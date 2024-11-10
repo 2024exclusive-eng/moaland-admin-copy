@@ -1,7 +1,9 @@
 // ** React Imports
 import { Fragment } from 'react'
 
+// 기능 설명 : 라우트를 가져오는 데 사용되는 파일입니다.
 // ** Routes Imports
+import PlanetRoutes from './Planet'
 import AppRoutes from './Apps'
 import FormRoutes from './Forms'
 import PagesRoutes from './Pages'
@@ -40,6 +42,7 @@ const DefaultRoute = '/dashboard/ecommerce'
 
 // ** Merge Routes
 const Routes = [
+  ...PlanetRoutes,
   ...AuthenticationRoutes,
   ...DashboardRoutes,
   ...AppRoutes,
@@ -86,7 +89,7 @@ const MergeLayoutRoutes = (layout, defaultLayout) => {
             // eslint-disable-next-line multiline-ternary
             isObjEmpty(route.element.props) && isBlank === false
               ? // eslint-disable-next-line multiline-ternary
-                LayoutWrapper
+              LayoutWrapper
               : Fragment
 
           route.element = (

@@ -3,6 +3,9 @@ import { Home, Circle } from 'react-feather'
 
 export default [
   {
+    header: '========[TEMP]========'
+  },
+  {
     id: 'dashboards',
     title: 'Dashboards',
     icon: <Home size={20} />,

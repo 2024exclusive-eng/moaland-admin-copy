@@ -16,42 +16,6 @@ const NotificationDropdown = () => {
   // ** Notification Array
   const notificationsArray = [
     {
-      img: require('@src/assets/images/portrait/small/avatar-s-15.jpg').default,
-      subtitle: 'Won the monthly best seller badge.',
-      title: (
-        <p className='media-heading'>
-          <span className='fw-bolder'>Congratulation Sam 🎉</span>winner!
-        </p>
-      )
-    },
-    {
-      img: require('@src/assets/images/portrait/small/avatar-s-3.jpg').default,
-      subtitle: 'You have 10 unread messages.',
-      title: (
-        <p className='media-heading'>
-          <span className='fw-bolder'>New message</span>&nbsp;received
-        </p>
-      )
-    },
-    {
-      avatarContent: 'MD',
-      color: 'light-danger',
-      subtitle: 'MD Inc. order updated',
-      title: (
-        <p className='media-heading'>
-          <span className='fw-bolder'>Revised Order 👋</span>&nbsp;checkout
-        </p>
-      )
-    },
-    {
-      title: <h6 className='fw-bolder me-auto mb-0'>System Notifications</h6>,
-      switch: (
-        <div className='form-check form-switch'>
-          <Input type='switch' name='customSwitch' id='exampleCustomSwitch' defaultChecked />
-        </div>
-      )
-    },
-    {
       avatarIcon: <X size={14} />,
       color: 'light-danger',
       subtitle: 'USA Server is down due to hight CPU usage',
@@ -162,18 +126,10 @@ const NotificationDropdown = () => {
       <DropdownMenu end tag='ul' className='dropdown-menu-media mt-0'>
         <li className='dropdown-menu-header'>
           <DropdownItem className='d-flex' tag='div' header>
-            <h4 className='notification-title mb-0 me-auto'>Notifications</h4>
-            <Badge tag='div' color='light-primary' pill>
-              6 New
-            </Badge>
+            <h4 className='notification-title mb-0 me-auto'>알림</h4>
           </DropdownItem>
         </li>
         {renderNotificationItems()}
-        <li className='dropdown-menu-footer'>
-          <Button color='primary' block>
-            Read all notifications
-          </Button>
-        </li>
       </DropdownMenu>
     </UncontrolledDropdown>
   )

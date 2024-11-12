@@ -18,30 +18,30 @@ const NotificationDropdown = () => {
     {
       avatarIcon: <X size={14} />,
       color: 'light-danger',
-      subtitle: 'USA Server is down due to hight CPU usage',
+      subtitle: '등록하신 공간의 운영정보가 명확하지 않습니다.',
       title: (
         <p className='media-heading'>
-          <span className='fw-bolder'>Server down</span>&nbsp;registered
+          요청하신 클래스가 <span className='fw-bolder'>반려되었습니다.</span>&nbsp;
         </p>
       )
     },
     {
       avatarIcon: <Check size={14} />,
       color: 'light-success',
-      subtitle: 'Last month sales report generated',
+      subtitle: '요청하신 클래스가 등록 완료되었습니다.',
       title: (
         <p className='media-heading'>
-          <span className='fw-bolder'>Sales report</span>&nbsp;generated
+          요청하신 클래스가 <span className='fw-bolder'>등록 완료되었습니다.</span>&nbsp;
         </p>
       )
     },
     {
       avatarIcon: <AlertTriangle size={14} />,
       color: 'light-warning',
-      subtitle: 'BLR Server using high memory',
+      subtitle: '프로모션 + 프로모션번호가 승인되었습니다.',
       title: (
         <p className='media-heading'>
-          <span className='fw-bolder'>High memory</span>&nbsp;usage
+          등록한 프로모션이 검수중입니다.&nbsp;
         </p>
       )
     }
@@ -83,16 +83,16 @@ const NotificationDropdown = () => {
                         {...(item.img
                           ? { img: item.img, imgHeight: 32, imgWidth: 32 }
                           : item.avatarContent
-                          ? {
+                            ? {
                               content: item.avatarContent,
                               color: item.color
                             }
-                          : item.avatarIcon
-                          ? {
-                              icon: item.avatarIcon,
-                              color: item.color
-                            }
-                          : null)}
+                            : item.avatarIcon
+                              ? {
+                                icon: item.avatarIcon,
+                                color: item.color
+                              }
+                              : null)}
                       />
                     </div>
                     <div className='list-item-body flex-grow-1'>

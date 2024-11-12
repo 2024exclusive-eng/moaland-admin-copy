@@ -47,11 +47,11 @@ const UserDropdown = () => {
         <Avatar img={userAvatar} imgHeight='40' imgWidth='40' status='online' />
       </DropdownToggle>
       <DropdownMenu end>
-        <DropdownItem tag={Link} to='/pages/profile'>
+        <DropdownItem tag={Link} to='#'>
           <User size={14} className='me-75' />
           <span className='align-middle'>마이페이지</span>
         </DropdownItem>
-        <DropdownItem tag={Link} to='/login' onClick={() => dispatch(handleLogout())}>
+        <DropdownItem tag={Link} to='#' onClick={() => dispatch(handleLogout())}>
           <Power size={14} className='me-75' />
           <span className='align-middle'>로그아웃</span>
         </DropdownItem>

@@ -19,7 +19,7 @@ import { User, Mail, CheckSquare, MessageSquare, Settings, CreditCard, HelpCircl
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap'
 
 // ** Default Avatar Image
-import defaultAvatar from '@src/assets/images/portrait/small/avatar-s-11.jpg'
+import defaultAvatar from '@src/assets/images/portrait/small/basic.jpg'
 
 const UserDropdown = () => {
   // ** Store Vars
@@ -36,21 +36,17 @@ const UserDropdown = () => {
   }, [])
 
   //** Vars
-  const userAvatar = (userData && userData.avatar) || defaultAvatar
+  const userAvatar = defaultAvatar
 
   return (
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
       <DropdownToggle href='/' tag='a' className='nav-link dropdown-user-link' onClick={e => e.preventDefault()}>
         <div className='user-nav d-sm-flex d-none'>
-          <span className='user-name m-50 fw-bold'>홍길동님</span>
+          <span className='user-name m-50 fw-bold'>관리자님</span>
         </div>
         <Avatar img={userAvatar} imgHeight='40' imgWidth='40' status='online' />
       </DropdownToggle>
       <DropdownMenu end>
-        <DropdownItem tag={Link} to='#'>
-          <User size={14} className='me-75' />
-          <span className='align-middle'>마이페이지</span>
-        </DropdownItem>
         <DropdownItem tag={Link} to='#' onClick={() => dispatch(handleLogout())}>
           <Power size={14} className='me-75' />
           <span className='align-middle'>로그아웃</span>

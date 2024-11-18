@@ -3,8 +3,8 @@
 //Template config options
 const themeConfig = {
   app: {
-    appName: '플래닛2536',
-    appLogoImage: require('@src/assets/images/logo/planetLogo.svg').default
+    appName: 'Harulink',
+    appLogoImage: require('@src/assets/images/logo/harulinkLogo.svg').default
   },
   layout: {
     isRTL: false,

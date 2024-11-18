@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 
 // 기능 설명 : 라우트를 가져오는 데 사용되는 파일입니다.
 // ** Routes Imports
-import PlanetRoutes from './Planet'
+import HarulinkRoutes from './Harulink'
 import AppRoutes from './Apps'
 import FormRoutes from './Forms'
 import PagesRoutes from './Pages'
@@ -35,14 +35,14 @@ const getLayout = {
 }
 
 // ** Document title
-const TemplateTitle = '%s - Vuexy React Admin Template'
+const TemplateTitle = '%s - 하루링크 운영센터'
 
 // ** Default Route
-const DefaultRoute = '/dashboard/ecommerce'
+const DefaultRoute = '/harulink/manage/user'
 
 // ** Merge Routes
 const Routes = [
-  ...PlanetRoutes,
+  ...HarulinkRoutes,
   ...AuthenticationRoutes,
   ...DashboardRoutes,
   ...AppRoutes,

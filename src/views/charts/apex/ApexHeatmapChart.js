@@ -70,7 +70,7 @@ const ApexHeatmapChart = () => {
               from: 51,
               to: 60,
               name: '50-60',
-              color: '#336949'
+              color: '#F05783'
             }
           ]
         }

@@ -11,7 +11,7 @@ export const areaChartOptions = {
   grid: {
     show: false
   },
-  colors: ['#336949'],
+  colors: ['#F05783'],
   dataLabels: {
     enabled: false
   },
@@ -66,7 +66,7 @@ export const lineChartOptions = {
   grid: {
     show: false
   },
-  colors: ['#336949'],
+  colors: ['#F05783'],
   dataLabels: {
     enabled: false
   },

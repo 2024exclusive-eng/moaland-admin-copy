@@ -1,0 +1,46 @@
+on:
+  push:
+    branches:
+      - staging # staging 브랜치에 push될 때 실행
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: STAGING # ACTION setting 시 configure name 지정
+    strategy:
+      matrix:
+        node-versions: [20.x]
+    steps:
+      - name: Checkout source code.
+        uses: actions/checkout@v2
+
+      - name: Set .env variables
+        run: |
+          echo SKIP_PREFLIGHT_CHECK=true > .env
+          echo REACT_APP_BASENAME="" >> .env
+
+      - name: Check .env variables
+        run: cat .env
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Build(export)
+        run: yarn run build
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_IAM_SECRET_KEY }}
+          aws-region: ap-northeast-2
+
+      # staging 브랜치일 때는 staging 환경으로 배포합니다.
+      - name: Deploy to S3 (Staging)
+        if: github.ref == 'refs/heads/staging'
+        run: aws s3 sync ./build s3://harulink/backoffice/ --delete
+
+      # staging 브랜치일 때는 staging 환경으로 배포합니다.
+      - name: Invalidate CloudFront Cache (Staging)
+        if: github.ref == 'refs/heads/staging'
+        run: aws cloudfront create-invalidation --distribution-id EP4KO2THQHWPS --paths "/*"

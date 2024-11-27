@@ -16,12 +16,12 @@ export default [
     id: 'manageMission',
     title: '미션 관리',
     icon: <Star size={20} />,
-    navLink: '/planet/manage/mission'
+    navLink: '/harulink/manage/mission'
   },
   {
     id: 'manageNotice',
     title: '공지사항 관리',
     icon: <FileText size={20} />,
-    navLink: '/planet/manage/notice'
+    navLink: '/harulink/manage/notice'
   }
 ]

@@ -42,17 +42,17 @@ const DefaultRoute = '/harulink/manage/user'
 
 // ** Merge Routes
 const Routes = [
-  ...HarulinkRoutes,
-  ...AuthenticationRoutes,
-  ...DashboardRoutes,
-  ...AppRoutes,
-  ...PagesRoutes,
-  ...UiElementRoutes,
-  ...ExtensionsRoutes,
-  ...PageLayoutsRoutes,
-  ...FormRoutes,
-  ...TablesRoutes,
-  ...ChartsRoutes
+  ...HarulinkRoutes
+  // ...AuthenticationRoutes,
+  // ...DashboardRoutes,
+  // ...AppRoutes,
+  // ...PagesRoutes,
+  // ...UiElementRoutes,
+  // ...ExtensionsRoutes,
+  // ...PageLayoutsRoutes,
+  // ...FormRoutes,
+  // ...TablesRoutes,
+  // ...ChartsRoutes
 ]
 
 const getRouteMeta = route => {

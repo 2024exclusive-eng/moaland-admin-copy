@@ -12,25 +12,25 @@ const StatsCard = ({ cols }) => {
   const data = [
     {
       title: '11건',
-      subtitle: '신규입점',
+      subtitle: '신규미션',
       color: 'light-primary',
       icon: <TrendingUp size={24} />
     },
     {
       title: '23건',
-      subtitle: '신규 클래스 검수요청',
+      subtitle: '선정대기',
       color: 'light-info',
       icon: <User size={24} />
     },
     {
       title: '8건',
-      subtitle: '신규 프로모션 신청',
+      subtitle: '완료대기',
       color: 'light-danger',
       icon: <Box size={24} />
     },
     {
       title: '3건',
-      subtitle: '신규 정산요청',
+      subtitle: '완료',
       color: 'light-success',
       icon: <DollarSign size={24} />
     }
@@ -63,7 +63,7 @@ const StatsCard = ({ cols }) => {
   return (
     <Card className='card-statistics'>
       <CardHeader>
-        <CardTitle tag='h4'>클래스 운영관리</CardTitle>
+        <CardTitle tag='h4'>미션 운영상황</CardTitle>
       </CardHeader>
       <CardBody className='statistics-body'>
         <Row>{renderData()}</Row>

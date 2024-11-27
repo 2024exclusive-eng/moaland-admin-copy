@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit'
 // ** UseJWT import to get config
 import useJwt from '@src/auth/jwt/useJwt'
 
-const config = useJwt.jwtConfig
+const config = useJwt.authConfig
 
 const initialUser = () => {
   const item = window.localStorage.getItem('userData')
@@ -23,8 +23,8 @@ export const authSlice = createSlice({
       state[config.storageTokenKeyName] = action.payload[config.storageTokenKeyName]
       state[config.storageRefreshTokenKeyName] = action.payload[config.storageRefreshTokenKeyName]
       localStorage.setItem('userData', JSON.stringify(action.payload))
-      localStorage.setItem(config.storageTokenKeyName, JSON.stringify(action.payload.accessToken))
-      localStorage.setItem(config.storageRefreshTokenKeyName, JSON.stringify(action.payload.refreshToken))
+      localStorage.setItem(config.storageTokenKeyName, action.payload.accessToken)
+      localStorage.setItem(config.storageRefreshTokenKeyName, action.payload.refreshToken)
     },
     handleLogout: state => {
       state.userData = {}

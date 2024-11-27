@@ -11,3 +11,4 @@ import uiElements from './ui-elements'
 
 // ** Merge & Export
 export default [...Harulink]
+//export default [...Harulink, ...dashboards,  ...apps, ...pages, ...forms, ...tables, ...others, ...charts, ...uiElements]

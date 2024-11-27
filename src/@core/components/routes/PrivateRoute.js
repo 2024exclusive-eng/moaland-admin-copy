@@ -21,7 +21,7 @@ const PrivateRoute = ({ children, route }) => {
       restrictedRoute = route.meta.restricted
     }
     if (!user) {
-      return <Navigate to='/planet/auth/intro' />
+      return <Navigate to='/harulink/auth/intro' />
     }
     if (user && restrictedRoute) {
       return <Navigate to='/' />
@@ -29,6 +29,7 @@ const PrivateRoute = ({ children, route }) => {
     if (user && restrictedRoute && user.role === 'client') {
       return <Navigate to='/access-control' />
     }
+    console.log('action', ability)
     if (user && !ability.can(action || 'read', resource)) {
       return <Navigate to='/misc/not-authorized' replace />
     }

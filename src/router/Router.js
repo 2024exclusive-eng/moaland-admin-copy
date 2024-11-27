@@ -31,7 +31,7 @@ const Router = () => {
     if (user) {
       return getHomeRouteForLoggedInUser(user.role)
     } else {
-      return '/planet/auth/intro'
+      return '/harulink/auth/intro'
     }
   }
 

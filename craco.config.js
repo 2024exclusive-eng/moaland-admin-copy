@@ -2,6 +2,15 @@ const path = require('path')
 
 module.exports = {
   reactScriptsVersion: 'react-scripts',
+  babel: {
+    plugins: [
+      ['@babel/plugin-transform-class-properties', { loose: true }],
+      ['@babel/plugin-transform-logical-assignment-operators'],
+      ['@babel/plugin-proposal-private-methods', { loose: true }],
+      ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+      '@babel/plugin-syntax-numeric-separator'
+    ]
+  },
   style: {
     sass: {
       loaderOptions: {
@@ -11,7 +20,7 @@ module.exports = {
       }
     },
     postcss: {
-      plugins: [require('postcss-rtl')()]
+      plugins: [require('postcss-rtlcss')()]
     }
   },
   webpack: {
@@ -25,6 +34,29 @@ module.exports = {
       '@configs': path.resolve(__dirname, 'src/configs'),
       '@utils': path.resolve(__dirname, 'src/utility/Utils'),
       '@hooks': path.resolve(__dirname, 'src/utility/hooks')
+    },
+    configure: (webpackConfig) => {
+      webpackConfig.module.rules.push({
+        test: /\.(js|jsx)?$/,
+        include: [
+          path.resolve(__dirname, '../node_modules/@ckeditor/ckeditor5-html-embed'),
+          path.resolve(__dirname, '../node_modules/@ckeditor/ckeditor5-upload')
+        ],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              plugins: [
+                ['@babel/plugin-transform-class-properties', { loose: true }],
+                ['@babel/plugin-proposal-private-methods', { loose: true }],
+                ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+                '@babel/plugin-syntax-numeric-separator'
+              ]
+            }
+          }
+        ]
+      })
+      return webpackConfig
     }
   }
 }

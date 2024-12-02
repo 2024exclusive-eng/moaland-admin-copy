@@ -1,9 +1,12 @@
 
 // ** Reactstrap Imports
-import { Row, Col, Card, CardHeader, CardTitle, CardBody, CardText } from 'reactstrap'
+import { Row, Col, Card, CardHeader, CardTitle, CardBody, Button } from 'reactstrap'
 
 // ** Demo Components
-import NewJoinTable from './NewJoin'
+import NewMissionList from './newMissionList'
+import SelectMissionList from './selectMissionList'
+import SelectedMissionList from './selectedMissionList'
+import CompleteMissionList from './completeMissionList'
 
 import StatsCard from './statsCard'
 
@@ -29,10 +32,47 @@ const EcommerceDashboard = () => {
         <Col lg='12' md='12'>
           <Card className='card-statistics'>
             <CardHeader>
-              <CardTitle tag='h4'>미션 관리</CardTitle>
+              <CardTitle tag='h4'>신규 미션</CardTitle>
+              <div className='d-flex mt-md-0 mt-1'>
+                <Button className='ms-2' color='primary' onClick={() => { window.location.href = '/harulink/manage/mission/modify/new' }} >
+                  <span className='align-middle '>생성</span>
+                </Button>
+              </div>
             </CardHeader>
             <CardBody className='' style={{ padding: 0 }}>
-              <NewJoinTable />
+              <NewMissionList />
+            </CardBody>
+          </Card>
+        </Col>
+        <Col lg='12' md='12'>
+          <Card className='card-statistics'>
+            <CardHeader>
+              <CardTitle tag='h4'>선정대기 미션</CardTitle>
+            </CardHeader>
+            <CardBody className='' style={{ padding: 0 }}>
+              <SelectMissionList />
+            </CardBody>
+          </Card>
+        </Col>
+        <Col lg='12' md='12'>
+          <Card className='card-statistics'>
+            <CardHeader>
+              <CardTitle tag='h4'>완료대기 미션</CardTitle>
+
+            </CardHeader>
+            <CardBody className='' style={{ padding: 0 }}>
+              <SelectedMissionList />
+            </CardBody>
+          </Card>
+        </Col>
+        <Col lg='12' md='12'>
+          <Card className='card-statistics'>
+            <CardHeader>
+              <CardTitle tag='h4'>완료 미션</CardTitle>
+
+            </CardHeader>
+            <CardBody className='' style={{ padding: 0 }}>
+              <CompleteMissionList />
             </CardBody>
           </Card>
         </Col>

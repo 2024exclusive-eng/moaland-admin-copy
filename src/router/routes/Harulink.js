@@ -9,6 +9,8 @@ const ManageUserDetail = lazy(() => import('../../views/harulink/manage/userDeta
 const ManageNotice = lazy(() => import('../../views/harulink/notice/list'))
 const ManageNoticeDetail = lazy(() => import('../../views/harulink/notice/detail'))
 const ManageMission = lazy(() => import('../../views/harulink/mission/list'))
+const ManageMissionDetail = lazy(() => import('../../views/harulink/mission/detail/missionDetail'))
+const ManageMissionModify = lazy(() => import('../../views/harulink/mission/detail/newMission'))
 
 const AppRoutes = [
   {
@@ -23,6 +25,14 @@ const AppRoutes = [
   {
     path: '/harulink/manage/mission',
     element: <ManageMission />
+  },
+  {
+    path: '/harulink/manage/mission/:id',
+    element: <ManageMissionDetail />
+  },
+  {
+    path: '/harulink/manage/mission/modify/:id',
+    element: <ManageMissionModify />
   },
   {
     path: '/harulink/manage/user',

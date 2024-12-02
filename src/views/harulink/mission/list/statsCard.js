@@ -7,34 +7,47 @@ import Avatar from '@components/avatar'
 
 // ** Reactstrap Imports
 import { Card, CardHeader, CardTitle, CardBody, CardText, Row, Col } from 'reactstrap'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 
 const StatsCard = ({ cols }) => {
-  const data = [
-    {
-      title: '11건',
-      subtitle: '신규미션',
-      color: 'light-primary',
-      icon: <TrendingUp size={24} />
-    },
-    {
-      title: '23건',
-      subtitle: '선정대기',
-      color: 'light-info',
-      icon: <User size={24} />
-    },
-    {
-      title: '8건',
-      subtitle: '완료대기',
-      color: 'light-danger',
-      icon: <Box size={24} />
-    },
-    {
-      title: '3건',
-      subtitle: '완료',
-      color: 'light-success',
-      icon: <DollarSign size={24} />
-    }
-  ]
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    axios.get('/admin/mission/status')
+      .then(response => {
+        console.log(response)
+        setData([
+          {
+            title: `${response.newMissions}건`,
+            subtitle: '신규미션',
+            color: 'light-primary',
+            icon: <TrendingUp size={24} />
+          },
+          {
+            title: `${response.selectMissions}건`,
+            subtitle: '선정대기',
+            color: 'light-info',
+            icon: <User size={24} />
+          },
+          {
+            title: `${response.selectedMissions}건`,
+            subtitle: '완료대기',
+            color: 'light-danger',
+            icon: <Box size={24} />
+          },
+          {
+            title: `${response.completeMissions}건`,
+            subtitle: '완료',
+            color: 'light-success',
+            icon: <DollarSign size={24} />
+          }
+        ])
+      })
+      .catch(error => {
+        console.error('Error fetching mission status:', error)
+      })
+  }, [])
 
   const renderData = () => {
     return data.map((item, index) => {

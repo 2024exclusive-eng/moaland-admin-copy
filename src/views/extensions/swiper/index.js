@@ -4,36 +4,36 @@ import { Fragment } from 'react'
 // ** Hooks
 import { useRTL } from '@hooks/useRTL'
 
-// ** Third Party Components
-import SwiperCore, {
-  Grid,
-  Lazy,
-  Virtual,
-  Autoplay,
-  Navigation,
-  Pagination,
-  EffectFade,
-  EffectCube,
-  EffectCoverflow
-} from 'swiper'
+// // ** Third Party Components
+// import SwiperCore, {
+//   Grid,
+//   Lazy,
+//   Virtual,
+//   Autoplay,
+//   Navigation,
+//   Pagination,
+//   EffectFade,
+//   EffectCube,
+//   EffectCoverflow
+// } from 'swiper'
 
 // ** Demo Components
-import SwiperCube from './3DEffect'
-import SwiperRows from './SwiperRows'
-import SwiperFade from './SwiperFade'
-import SwiperLazy from './SwiperLazyload'
-import SwiperGallery from './SwiperGallery'
-import SwiperVirtual from './SwiperVirtual'
-import SwiperDefault from './SwiperDefault'
-import SwiperAutoplay from './SwiperAutoplay'
-import SwiperProgress from './SwiperProgress'
-import SwiperCoverflow from './SwiperCoverflow'
-import SwiperResponsive from './SwiperResponsive'
-import SwiperNavigation from './SwiperNavigation'
-import SwiperPagination from './SwiperPagination'
-import SwiperMultiSlides from './SwiperMultiSlides'
-import CenterSlidesStyle1 from './CenteredSlidesStyle1'
-import CenterSlidesStyle2 from './CenteredSlidesStyle2'
+// import SwiperCube from './3DEffect'
+// import SwiperRows from './SwiperRows'
+// import SwiperFade from './SwiperFade'
+// import SwiperLazy from './SwiperLazyload'
+// import SwiperGallery from './SwiperGallery'
+// import SwiperVirtual from './SwiperVirtual'
+// import SwiperDefault from './SwiperDefault'
+// import SwiperAutoplay from './SwiperAutoplay'
+// import SwiperProgress from './SwiperProgress'
+// import SwiperCoverflow from './SwiperCoverflow'
+// import SwiperResponsive from './SwiperResponsive'
+// import SwiperNavigation from './SwiperNavigation'
+// import SwiperPagination from './SwiperPagination'
+// import SwiperMultiSlides from './SwiperMultiSlides'
+// import CenterSlidesStyle1 from './CenteredSlidesStyle1'
+// import CenterSlidesStyle2 from './CenteredSlidesStyle2'
 import ExtensionsHeader from '@components/extensions-header'
 
 // ** Reactstrap Imports
@@ -43,7 +43,7 @@ import { Row, Col } from 'reactstrap'
 import '@styles/react/libs/swiper/swiper.scss'
 
 // ** Init Swiper Functions
-SwiperCore.use([Navigation, Grid, Pagination, EffectFade, EffectCube, EffectCoverflow, Autoplay, Lazy, Virtual])
+// SwiperCore.use([Navigation, Grid, Pagination, EffectFade, EffectCube, EffectCoverflow, Autoplay, Lazy, Virtual])
 
 const Slider = () => {
   // ** Hooks
@@ -56,7 +56,7 @@ const Slider = () => {
         subTitle='Swiper is the most modern free mobile touch slider'
         link='https://swiperjs.com/'
       />
-      <Row>
+      {/* <Row>
         <Col sm='12'>
           <SwiperDefault isRtl={isRtl} />
         </Col>
@@ -105,7 +105,7 @@ const Slider = () => {
         <Col sm='12'>
           <SwiperVirtual isRtl={isRtl} />
         </Col>
-      </Row>
+      </Row> */}
     </Fragment>
   )
 }

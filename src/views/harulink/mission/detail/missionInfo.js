@@ -76,6 +76,13 @@ const HorizontalFormIcons = ({ missionData }) => {
   }
 
   const handleSave = () => {
+    if (!formData.goodsContents) {
+      return alert('제공 상세 정보를 입력해주세요.')
+    }
+    if (!formData.missionContents) {
+      return alert('미션 방법을 입력해주세요.')
+    }
+
     // Check if all required fields are filled
     if (!formData.title || !formData.category || !formData.brand || !formData.maxEnroll || !formData.selectDate || !formData.enrollStartDate || !formData.enrollEndDate || !formData.missionStartDate || !formData.missionEndDate) {
       return alert('모든 필수 항목을 입력해주세요.')

@@ -23,11 +23,11 @@ class JwtService {
   authConfig = AuthConfig
 
   constructor(jwtOverrideConfig) {
-    const authConfig = {...this.authConfig, ...jwtOverrideConfig }
-    // axios.defaults.baseURL = 'http://localhost:3000'
-    axios.defaults.baseURL = 'https://api.harulink.com'
+    const authConfig = { ...this.authConfig, ...jwtOverrideConfig }
+    axios.defaults.baseURL = 'http://localhost:3000'
+    // axios.defaults.baseURL = 'https://api.harulink.com'
 
-    
+
     // ** Request Interceptor
     axios.interceptors.request.use(
       config => {

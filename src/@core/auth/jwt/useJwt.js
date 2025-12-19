@@ -24,7 +24,7 @@ class JwtService {
 
   constructor(jwtOverrideConfig) {
     const authConfig = { ...this.authConfig, ...jwtOverrideConfig }
-    axios.defaults.baseURL = 'http://localhost:3000'
+    axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL
     // axios.defaults.baseURL = 'https://api.harulink.com'
 
 

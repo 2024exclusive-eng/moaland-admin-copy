@@ -1,0 +1,121 @@
+.campaign-details-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  margin-bottom: 24px;
+
+  .card-content {
+    padding: 32px;
+  }
+
+  .card-title {
+    font-family: 'Pretendard Variable', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #000000;
+    margin: 0 0 24px 0;
+    line-height: normal;
+  }
+
+  .tabs-wrapper {
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 24px;
+
+    .campaign-tabs {
+      display: flex;
+      gap: 0;
+
+      .nav-item {
+        .nav-link {
+          padding: 10px 20px;
+          font-family: 'Pretendard', sans-serif;
+          font-size: 16px;
+          font-weight: 500;
+          color: #9da0a8;
+          border: none;
+          border-bottom: 2px solid transparent;
+          background: transparent;
+          cursor: pointer;
+          line-height: 1.5;
+
+          &:hover {
+            color: #000000;
+          }
+
+          &.active {
+            color: #000000;
+            font-weight: 700;
+            border-bottom-color: #000000;
+          }
+        }
+      }
+    }
+  }
+
+  .table-wrapper {
+    table {
+      thead {
+        tr {
+          th {
+            background-color: #f9fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px;
+            font-family: 'Pretendard Variable', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000000;
+            line-height: 1.5;
+            vertical-align: middle;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          cursor: pointer;
+
+          &:hover {
+            background-color: #f9fafc;
+          }
+
+          td {
+            padding: 16px;
+            font-family: 'Pretendard Variable', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: #3b3f4a;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+            line-height: 1.5;
+
+            &.underline-text {
+              text-decoration: underline;
+              text-decoration-skip-ink: none;
+              text-underline-position: from-font;
+            }
+
+            &.text-center {
+              text-align: center;
+            }
+
+            .view-btn {
+              border: 1px solid #e4e6ea;
+              border-radius: 6px;
+              padding: 4px 12px;
+              font-family: 'Inter', sans-serif;
+              font-size: 14px;
+              font-weight: 500;
+              color: #5a5e6a;
+              background-color: #ffffff;
+              line-height: 28px;
+
+              &:hover {
+                background-color: #f9fafc;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

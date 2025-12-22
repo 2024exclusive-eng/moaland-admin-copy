@@ -155,7 +155,7 @@ const VerticalLayout = props => {
         />
       ) : null}
 
-      <Navbar
+      {/* <Navbar
         expand='lg'
         container={false}
         light={skin !== 'dark'}
@@ -172,7 +172,7 @@ const VerticalLayout = props => {
             <NavbarComponent setMenuVisibility={setMenuVisibility} skin={skin} setSkin={setSkin} />
           )}
         </div>
-      </Navbar>
+      </Navbar> */}
       {children}
 
       {/* Vertical Nav Menu Overlay */}
@@ -208,13 +208,13 @@ const VerticalLayout = props => {
           setMenuCollapsed={setMenuCollapsed}
         />
       ) : null}
-      <footer
+      {/* <footer
         className={classnames(`footer footer-light ${footerClasses[footerType] || 'footer-static'}`, {
           'd-none': footerType === 'hidden'
         })}
       >
         {footer ? footer : <FooterComponent footerType={footerType} footerClasses={footerClasses} />}
-      </footer>
+      </footer> */}
       
 
       {themeConfig.layout.scrollTop === true ? (

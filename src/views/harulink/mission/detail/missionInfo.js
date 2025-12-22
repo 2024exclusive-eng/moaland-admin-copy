@@ -1,33 +1,67 @@
+/* eslint-disable multiline-ternary */
 import moment from 'moment/moment'
 import { Fragment, useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 // ** Reactstrap Imports
 import {
   Row,
   Button,
   Col,
   Card,
-  Form,
   Input,
   Label,
-  CardBody,
-  CardTitle,
-  CardImg,
-  CardHeader
+  CardBody
 } from 'reactstrap'
-import img1 from '@src/assets/images/slider/06.jpg'
-import Editor from '@src/@core/components/editor/editor.js'
 import axios from 'axios'
-const formatDate = (date) => moment(date).format('YYYY-MM-DD')
+import Editor from '@components/editor/editor'
+import './missionInfo.scss'
+
+const formatDate = (date) => {
+  if (!date) return ''
+  return moment(date).format('YYYY-MM-DD')
+}
+
+const formatDateForServer = (date) => {
+  if (!date) return null
+  return moment(date).format('YYYY-MM-DD HH:mm:ss')
+}
 
 const HorizontalFormIcons = ({ missionData }) => {
   const { id } = useParams()
+  const navigate = useNavigate()
 
-  const [formData, setFormData] = useState(missionData ?? {})
+  const [formData, setFormData] = useState({})
 
   useEffect(() => {
-    if (missionData) setFormData(missionData)
-    else setFormData({})
+    if (missionData) {
+      // Map server data to form fields
+      setFormData({
+        category: missionData.category,
+        applicationStartDate: missionData.enrollStartDate,
+        applicationEndDate: missionData.enrollEndDate,
+        selectionDate: missionData.selectDate,
+        paymentDate: missionData.paymentDate,
+        visitStartDate: missionData.missionStartDate,
+        visitEndDate: missionData.missionEndDate,
+        contentStartDate: missionData.contentStartDate,
+        contentEndDate: missionData.contentEndDate,
+        mediaType: missionData.social ? missionData.social.split(',') : [],
+        region: missionData.region,
+        address: missionData.address,
+        latitude: missionData.latitude,
+        longitude: missionData.longitude,
+        point: missionData.point,
+        selectedCandidates: missionData.maxEnroll,
+        brand: missionData.brand,
+        campaignName: missionData.title,
+        provisionDetails: missionData.goodsContents,
+        filmingMission: missionData.missionContents,
+        additionalInfo: missionData.additionalInfo,
+        guideline: missionData.guideline
+      })
+    } else {
+      setFormData({})
+    }
   }, [missionData])
 
   const handleChange = (e) => {
@@ -38,67 +72,111 @@ const HorizontalFormIcons = ({ missionData }) => {
     })
   }
 
-  const [image, setImage] = useState(missionData?.thumbnailImg || img1)
+  const handleCheckboxChange = (name, value) => {
+    const currentValues = formData[name] || []
+    const newValues = currentValues.includes(value)
+      ? currentValues.filter(v => v !== value)
+      : [...currentValues, value]
 
-  useEffect(() => {
-    setImage(missionData?.thumbnailImg || img1)
-  }, [missionData])
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0]
-
-    const formData = new FormData()
-    formData.append('file', file)
-
-    axios
-      .post('/admin/image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      .then((response) => {
-        // 서버에서 반환된 이미지 URL 사용
-        setImage(response.data.uri)
-      })
-      .catch((error) => {
-        console.error('Image upload error:', error)
-        alert('이미지 업로드 중 오류가 발생했습니다.')
-      })
-
-  }
-
-  const handleEditorChange = (name, content) => {
-    console.log(name, content)
     setFormData({
       ...formData,
-      [name]: content
+      [name]: newValues
     })
   }
 
-  const handleSave = () => {
-    if (!formData.goodsContents) {
-      return alert('제공 상세 정보를 입력해주세요.')
+  const handleEditorChange = (name, data) => {
+    setFormData({
+      ...formData,
+      [name]: data
+    })
+  }
+
+  const [thumbnailImage, setThumbnailImage] = useState(null)
+  const [detailedImage, setDetailedImage] = useState(null)
+
+  useEffect(() => {
+    setThumbnailImage(missionData?.thumbnailImg || null)
+    setDetailedImage(missionData?.detailImg || null)
+  }, [missionData])
+
+  const handleImageUpload = async (event, type) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    const formDataUpload = new FormData()
+    formDataUpload.append('file', file)
+
+    try {
+      const response = await axios.post('/admin/image', formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      if (type === 'thumbnail') {
+        setThumbnailImage(response.data.uri)
+      } else if (type === 'detailed') {
+        setDetailedImage(response.data.uri)
+      }
+    } catch (error) {
+      console.error('Image upload error:', error)
+      alert('이미지 업로드 중 오류가 발생했습니다.')
     }
-    if (!formData.missionContents) {
-      return alert('미션 방법을 입력해주세요.')
+  }
+
+  const handleSave = () => {
+    // Validate required fields
+    if (!formData.campaignName) {
+      return alert('캠페인 이름을 입력해주세요.')
+    }
+    if (!formData.category) {
+      return alert('카테고리를 선택해주세요.')
+    }
+    if (!formData.region) {
+      return alert('지역을 선택해주세요.')
+    }
+    if (!formData.mediaType || formData.mediaType.length === 0) {
+      return alert('미디어 타입을 최소 1개 이상 선택해주세요.')
+    }
+    if (!thumbnailImage) {
+      return alert('썸네일 이미지를 업로드해주세요.')
     }
 
-    // Check if all required fields are filled
-    if (!formData.title || !formData.category || !formData.brand || !formData.maxEnroll || !formData.selectDate || !formData.enrollStartDate || !formData.enrollEndDate || !formData.missionStartDate || !formData.missionEndDate) {
-      return alert('모든 필수 항목을 입력해주세요.')
-    }
-    // Check if thumbnail image is uploaded
-    if (!image) {
-      return alert('대표 이미지를 업로드해주세요.')
-    }
+    // Get current date as default
+    const now = moment()
+    const defaultStartDate = formatDateForServer(now)
+    const defaultEndDate = formatDateForServer(now.clone().add(30, 'days'))
+
     // Prepare data to be sent to the server
     const dataToSave = {
-      ...formData,
-      thumbnailImg: image
+      category: formData.category,
+      enrollStartDate: formatDateForServer(formData.applicationStartDate) || defaultStartDate,
+      enrollEndDate: formatDateForServer(formData.applicationEndDate) || defaultEndDate,
+      selectDate: formatDateForServer(formData.selectionDate),
+      paymentDate: formatDateForServer(formData.paymentDate),
+      missionStartDate: formatDateForServer(formData.visitStartDate),
+      missionEndDate: formatDateForServer(formData.visitEndDate),
+      contentStartDate: formatDateForServer(formData.contentStartDate),
+      contentEndDate: formatDateForServer(formData.contentEndDate),
+      social: formData.mediaType ? formData.mediaType.join(',') : null,
+      region: formData.region,
+      address: formData.address,
+      latitude: formData.latitude || null,
+      longitude: formData.longitude || null,
+      point: formData.point || 0,
+      maxEnroll: formData.selectedCandidates || 0,
+      brand: formData.brand || null,
+      title: formData.campaignName,
+      thumbnailImg: thumbnailImage,
+      detailImg: detailedImage,
+      goodsContents: formData.provisionDetails,
+      missionContents: formData.filmingMission,
+      additionalInfo: formData.additionalInfo,
+      guideline: formData.guideline
     }
 
     console.log(dataToSave)
-    axios.post(`/admin/mission/${id ? id : 'new'}`, dataToSave, {
+    axios.post(`/admin/campaign/${id ? id : 'new'}`, dataToSave, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -106,7 +184,7 @@ const HorizontalFormIcons = ({ missionData }) => {
       .then(response => {
         if (response.success) {
           alert('저장되었습니다.')
-          window.location.reload()
+          navigate('/harulink/manage/mission')
         }
       })
       .catch(error => {
@@ -115,156 +193,355 @@ const HorizontalFormIcons = ({ missionData }) => {
       })
   }
 
+  const handleCancel = () => {
+    navigate('/harulink/manage/mission')
+  }
+
   return (
     <Fragment>
-      <Card>
-        <CardHeader>
-          <CardTitle tag='h4'>기본 정보</CardTitle>
-          <Button color='primary' onClick={handleSave}>저장</Button>
-        </CardHeader>
-        <CardBody>
-          <Form>
-            <div className='mb-1'>
-              <h5>대표 이미지</h5>
-              <Button style={{ padding: 0, border: 0 }} onClick={() => document.getElementById('imageUpload').click()}>
-                <CardImg style={{ width: '150px', height: "150px" }} src={image} />
-              </Button>
-              <Input type='file' id='imageUpload' style={{ display: 'none' }} onChange={handleImageUpload} />
+      <div className="campaign-registration">
+        {/* Header */}
+        <div className="campaign-header">
+          <h1 className="campaign-title">캠페인 등록</h1>
+          <div className="campaign-actions">
+            <Button className="btn-cancel" onClick={handleCancel}>
+              취소
+            </Button>
+            <Button className="btn-register" onClick={handleSave}>
+              등록 하기
+            </Button>
+          </div>
+        </div>
+
+        {/* Provided Information Section */}
+        <Card className="campaign-card">
+          <CardBody>
+            <h2 className="section-title">제공 정보</h2>
+
+            {/* Thumbnail Image */}
+            <div className="form-group">
+              <Label className="form-label">썸네일 이미지 (750px *750px 권장)</Label>
+              <div className="image-upload-wrapper">
+                <div
+                  className="image-upload-box"
+                  onClick={() => document.getElementById('thumbnailUpload').click()}
+                >
+                  {thumbnailImage ? (
+                    <img src={thumbnailImage} alt="Thumbnail" className="uploaded-image" />
+                  ) : (
+                    <>
+                      <div className="upload-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                          <path d="M16 8V24M8 16H24" stroke="#BEC1C7" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </div>
+                      <p className="upload-text">파일업로드</p>
+                    </>
+                  )}
+                </div>
+                <Input
+                  type="file"
+                  id="thumbnailUpload"
+                  className="d-none"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, 'thumbnail')}
+                />
+              </div>
             </div>
 
-            <Row className='mb-1'>
-              <Col>
-                <div className='mb-1'>
-                  <h5>카테고리</h5>
-                  <Input type='select' name='category' id='category' value={formData?.category} onChange={handleChange}>
-                    <option value='beauty'>Beauty</option>
-                    <option value='fashion'>Fashion</option>
-                    <option value='food'>Food</option>
-                    <option value='lifestyle'>Lifestyle</option>
-                    <option value='kids'>Kids</option>
-                    <option value='digital'>Digital</option>
-                    <option value='books'>Books</option>
-                    <option value='pets'>Pets</option>
-                    <option value='sports'>Sports</option>
-                    <option value='etc'>Etc</option>
-                  </Input>
+            {/* Detailed Image */}
+            <div className="form-group">
+              <Label className="form-label">상세 이미지 (가로 860px 권장)</Label>
+              <div className="image-upload-wrapper">
+                <div
+                  className="image-upload-box"
+                  onClick={() => document.getElementById('detailedUpload').click()}
+                >
+                  {detailedImage ? (
+                    <img src={detailedImage} alt="Detailed" className="uploaded-image" />
+                  ) : (
+                    <>
+                      <div className="upload-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                          <path d="M16 8V24M8 16H24" stroke="#BEC1C7" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </div>
+                      <p className="upload-text">파일업로드</p>
+                    </>
+                  )}
                 </div>
-              </Col>
-              <Col>
-                <div className='mb-1'>
-                  <h5>타이틀</h5>
-                  <Input type='text' name='title' id='title' value={formData?.title} onChange={handleChange} />
-                </div>
-              </Col>
-              <Col>
-                <div className='mb-1'>
-                  <h5>브랜드</h5>
-                  <Input type='text' name='brand' id='brand' value={formData?.brand} onChange={handleChange} />
-                </div>
-              </Col>
-            </Row>
-            <Row className='mb-1'>
-              <Col>
-                <div className='mb-1'>
-                  <h5>제공 상세 정보</h5>
-                  <Editor key="goodsContents" content={formData?.goodsContents} onChange={(content) => handleEditorChange('goodsContents', content)} />
-                </div>
-              </Col>
-            </Row>
+                <Input
+                  type="file"
+                  id="detailedUpload"
+                  className="d-none"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, 'detailed')}
+                />
+              </div>
+            </div>
 
-          </Form>
-        </CardBody>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle tag='h4'>미션 정보</CardTitle>
-        </CardHeader>
-        <CardBody>
-          <Form>
-            <Row className='mb-1'>
-              <Col>
-                <div className='mb-1'>
-                  <h5>SNS 유형</h5>
-                  <div>
-                    <Input className='me-1' type='radio' name='social' id='instagram' value='instagram' checked={formData?.social === 'instagram'} onChange={handleChange} />
-                    <Label for='instagram' className='me-2'>인스타그램</Label>
-                    <Input className='me-1' type='radio' name='social' id='tiktok' value='tiktok' checked={formData?.social === 'tiktok'} onChange={handleChange} />
-                    <Label for='tiktok' className='me-2'>틱톡</Label>
-                    <Input className='me-1' type='radio' name='social' id='youtube' value='youtube' checked={formData?.social === 'youtube'} onChange={handleChange} />
-                    <Label for='youtube'>유튜브</Label>
+            {/* Category */}
+            <div className="form-group">
+              <Label className="form-label">카테고리</Label>
+              <div className="radio-group">
+                {[
+                  { value: 'restaurant', label: '맛집' },
+                  { value: 'Hospital', label: '병원' },
+                  { value: 'Beauty', label: '뷰티' },
+                  { value: 'Culture', label: '문화' },
+                  { value: 'Stay', label: '숙박' },
+                  { value: 'Massage', label: '여가시설' }
+                ].map((cat) => (
+                  <div key={cat.value} className="radio-item">
+                    <Input
+                      type="radio"
+                      name="category"
+                      id={`category-${cat.value}`}
+                      value={cat.value}
+                      checked={formData?.category === cat.value}
+                      onChange={handleChange}
+                    />
+                    <Label for={`category-${cat.value}`} className="radio-label">{cat.label}</Label>
                   </div>
-                </div>
-              </Col>
-              <Col>
-              </Col>
-            </Row>
+                ))}
+              </div>
+            </div>
 
-            <Row className='mb-1'>
-              <Col>
-                <div className='mb-1'>
-                  <h5>최대 신청자 수</h5>
-                  <div>
-                    <Input type='number' name='maxEnroll' id='maxEnroll' value={formData?.maxEnroll} onChange={handleChange} />
+            {/* Region */}
+            <div className="form-group">
+              <Label className="form-label">지역</Label>
+              <div className="radio-group">
+                {[
+                  { value: 'Seoul', label: '서울' },
+                  { value: 'Busan', label: '부산' },
+                  { value: 'Jeju', label: '제주' },
+                  { value: 'Other', label: '기타' }
+                ].map((reg) => (
+                  <div key={reg.value} className="radio-item">
+                    <Input
+                      type="radio"
+                      name="region"
+                      id={`region-${reg.value}`}
+                      value={reg.value}
+                      checked={formData?.region === reg.value}
+                      onChange={handleChange}
+                    />
+                    <Label for={`region-${reg.value}`} className="radio-label">{reg.label}</Label>
                   </div>
-                </div>
-              </Col>
-              <Col>
-                <h5>선정 일자</h5>
-                <Input type='date' name='selectDate' id='selectDate' value={formatDate(formData?.selectDate)} onChange={handleChange} />
-              </Col>
-            </Row>
+                ))}
+              </div>
+            </div>
 
-            <Row className='mb-1'>
-              <Col>
-                <div className='mb-1'>
-                  <h5>신청가능 일자</h5>
+            {/* Campaign Name */}
+            <div className="form-group">
+              <Label className="form-label">캠페인 이름</Label>
+              <Input
+                type="text"
+                name="campaignName"
+                className="form-input"
+                placeholder="예) [지역] 장소이름"
+                value={formData?.campaignName || ''}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Provision Details */}
+            <div className="form-group">
+              <Label className="form-label">제공내역</Label>
+              <Input
+                type="text"
+                name="provisionDetails"
+                className="form-input"
+                placeholder="Place holder"
+                value={formData?.provisionDetails || ''}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Address */}
+            <div className="form-group">
+              <Label className="form-label">주소 (구글맵)</Label>
+              <Input
+                type="text"
+                name="address"
+                className="form-input"
+                placeholder="Place holder"
+                value={formData?.address || ''}
+                onChange={handleChange}
+              />
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Campaign Information Section */}
+        <Card className="campaign-card">
+          <CardBody>
+            <h2 className="section-title">캠페인 정보</h2>
+
+            {/* Media Type */}
+            <div className="form-group">
+              <Label className="form-label">미션 유형</Label>
+              <div className="checkbox-group">
+                {[
+                  { value: 'Xiaohongshu', label: '샤오홍슈' },
+                  { value: 'Douyin', label: '도우인' },
+                  { value: 'Dajongdienping', label: '따중띠앤핑' },
+                  { value: 'Instagram', label: '인스타' },
+                  { value: 'YouTube', label: '유튜브' }
+                ].map((media) => (
+                  <div key={media.value} className="checkbox-item">
+                    <Input
+                      type="checkbox"
+                      name="mediaType"
+                      id={`media-${media.value}`}
+                      value={media.value}
+                      checked={(formData?.mediaType || []).includes(media.value)}
+                      onChange={() => handleCheckboxChange('mediaType', media.value)}
+                    />
+                    <Label for={`media-${media.value}`} className="checkbox-label">{media.label}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Date Fields Row 1 */}
+            <Row className="form-row">
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">캠페인 신청기간</Label>
                   <Row>
                     <Col>
-                      <Input type='date' name='enrollStartDate' id='enrollStartDate' value={formatDate(formData?.enrollStartDate)} onChange={handleChange} />
+                      <Input
+                        type="date"
+                        name="applicationStartDate"
+                        className="form-input"
+                        value={formatDate(formData?.applicationStartDate) || ''}
+                        onChange={handleChange}
+                      />
                     </Col>
                     <Col>
-                      <Input type='date' name='enrollEndDate' id='enrollEndDate' value={formatDate(formData?.enrollEndDate)} onChange={handleChange} />
+                      <Input
+                        type="date"
+                        name="applicationEndDate"
+                        className="form-input"
+                        value={formatDate(formData?.applicationEndDate) || ''}
+                        onChange={handleChange}
+                      />
                     </Col>
                   </Row>
                 </div>
               </Col>
-              <Col>
-                <div className='mb-1'>
-                  <h5>미션수행 일자</h5>
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">인플루언서 선정일</Label>
+                  <Input
+                    type="date"
+                    name="selectionDate"
+                    className="form-input"
+                    value={formatDate(formData?.selectionDate) || ''}
+                    onChange={handleChange}
+                  />
+                </div>
+              </Col>
+            </Row>
+
+            {/* Date Fields Row 2 */}
+            <Row className="form-row">
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">방문기간</Label>
                   <Row>
                     <Col>
-                      <Input type='date' name='missionStartDate' id='missionStartDate' value={formatDate(formData?.missionStartDate)} onChange={handleChange} />
+                      <Input
+                        type="date"
+                        name="visitStartDate"
+                        className="form-input"
+                        value={formatDate(formData?.visitStartDate) || ''}
+                        onChange={handleChange}
+                      />
                     </Col>
                     <Col>
-                      <Input type='date' name='missionEndDate' id='missionEndDate' value={formatDate(formData?.missionEndDate)} onChange={handleChange} />
+                      <Input
+                        type="date"
+                        name="visitEndDate"
+                        className="form-input"
+                        value={formatDate(formData?.visitEndDate) || ''}
+                        onChange={handleChange}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">콘텐츠 등록기간</Label>
+                  <Row>
+                    <Col>
+                      <Input
+                        type="date"
+                        name="contentStartDate"
+                        className="form-input"
+                        value={formatDate(formData?.contentStartDate) || ''}
+                        onChange={handleChange}
+                      />
+                    </Col>
+                    <Col>
+                      <Input
+                        type="date"
+                        name="contentEndDate"
+                        className="form-input"
+                        value={formatDate(formData?.contentEndDate) || ''}
+                        onChange={handleChange}
+                      />
                     </Col>
                   </Row>
                 </div>
               </Col>
             </Row>
 
-            <Row className='mb-1'>
-              <Col>
-                <div className='mb-1'>
-                  <h5>미션 방법</h5>
-                  <Editor key="missionContents" content={formData?.missionContents} onChange={(content) => handleEditorChange('missionContents', content)} />
-                </div>
-              </Col>
-            </Row>
+            {/* Number of Selected Candidates */}
+            <div className="form-group">
+              <Label className="form-label">선정자 수</Label>
+              <Input
+                type="number"
+                name="selectedCandidates"
+                className="form-input"
+                placeholder="Place holder"
+                value={formData?.selectedCandidates || ''}
+                onChange={handleChange}
+              />
+            </div>
 
-            <Row className='mb-1'>
-              <Col>
-                <div className='mb-1'>
-                  <h5>주의 사항</h5>
-                  <Editor key="caution" content={formData?.caution} onChange={(content) => handleEditorChange('caution', content)} />
-                </div>
-              </Col>
-            </Row>
+            {/* Guideline */}
+            <div className="form-group">
+              <Label className="form-label">가이드라인</Label>
+              <Editor
+                content={formData?.guideline || ''}
+                onChange={(data) => handleEditorChange('guideline', data)}
+              />
+            </div>
 
-          </Form>
-        </CardBody>
-      </Card>
-    </Fragment >
+            {/* Filming/Editing Mission */}
+            <div className="form-group">
+              <Label className="form-label">촬영/편집 미션</Label>
+              <Editor
+                content={formData?.filmingMission || ''}
+                onChange={(data) => handleEditorChange('filmingMission', data)}
+              />
+            </div>
+
+            {/* Additional Information */}
+            <div className="form-group">
+              <Label className="form-label">주의 안내사항</Label>
+              <Editor
+                content={formData?.additionalInfo || ''}
+                onChange={(data) => handleEditorChange('additionalInfo', data)}
+              />
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+    </Fragment>
   )
 }
 export default HorizontalFormIcons

@@ -1,0 +1,81 @@
+ .user-header-title {
+  margin-bottom: 24px;
+
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 7px;
+
+    .page-title {
+      font-family: 'Pretendard Variable', sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: #000000;
+      margin: 0;
+      line-height: normal;
+    }
+
+    .member-badge {
+      background-color: #c6f6d5;
+      color: #22543d;
+      // font-family: 'Inter', 'Noto Sans KR', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 16px;
+      padding: 5px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+  }
+
+  .page-subtitle {
+    font-family: 'Pretendard Variable', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #9da0a8;
+    margin: 0;
+    line-height: normal;
+  }
+}
+
+.mission-stats-row {
+  margin-bottom: 32px;
+
+  .stat-card {
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    box-shadow: none;
+    margin-bottom: 0;
+
+    .card-body {
+      padding: 24px;
+
+      .stat-label {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 40px;
+        color: #000;
+        margin: 0;
+
+        &.danger {
+          color: #FF4D6A;
+        }
+
+        &.underlined {
+          text-decoration: underline;
+          text-decoration-thickness: 2px;
+          text-underline-offset: 4px;
+        }
+      }
+    }
+  }
+}

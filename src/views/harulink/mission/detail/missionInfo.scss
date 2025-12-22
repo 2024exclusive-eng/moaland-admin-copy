@@ -1,0 +1,338 @@
+.campaign-registration {
+  // padding: 32px 0;
+
+  // Header
+  .campaign-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 12px;
+
+    .campaign-title {
+      font-family: 'Pretendard Variable', sans-serif;
+      font-weight: 600;
+      font-size: 26px;
+      line-height: normal;
+      color: #3B3F4A;
+      margin: 0;
+      flex: 1;
+    }
+
+    .campaign-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+
+      .btn-cancel {
+        background: white !important; 
+        border: 1px solid #E4E6EA;
+        color: #5A5E6A !important;
+        padding: 0 16px;
+        min-height: 44px;
+        border-radius: 6px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 28px;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #F5F6F7;
+          border-color: #D5D8DC;
+        }
+      }
+
+      .btn-register {
+        background: #509594 !important;
+        border: none;
+        color: white;
+        padding: 0 16px;
+        min-height: 44px;
+        border-radius: 6px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 28px;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #458584;
+        }
+      }
+    }
+  }
+
+  // Cards
+  .campaign-card {
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 24px;
+
+    .card-body {
+      padding: 0;
+    }
+
+    .section-title {
+      font-family: 'Pretendard Variable', sans-serif;
+      font-weight: 600;
+      font-size: 20px;
+      line-height: normal;
+      color: #000000;
+      margin: 0 0 24px 0;
+    }
+  }
+
+  // Form Groups
+  .form-group {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      font-family: 'Pretendard Variable', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #5A5E6A;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-input {
+      background: white;
+      border: 1px solid #E4E6EA;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'Pretendard Variable', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #000000;
+      width: 100%;
+      height: 48px;
+
+      &::placeholder {
+        color: #9DA0A8;
+      }
+
+      &:focus {
+        border-color: #509594;
+        box-shadow: 0 0 0 0.2rem rgba(80, 149, 148, 0.15);
+      }
+    }
+
+    .form-textarea {
+      background: white;
+      border: 1px solid #E4E6EA;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'Pretendard Variable', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #000000;
+      width: 100%;
+      min-height: 200px;
+      resize: vertical;
+
+      &::placeholder {
+        color: #9DA0A8;
+      }
+
+      &:focus {
+        border-color: #509594;
+        box-shadow: 0 0 0 0.2rem rgba(80, 149, 148, 0.15);
+      }
+    }
+  }
+
+  // Image Upload
+  .image-upload-wrapper {
+    .image-upload-box {
+      width: 160px;
+      height: 160px;
+      background: #EFF1F4;
+      border: 1px solid #E4E6EA;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      overflow: hidden;
+
+      &:hover {
+        background: #E4E6EA;
+      }
+
+      .uploaded-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .upload-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .upload-text {
+        font-family: 'Pretendard Variable', sans-serif;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #BEC1C7;
+        margin: 0;
+      }
+    }
+  }
+
+  // Radio Groups
+  .radio-group {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    padding: 14px 0;
+    flex-wrap: wrap;
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #509594;
+        margin: 0;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        border-radius: 50%;
+        background: white;
+        position: relative;
+        flex-shrink: 0;
+
+        &:checked {
+          border-color: #509594;
+          background: white;
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #509594;
+          }
+        }
+
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 0.2rem rgba(80, 149, 148, 0.15);
+        }
+      }
+
+      .radio-label {
+        font-family: 'Pretendard Variable', sans-serif;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #000000;
+        margin: 0;
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+  }
+
+  // Checkbox Groups
+  .checkbox-group {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    padding: 14px 0;
+    flex-wrap: wrap;
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #509594;
+        margin: 0;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        border-radius: 4px;
+        background: white;
+        position: relative;
+        flex-shrink: 0;
+
+        &:checked {
+          border-color: #509594;
+          background: #509594;
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 6px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+          }
+        }
+
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 0.2rem rgba(80, 149, 148, 0.15);
+        }
+      }
+
+      .checkbox-label {
+        font-family: 'Pretendard Variable', sans-serif;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #000000;
+        margin: 0;
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+  }
+
+  // Form Rows
+  .form-row {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .col-md-6 {
+      .form-group {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

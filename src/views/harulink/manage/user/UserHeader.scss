@@ -1,0 +1,78 @@
+.user-header-title {
+  margin-bottom: 24px;
+
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 7px;
+
+    .page-title {
+      font-family: 'Pretendard Variable', sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: #000000;
+      margin: 0;
+      line-height: normal;
+    }
+
+    .member-badge {
+      background-color: #c6f6d5;
+      color: #22543d;
+      // font-family: 'Inter', 'Noto Sans KR', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 16px;
+      padding: 5px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+  }
+
+  .page-subtitle {
+    font-family: 'Pretendard Variable', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #9da0a8;
+    margin: 0;
+    line-height: normal;
+  }
+}
+
+.user-stats-row {
+  margin-bottom: 24px;
+
+  .stat-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    background-color: #ffffff;
+    margin-bottom: 0;
+
+    .card-body {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .stat-label {
+        // font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        color: #666666;
+        line-height: 16.8px;
+        margin: 0;
+      }
+
+      .stat-value {
+        // font-family: 'Inter', sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: #000000;
+        line-height: 36px;
+        letter-spacing: 0.0703px;
+        margin: 0;
+      }
+    }
+  }
+}

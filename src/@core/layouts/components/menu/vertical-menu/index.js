@@ -1,13 +1,16 @@
 // ** React Imports
-import { Fragment, useState, useRef } from 'react'
+import { Fragment, useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // ** Third Party Components
 import classnames from 'classnames'
 import PerfectScrollbar from 'react-perfect-scrollbar'
+import { LogIn } from 'react-feather'
 
 // ** Vertical Menu Components
 import VerticalMenuHeader from './VerticalMenuHeader'
 import VerticalNavMenuItems from './VerticalNavMenuItems'
+import { Logout } from '../../../../../navigation/vertical/harulink'
 
 const Sidebar = props => {
   // ** Props
@@ -19,11 +22,22 @@ const Sidebar = props => {
   const [currentActiveGroup, setCurrentActiveGroup] = useState([])
   const [activeItem, setActiveItem] = useState(null)
 
+  // ** Set all groups open by default
+  useEffect(() => {
+    const allGroupIds = menuData
+      .filter(item => item.children)
+      .map(item => item.id)
+    setGroupOpen(allGroupIds)
+  }, [])
+
   // ** Menu Hover State
   const [menuHover, setMenuHover] = useState(false)
 
   // ** Ref
   const shadowRef = useRef(null)
+
+  // ** Navigate
+  const navigate = useNavigate()
 
   // ** Function to handle Mouse Enter
   const onMouseEnter = () => {
@@ -41,6 +55,14 @@ const Sidebar = props => {
         shadowRef.current.classList.remove('d-block')
       }
     }
+  }
+
+  // ** Handle Logout
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('userData')
+    navigate('/harulink/auth/intro')
   }
 
   return (
@@ -85,6 +107,32 @@ const Sidebar = props => {
                 />
               </ul>
             </PerfectScrollbar>
+            {/* Logout Button */}
+            <div
+              className='sidebar-logout'
+              style={{
+                borderTop: '1px solid #E2E8F0',
+                padding: '20px 0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                cursor: 'pointer',
+                backgroundColor: 'white'
+              }}
+              onClick={handleLogout}
+            >
+              <Logout />
+              <span
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  color: '#000'
+                }}
+              >
+                로그아웃
+              </span>
+            </div>
           </Fragment>
         )}
       </div>

@@ -23,15 +23,15 @@ const AppRoutes = [
     }
   },
   {
-    path: '/harulink/manage/mission',
+    path: '/harulink/manage/campaign',
     element: <ManageMission />
   },
   {
-    path: '/harulink/manage/mission/:id',
+    path: '/harulink/manage/campaign/:id',
     element: <ManageMissionDetail />
   },
   {
-    path: '/harulink/manage/mission/modify/:id',
+    path: '/harulink/manage/campaign/modify/:id',
     element: <ManageMissionModify />
   },
   {

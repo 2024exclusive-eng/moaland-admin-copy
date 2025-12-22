@@ -8,15 +8,9 @@ import axios from 'axios'
 import { useParams } from 'react-router-dom'
 
 // ** Custom Components
-import Breadcrumbs from '@components/breadcrumbs'
-
-// ** Demo Components
+import UserDetailHeader from './UserDetailHeader'
 import UserInfo from './userInfo'
-
-// ** Demo Components
-import EnrollMission from './enrollMission'
-import SelectMission from './selectMission'
-import CompleteMission from './completeMission'
+import CampaignDetails from './CampaignDetails'
 
 const fetchData = async (id) => {
   try {
@@ -28,7 +22,7 @@ const fetchData = async (id) => {
   }
 }
 
-const FormLayouts = () => {
+const UserDetail = () => {
   const { id } = useParams()
   const [data, setData] = useState()
 
@@ -39,26 +33,25 @@ const FormLayouts = () => {
       setData(result)
     }
     fetchInitialData()
-  }, [])
+  }, [id])
 
   return (
     <Fragment>
-      <Breadcrumbs title='회원관리' data={[{ title: '관리' }, { title: '회원관리' }]} />
+      <UserDetailHeader />
       <Row>
         <Col md='12' sm='12'>
           <UserInfo data={data?.user ? data.user : {}}/>
         </Col>
         <Col md='12' sm='12'>
-          <EnrollMission data={data?.enrollMission?.data ? data?.enrollMission?.data : []}/>
-        </Col>
-        <Col md='12' sm='12'>
-          <SelectMission data={data?.selectMission?.data ? data?.selectMission?.data : []}/>
-        </Col>
-        <Col md='12' sm='12'>
-          <CompleteMission data={data?.completeMission?.data ? data?.completeMission?.data : []}/>
+          <CampaignDetails
+            enrollData={data?.enrollMission?.data ? data?.enrollMission?.data : []}
+            selectData={data?.selectMission?.data ? data?.selectMission?.data : []}
+            completeData={data?.completeMission?.data ? data?.completeMission?.data : []}
+          />
         </Col>
       </Row>
     </Fragment>
   )
 }
-export default FormLayouts
+
+export default UserDetail

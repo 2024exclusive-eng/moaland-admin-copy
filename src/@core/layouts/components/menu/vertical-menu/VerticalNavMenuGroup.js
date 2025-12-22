@@ -38,7 +38,7 @@ const VerticalNavMenuGroup = ({
 
   // ** Toggle Open Group
   const toggleOpenGroup = (item, parent) => {
-    let openGroup = groupOpen
+    const openGroup = groupOpen
     const activeGroup = groupActive
 
     // ** If Group is already open and clicked, close the group
@@ -72,12 +72,9 @@ const VerticalNavMenuGroup = ({
         openGroup.push(item.id)
       }
     } else {
-      // ** If clicked on another group that is not active or open, create openGroup array from scratch
+      // ** If clicked on another group that is not active or open, add it to open groups
 
-      // ** Empty Open Group array
-      openGroup = []
-
-      // ** Push current clicked group item to Open Group array
+      // ** Push current clicked group item to Open Group array (allow multiple groups to be open)
       if (!openGroup.includes(item.id)) {
         openGroup.push(item.id)
       }

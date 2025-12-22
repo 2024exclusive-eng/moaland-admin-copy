@@ -1,115 +1,287 @@
 // ** React Imports
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect } from "react";
 
 // ** Reactstrap Imports
-import { Table, Card, Input, Button, Pagination, PaginationItem, PaginationLink, CardHeader } from 'reactstrap'
+import {
+  Table,
+  Card,
+  Input,
+  Button,
+  Nav,
+  NavItem,
+  NavLink,
+  Label,
+} from "reactstrap";
 
-import axios from 'axios'
+import axios from "axios";
+
+// ** Icons
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "react-feather";
+
+// ** Styles
+import "./userList.scss";
 
 const fetchData = async (page, item, search) => {
   try {
-    const response = await axios.get('/admin/manage/user', {
+    const response = await axios.get("/admin/manage/user", {
       params: {
         page,
         item,
-        search
-      }
-    })
-    return response.data
+        search,
+      },
+    });
+    return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error)
-    return []
+    console.error("Error fetching data:", error);
+    return [];
   }
-}
+};
 
 const DataTableWithButtons = () => {
   // ** States
-  const [data, setData] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [search, setSearch] = useState('')
+  const [data, setData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [targetPage, setTargetPage] = useState("");
 
   // ** Get data on mount
   useEffect(() => {
     const fetchInitialData = async () => {
-      const result = await fetchData(currentPage, 30, '')
-      setData(result)
-    }
-    fetchInitialData()
-  }, [currentPage])
+      // Note: You may need to pass activeTab to API if backend supports filtering by user type
+      const result = await fetchData(currentPage, itemsPerPage, search);
+      setData(result);
+    };
+    fetchInitialData();
+  }, [currentPage, itemsPerPage, activeTab]);
 
-  const handlePagination = page => {
-    setCurrentPage(page.selected)
-  }
+  const handlePagination = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleRowClick = (id) => {
-    window.location.href = `/harulink/manage/user/${id}`
-  }
+    window.location.href = `/harulink/manage/user/${id}`;
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allIds = data.data?.map((item) => item.id) || [];
+      setSelectedRows(allIds);
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
+  const handleSelectRow = (id) => {
+    if (selectedRows.includes(id)) {
+      setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
+    } else {
+      setSelectedRows([...selectedRows, id]);
+    }
+  };
+
+  const handleMovePage = () => {
+    const pageNum = parseInt(targetPage);
+    if (pageNum && pageNum > 0 && pageNum <= (data?.paging?.totalPages || 1)) {
+      setCurrentPage(pageNum);
+      setTargetPage("");
+    }
+  };
 
   const renderData = () => {
-    return data.data?.map(col => {
+    return data.data?.map((col, index) => {
+      const isSelected = selectedRows.includes(col.id);
       return (
-        <tr key={col.id} onClick={() => handleRowClick(col.id)}>
-          <td>{col.id}</td>
-          <td>{col.email}</td>
-          <td>harulink.com/{col.link}</td>
-          <td>{col.oauthType ? '라인사용자' : '일반사용자'}</td>
-          <td>{col.account}</td>
-          <td>{col.depositor}</td>
+        <tr key={col.id}>
+          <td className="text-center" onClick={(e) => e.stopPropagation()}>
+            <Input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => handleSelectRow(col.id)}
+            />
+          </td>
+          <td onClick={() => handleRowClick(col.id)}>{index + 1}</td>
+          <td onClick={() => handleRowClick(col.id)}>
+            {col.oauthType ? "LINE" : "일반"}
+          </td>
+          <td onClick={() => handleRowClick(col.id)}>{col.email}</td>
+          <td onClick={() => handleRowClick(col.id)}>
+            {col.appliedCampaign || "-"}
+          </td>
+          <td onClick={() => handleRowClick(col.id)}>
+            {col.selectedCampaign || "-"}
+          </td>
+          <td onClick={() => handleRowClick(col.id)}>
+            {col.registeredCampaigns || "-"}
+          </td>
+          <td onClick={() => handleRowClick(col.id)}>
+            {col.endedCampaign || "-"}
+          </td>
         </tr>
-      )
-    })
-  }
+      );
+    });
+  };
 
-  // ** Function to handle search
   const handleSearchChange = (e) => {
-    setSearch(e.target.value)
-  }
-  const handleSearch = async () => {
-    const result = await fetchData(currentPage, 30, search)
-    setData(result)
-  }
+    setSearch(e.target.value);
+  };
+
+  const handleSearchKeyPress = async (e) => {
+    if (e.key === "Enter") {
+      const result = await fetchData(currentPage, itemsPerPage, search);
+      setData(result);
+    }
+  };
+
+  const totalPages = data?.paging?.totalPages || 1;
 
   return (
     <Fragment>
-      <Card>
-        <CardHeader className='flex-md-row flex-column align-md-items-center align-items-start border-bottom'>
-          <div className='d-flex mt-md-0 mt-1'>
-            <Input type='text' placeholder='Search...' value={search} onChange={handleSearchChange} />
+      <Card className="user-list-card" style={{ marginBottom: "0"}}>
+        <div style={{ padding: "32px" }}>
+          {/* Tabs */}
+          <div style={{ marginBottom: "10px" }}>
+            <Nav className="user-tabs">
+              <NavItem style={{ height: "52px"}}>
+                <NavLink
+                  className={activeTab === "all" ? "active" : ""}
+                  onClick={() => setActiveTab("all")}
+                >
+                  <span style={{ fontSize: "16px" }}>전체</span>
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={activeTab === "regular" ? "active" : ""}
+                  onClick={() => setActiveTab("regular")}
+                >
+                  <span style={{ fontSize: "16px" }}>일반회원</span>
+                </NavLink>
+              </NavItem>
+            </Nav>
           </div>
-          <div className='d-flex mt-md-0 mt-1'>
-            <Button className='ms-2' color='primary' onClick={handleSearch}>
-              <span className='align-middle '>검색</span>
-            </Button>
-          </div>
-        </CardHeader>
 
-        <div className='react-dataTable react-dataTable-selectable-rows'>
-          <Table responsive>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Email</th>
-                <th>Link</th>
-                <th>Oauth Type</th>
-                <th>Account</th>
-                <th>Depositor</th>
-              </tr>
-            </thead>
-            <tbody>{renderData()}</tbody>
-          </Table>
-          <Pagination className='d-flex justify-content-center mt-2'>
-            {Array.from({ length: data?.paging?.totalPages }, (_, i) => (
-              <PaginationItem key={i} active={i + 1 === currentPage}>
-                <PaginationLink href='#' onClick={e => { e.preventDefault(); handlePagination({ selected: i + 1 }) }}>
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-          </Pagination>
+          {/* Search Input */}
+          <div style={{ marginBottom: "20px" }}>
+            <Input
+              type="text"
+              placeholder="검색어를 입력하세요."
+              style={{ fontSize: "16px"}}
+              value={search}
+              onChange={handleSearchChange}
+              onKeyPress={handleSearchKeyPress}
+            />
+          </div>
+
+          {/* Table */}
+          <div className="table-wrapper" style={{ marginBottom: "12px" }}>
+            <Table className="user-table" responsive>
+              <thead>
+                <tr>
+                  <th className="text-center" style={{ width: "32px" }}>
+                    <Input
+                      type="checkbox"
+                      checked={
+                        selectedRows.length === data.data?.length &&
+                        data.data?.length > 0
+                      }
+                      onChange={handleSelectAll}
+                    />
+                  </th>
+                  <th style={{ width: "52px", fontSize: "14px" }}>No</th>
+                  <th style={{ width: "100px" }}>상태</th>
+                  <th>가입 이메일</th>
+                  <th>신청한 캠페인</th>
+                  <th>선정된 캠페인</th>
+                  <th>등록한 캠페인</th>
+                  <th>종료된 캠페인</th>
+                </tr>
+              </thead>
+              <tbody>{renderData()}</tbody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          <div className="pagination-wrapper d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center" style={{ gap: "8px" }}>
+              <Button
+                // color="secondary"
+                className="pagination-btn"
+                onClick={() => handlePagination(1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronsLeft size={24} />
+              </Button>
+              <Button
+                color="secondary"
+                className="pagination-btn"
+                onClick={() => handlePagination(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft size={24} />
+              </Button>
+              <Button
+                color="secondary"
+                className="pagination-btn"
+                onClick={() => handlePagination(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight size={24} />
+              </Button>
+              <Button
+                color="secondary"
+                className="pagination-btn"
+                onClick={() => handlePagination(totalPages)}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronsRight size={24} />
+              </Button>
+              <div className="page-indicator">
+                <span className="current-page">{currentPage}</span>
+                <span>/</span>
+                <span className="total-pages">{totalPages}</span>
+              </div>
+            </div>
+
+            <div className="d-flex align-items-center" style={{ gap: "8px" }}>
+              <Input
+                type="number"
+                placeholder="페이지"
+                value={targetPage}
+                onChange={(e) => setTargetPage(e.target.value)}
+                style={{ width: "100px", height: "48px", fontSize: "16px" }}
+              />
+              <Button
+                color="light"
+                onClick={handleMovePage}
+                style={{ height: "48px", fontSize: "16px" }}
+              >
+                이동
+              </Button>
+              <Input
+                type="select"
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                style={{ width: "96px", height: "48px", fontSize: "16px" }}
+              >
+                <option value={10}>10건</option>
+                <option value={20}>20건</option>
+                <option value={30}>30건</option>
+                <option value={50}>50건</option>
+              </Input>
+            </div>
+          </div>
         </div>
       </Card>
     </Fragment>
-  )
-}
+  );
+};
 
-export default DataTableWithButtons
+export default DataTableWithButtons;

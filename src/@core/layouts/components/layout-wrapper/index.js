@@ -64,13 +64,13 @@ const LayoutWrapper = props => {
 
   return (
     <div
-      className={classnames('app-content content overflow-hidden', {
+      className={classnames('app-content content', {
         [routeMeta ? routeMeta.className : '']: routeMeta && routeMeta.className,
         'show-overlay': navbarStore.query.length
       })}
     >
       <div className='content-overlay'></div>
-      <div className='header-navbar-shadow' />
+      {/* <div className='header-navbar-shadow' /> */}
       <div
         className={classnames({
           'content-wrapper': routeMeta && !routeMeta.appLayout,

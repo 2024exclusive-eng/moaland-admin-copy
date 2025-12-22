@@ -4,7 +4,7 @@
 const themeConfig = {
   app: {
     appName: 'Harulink',
-    appLogoImage: require('@src/assets/images/logo/harulinkLogo.svg').default
+    appLogoImage: require('@assets/images/logo.png')
   },
   layout: {
     isRTL: false,

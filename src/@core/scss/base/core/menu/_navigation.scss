@@ -15,7 +15,8 @@
 .main-menu {
   z-index: 1031;
   position: absolute;
-  display: table-cell;
+  display: flex;
+  flex-direction: column;
   height: 100%;
   overflow: hidden;
 
@@ -82,7 +83,7 @@
       margin-top: 1.35rem;
       font-size: inherit;
       .brand-logo img {
-        max-width: 36px;
+        max-width: 120px;
       }
       .brand-text {
         color: $primary;
@@ -102,9 +103,16 @@
   .main-menu-content {
     height: calc(100% - #{$navbar-height}) !important;
     position: relative;
+    flex: 1;
+    overflow: hidden;
     .ps__rail-y {
       z-index: 3;
     }
+  }
+
+  .sidebar-logout {
+    flex-shrink: 0;
+    margin-top: auto;
   }
 
   ul {
@@ -158,9 +166,9 @@
       overflow: hidden;
       i,
       svg {
-        height: 11px;
-        width: 11px;
-        font-size: 11px;
+        height: 16px;
+        width: 16px;
+        font-size: 16px;
         margin-right: 1.38rem;
       }
     }

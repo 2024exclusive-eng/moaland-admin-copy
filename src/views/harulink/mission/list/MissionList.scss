@@ -57,6 +57,7 @@
         min-width: 200px;
 
         .filter-item {
+          width: 100%;
           padding: 0;
           background-color: transparent;
 
@@ -153,7 +154,7 @@
   .table-wrapper {
     overflow-x: auto;
     border: 1px solid #E5E7EB;
-    border-radius: 8px;
+    border-radius: 0;
   }
 
   .mission-table {
@@ -195,7 +196,7 @@
             .thumbnail-wrapper {
               width: 60px;
               height: 60px;
-              border-radius: 8px;
+              border-radius: 0;
               overflow: hidden;
               display: flex;
               align-items: center;
@@ -225,7 +226,7 @@
           .status-badge {
             display: inline-block;
             padding: 4px 12px;
-            border-radius: 12px;
+            border-radius: 0;
             font-size: 13px;
             font-weight: 500;
 

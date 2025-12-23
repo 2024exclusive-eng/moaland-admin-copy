@@ -111,11 +111,7 @@ const CampaignDetails = ({ enrollData, selectData, completeData }) => {
       case 'registered':
         return renderCompletedData()
       case 'ended':
-        return (
-          <tr>
-            <td colSpan="8" className="text-center">데이터가 없습니다</td>
-          </tr>
-        )
+        return renderCompletedData()
       default:
         return renderEnrolledData()
     }

@@ -62,6 +62,15 @@ const DataTableWithButtons = () => {
     fetchInitialData();
   }, [currentPage, itemsPerPage, activeTab]);
 
+  useEffect(() => {
+    const debounceTimer = setTimeout(async () => {
+      const result = await fetchData(currentPage, itemsPerPage, search);
+      setData(result);
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [search]);
+
   const handlePagination = (page) => {
     setCurrentPage(page);
   };
@@ -99,7 +108,7 @@ const DataTableWithButtons = () => {
     return data.data?.map((col, index) => {
       const isSelected = selectedRows.includes(col.id);
       return (
-        <tr key={col.id}>
+        <tr key={col.id} onClick={() => handleRowClick(col.id)}>
           <td className="text-center" onClick={(e) => e.stopPropagation()}>
             <Input
               type="checkbox"
@@ -107,22 +116,22 @@ const DataTableWithButtons = () => {
               onChange={() => handleSelectRow(col.id)}
             />
           </td>
-          <td onClick={() => handleRowClick(col.id)}>{index + 1}</td>
-          <td onClick={() => handleRowClick(col.id)}>
+          <td>{index + 1}</td>
+          <td>
             {col.oauthType ? "LINE" : "일반"}
           </td>
-          <td onClick={() => handleRowClick(col.id)}>{col.email}</td>
-          <td onClick={() => handleRowClick(col.id)}>
-            {col.appliedCampaign || "-"}
+          <td>{col.email}</td>
+          <td>
+            {col.appliedMission || "0"}
           </td>
-          <td onClick={() => handleRowClick(col.id)}>
-            {col.selectedCampaign || "-"}
+          <td>
+            {col.selectedMission || "0"}
           </td>
-          <td onClick={() => handleRowClick(col.id)}>
-            {col.registeredCampaigns || "-"}
+          <td>
+            {col.registeredMission || "0"}
           </td>
-          <td onClick={() => handleRowClick(col.id)}>
-            {col.endedCampaign || "-"}
+          <td>
+            {col.endedMission || "0"}
           </td>
         </tr>
       );
@@ -131,13 +140,6 @@ const DataTableWithButtons = () => {
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
-  };
-
-  const handleSearchKeyPress = async (e) => {
-    if (e.key === "Enter") {
-      const result = await fetchData(currentPage, itemsPerPage, search);
-      setData(result);
-    }
   };
 
   const totalPages = data?.paging?.totalPages || 1;
@@ -176,7 +178,6 @@ const DataTableWithButtons = () => {
               style={{ fontSize: "16px"}}
               value={search}
               onChange={handleSearchChange}
-              onKeyPress={handleSearchKeyPress}
             />
           </div>
 

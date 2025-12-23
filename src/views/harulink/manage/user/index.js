@@ -1,42 +1,61 @@
 // ** React Imports
-import { Fragment } from 'react'
+import { Fragment, useState, useEffect } from "react";
 
 // ** Custom Components
-import Breadcrumbs from '@components/breadcrumbs'
+import Breadcrumbs from "@components/breadcrumbs";
 
 // ** Third Party Components
-import { Row, Col } from 'reactstrap'
+import { Row, Col } from "reactstrap";
+import axios from "axios";
 
 // ** Demo Components
-import UserHeader from './UserHeader'
-import UsetList from './userList'
+import UserHeader from "./UserHeader";
+import UsetList from "./userList";
 
 // ** Styles
-import '@styles/react/libs/tables/react-dataTable-component.scss'
+import "@styles/react/libs/tables/react-dataTable-component.scss";
 
 const Tables = () => {
-  // ** Stats data - you can replace this with data from API
-  const stats = {
-    totalMembers: 8923,
-    newMembers: 923,
-    withdrawnMembers: 23
-  }
+  // ** States
+  const [stats, setStats] = useState({
+    totalMembers: 0,
+    newMembers: 0,
+    withdrawnMembers: 0,
+  });
+
+  // ** Fetch user status on component mount
+  useEffect(() => {
+    const fetchUserStatus = async () => {
+      try {
+        const response = await axios.get("/admin/manage/user/status");
+        if (response.success) {
+          const { usersCount, newMembersPast30Days, withdrawnMembers } =
+            response.data;
+          setStats({
+            totalMembers: usersCount,
+            newMembers: newMembersPast30Days,
+            withdrawnMembers,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user status:", error);
+      }
+    };
+
+    fetchUserStatus();
+  }, []);
 
   return (
     <Fragment>
-      {/* <Breadcrumbs title='회원관리' data={[{ title: '관리' }, { title: '회원관리' }]} /> */}
-
-      {/* Page Header with Title and Stats */}
       <UserHeader stats={stats} />
 
-      {/* User List Table */}
       <Row>
-        <Col sm='12'>
+        <Col sm="12">
           <UsetList />
         </Col>
       </Row>
     </Fragment>
-  )
-}
+  );
+};
 
-export default Tables
+export default Tables;

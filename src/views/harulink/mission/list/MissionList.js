@@ -26,7 +26,6 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  MoreVertical,
   ChevronDown
 } from 'react-feather'
 
@@ -35,14 +34,36 @@ import './MissionList.scss'
 
 const fetchData = async (page, item, search, filters) => {
   try {
-    const response = await axios.get('/admin/mission', {
-      params: {
-        page,
-        item,
-        search,
-        ...filters
-      }
-    })
+    const params = {
+      page,
+      item
+    }
+
+    if (search) {
+      params.search = search
+    }
+
+    if (filters.status && filters.status.length > 0) {
+      params.status = filters.status.join(',')
+    }
+
+    if (filters.selection_status && filters.selection_status.length > 0) {
+      params.selection_status = filters.selection_status.join(',')
+    }
+
+    if (filters.region && filters.region.length > 0) {
+      params.region = filters.region.join(',')
+    }
+
+    if (filters.category && filters.category.length > 0) {
+      params.category = filters.category.join(',')
+    }
+
+    if (filters.social && filters.social.length > 0) {
+      params.social = filters.social.join(',')
+    }
+
+    const response = await axios.get('/admin/mission', { params })
     return response
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -50,50 +71,133 @@ const fetchData = async (page, item, search, filters) => {
   }
 }
 
-const statusOptions = [
-  { value: 'open_scheduled', label: '오픈예정', count: 21 },
-  { value: 'applying', label: '신청중', count: 21 },
-  { value: 'selection_waiting', label: '선정대기', count: 20 },
-  { value: 'selection_complete', label: '선정완료', count: 20 },
-  { value: 'in_progress', label: '진행중', count: 19 },
-  { value: 'ended', label: '종료', count: 19 }
+const fetchFilterCounts = async () => {
+  try {
+    const response = await axios.get('/admin/mission/filter-counts')
+    return response.counts || {}
+  } catch (error) {
+    console.error('Error fetching filter counts:', error)
+    return {}
+  }
+}
+
+const getStatusOptions = (counts = {}) => [
+  { value: 'opening_soon', label: '오픈예정', count: counts.opening_soon || 0 },
+  { value: 'applying', label: '신청중', count: counts.applying || 0 },
+  { value: 'application_deadline', label: '선정대기', count: counts.application_deadline || 0 },
+  { value: 'in_progress', label: '선정완료', count: counts.in_progress || 0 },
+  { value: 'registration_deadline', label: '진행중', count: counts.registration_deadline || 0 },
+  { value: 'end', label: '종료', count: counts.end || 0 }
 ]
 
-const regionOptions = [
-  { value: 'seoul', label: '서울', count: 21 },
-  { value: 'busan', label: '부산', count: 21 },
-  { value: 'jeju', label: '제주', count: 21 },
-  { value: 'etc', label: '기타', count: 21 }
+const getSelectionStatusOptions = (counts = {}) => [
+  { value: 'waiting', label: 'Waiting', count: counts.waiting || 0 },
+  { value: 'selection_date', label: 'Selection Date', count: counts.selection_date || 0 },
+  { value: 'delayed', label: 'Delayed', count: counts.delayed || 0 },
+  { value: 'completed', label: 'Completed', count: counts.completed || 0 },
+  { value: 'selection_deadline', label: 'Selection Deadline', count: counts.selection_deadline || 0 }
 ]
 
-const categoryOptions = [
-  { value: 'restaurant', label: '맛집', count: 21 },
-  { value: 'beauty', label: '뷰티', count: 21 },
-  { value: 'music', label: '뮤티', count: 21 },
-  { value: 'culture', label: '문화', count: 21 },
-  { value: 'accommodation', label: '숙박', count: 21 },
-  { value: 'massage', label: '마사지', count: 21 }
+const getRegionOptions = (counts = {}) => [
+  { value: 'Seoul', label: '서울', count: counts.Seoul || 0 },
+  { value: 'Busan', label: '부산', count: counts.Busan || 0 },
+  { value: 'Jeju', label: '제주', count: counts.Jeju || 0 },
+  { value: 'Other', label: '기타', count: counts.Other || 0 }
 ]
 
-const mediaOptions = [
-  { value: 'blog', label: '식으홍슈', count: 21 },
-  { value: 'naver', label: '도우안', count: 21 },
-  { value: 'review', label: '따졋디앤팀', count: 21 },
-  { value: 'instagram', label: '인스타', count: 21 },
-  { value: 'youtube', label: '유튜브', count: 21 }
+const getCategoryOptions = (counts = {}) => [
+  { value: 'restaurant', label: '맛집', count: counts.restaurant || 0 },
+  { value: 'Hospital', label: '병원', count: counts.Hospital || 0 },
+  { value: 'Beauty', label: '뷰티', count: counts.Beauty || 0 },
+  { value: 'Culture', label: '문화', count: counts.Culture || 0 },
+  { value: 'Stay', label: '숙박', count: counts.Stay || 0 },
+  { value: 'Massage', label: '마사지', count: counts.Massage || 0 }
 ]
 
-const statusMap = {
-  open_scheduled: '오픈예정',
-  applying: '신청중',
-  selection_waiting: '선정대기',
-  selection_complete: '선정완료',
-  in_progress: '진행중',
-  ended: '종료'
+const getSocialOptions = (counts = {}) => [
+  { value: 'Xiaohongshu', label: '식으홍슈', count: counts.Xiaohongshu || 0 },
+  { value: 'Douyin', label: '도우안', count: counts.Douyin || 0 },
+  { value: 'Dajongdienping', label: '따졋디앤팀', count: counts.Dajongdienping || 0 },
+  { value: 'Instagram', label: '인스타', count: counts.Instagram || 0 },
+  { value: 'YouTube', label: '유튜브', count: counts.YouTube || 0 }
+]
+
+const getMissionEnrollmentStatus = (mission) => {
+  const now = moment()
+  const enrollStart = mission.enrollStartDate ? moment(mission.enrollStartDate) : null
+  const enrollEnd = mission.enrollEndDate ? moment(mission.enrollEndDate) : null
+  const selectDate = mission.selectDate ? moment(mission.selectDate) : null
+  const missionStart = mission.missionStartDate ? moment(mission.missionStartDate) : null
+  const missionEnd = mission.missionEndDate ? moment(mission.missionEndDate) : null
+  const contentStart = mission.contentStartDate ? moment(mission.contentStartDate) : null
+  const contentEnd = mission.contentEndDate ? moment(mission.contentEndDate) : null
+
+  if (enrollStart && now.isBefore(enrollStart, 'day')) {
+    return { label: 'Opening Soon', color: '#6C757D' }
+  }
+
+  if (enrollStart && enrollEnd &&
+      now.isSameOrAfter(enrollStart, 'day') && now.isSameOrBefore(enrollEnd, 'day')) {
+    return { label: 'Applying', color: '#4CAF50' }
+  }
+
+  if (selectDate && now.isSame(selectDate, 'day')) {
+    return { label: 'Application Deadline', color: '#FF6B6B' }
+  }
+
+  if (missionStart && missionEnd &&
+      now.isSameOrAfter(missionStart, 'day') && now.isSameOrBefore(missionEnd, 'day')) {
+    return { label: 'In Progress', color: '#2196F3' }
+  }
+
+  if (contentStart && contentEnd &&
+      now.isSameOrAfter(contentStart, 'day') && now.isSameOrBefore(contentEnd, 'day')) {
+    return { label: 'Registration Deadline', color: '#FF9800' }
+  }
+
+  if (contentEnd && now.isAfter(contentEnd, 'day')) {
+    return { label: 'End', color: '#9E9E9E' }
+  }
+
+  return { label: 'Opening Soon', color: '#6C757D' }
+}
+
+const getSelectionStatus = (mission) => {
+  const now = moment()
+  const selectDate = mission.selectDate ? moment(mission.selectDate) : null
+  const selectedCount = mission.selectedParticipantCount || 0
+  const contentEnd = mission.contentEndDate ? moment(mission.contentEndDate) : null
+  const contentStart = mission.contentStartDate ? moment(mission.contentStartDate) : null
+
+  if (!selectDate) {
+    return { label: 'Waiting', color: '#111827' }
+  }
+
+  if (now.isBefore(selectDate, 'day')) {
+    return { label: 'Waiting', color: '#111827' }
+  }
+
+  if (now.isSame(selectDate, 'day')) {
+    return { label: 'Selection date', color: '#509594' }
+  }
+
+  if (now.isAfter(selectDate, 'day')) {
+    if (selectedCount === 0) {
+      return { label: 'Delayed', color: '#ea3a50' }
+    }
+
+    if (now.isAfter(contentEnd, 'day')) {
+      return { label: 'Selection deadline', color: '#a5a5a5' }
+    }
+
+    return { label: 'Completed', color: '#a5a5a5' }
+  }
+
+
+  return { label: 'Waiting', color: '#111827' }
 }
 
 const MissionList = () => {
-  // ** States
   const [data, setData] = useState({ data: [], paging: {} })
   const [currentPage, setCurrentPage] = useState(1)
   const [search, setSearch] = useState('')
@@ -101,18 +205,26 @@ const MissionList = () => {
   const [targetPage, setTargetPage] = useState('')
   const [filters, setFilters] = useState({
     status: [],
+    selection_status: [],
     region: [],
     category: [],
-    media: []
+    social: []
+  })
+  const [filterCounts, setFilterCounts] = useState({
+    status: {},
+    selection_status: {},
+    region: {},
+    category: {},
+    social: {}
   })
   const [dropdownOpen, setDropdownOpen] = useState({
     status: false,
+    selection_status: false,
     region: false,
     category: false,
-    media: false
+    social: false
   })
 
-  // ** Get data on mount
   useEffect(() => {
     const fetchInitialData = async () => {
       const result = await fetchData(currentPage, itemsPerPage, search, filters)
@@ -120,6 +232,23 @@ const MissionList = () => {
     }
     fetchInitialData()
   }, [currentPage, itemsPerPage, filters])
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(async () => {
+      const result = await fetchData(currentPage, itemsPerPage, search, filters)
+      setData(result.missions || { data: [], paging: {} })
+    }, 500)
+
+    return () => clearTimeout(debounceTimer)
+  }, [search])
+
+  useEffect(() => {
+    const loadFilterCounts = async () => {
+      const counts = await fetchFilterCounts()
+      setFilterCounts(counts)
+    }
+    loadFilterCounts()
+  }, [])
 
   const handlePagination = (page) => {
     setCurrentPage(page)
@@ -134,6 +263,27 @@ const MissionList = () => {
     if (pageNum && pageNum > 0 && pageNum <= (data?.paging?.totalPages || 1)) {
       setCurrentPage(pageNum)
       setTargetPage('')
+    }
+  }
+
+  const handleDraftStatusChange = async (missionId, newStatus) => {
+    const previousData = { ...data }
+
+    setData(prevData => ({
+      ...prevData,
+      data: prevData.data.map(mission => (mission.missionId === missionId
+          ? { ...mission, is_public: newStatus }
+          : mission)
+      )
+    }))
+
+    try {
+      await axios.put(`/admin/mission/${missionId}/draft`, {
+        status: newStatus
+      })
+    } catch (error) {
+      console.error('Error updating draft status:', error)
+      setData(previousData)
     }
   }
 
@@ -170,9 +320,10 @@ const MissionList = () => {
   const getFilterLabel = (filterName) => {
     const filterLabels = {
       status: '상태',
+      selection_status: '선정상태',
       region: '지역',
       category: '카테고리',
-      media: '미디어'
+      social: '미디어'
     }
     return filterLabels[filterName]
   }
@@ -190,47 +341,50 @@ const MissionList = () => {
 
     return data.data.map((col) => {
       return (
-        <tr key={col.missionId}>
-          <td className="thumbnail-cell" onClick={() => handleRowClick(col.missionId)}>
+        <tr key={col.missionId} onClick={() => handleRowClick(col.missionId)}>
+          <td className="thumbnail-cell" style={{ display :"flex", alignItems: "center", gap: "12px"}} onClick={() => handleRowClick(col.missionId)}>
             <div className="thumbnail-wrapper">
               <img src={col.thumbnailImg} alt={col.title} />
             </div>
+            <a href={`/harulink/manage/campaign/${col.missionId}`} style={{ color: "#509594", maxWidth: "400px" }} onClick={(e) => e.preventDefault()}>
+              {col.title}
+            </a>
           </td>
-          <td onClick={() => handleRowClick(col.missionId)}>
-            <div className="mission-title">
-              <a href={`/harulink/manage/campaign/${col.missionId}`} onClick={(e) => e.preventDefault()}>
-                {col.title || '[미션명칭] 미뇨네뜨 도쿄라멘 초대캠페인'}
-              </a>
+           <td>
+            {/* eslint-disable-next-line multiline-ternary */}
+            {`${moment(col.enrollStartDate).format("YY.MM.DD")}-${moment(col.enrollEndDate).format("YY.MM.DD")}`}
+          </td>
+          <td>
+            <div style={{ padding: "2px 8px", width: "fit-content", whiteSpace: "nowrap", borderRadius: "100px", border: "1px solid #E4E6EA", fontSize: "12px" }}>
+              {getMissionEnrollmentStatus(col).label}
             </div>
           </td>
-          <td onClick={() => handleRowClick(col.missionId)}>
-            {/* eslint-disable-next-line multiline-ternary */}
-            {col.enrollStartDate && col.enrollEndDate
-              // eslint-disable-next-line multiline-ternary
-              ? `${moment(col.enrollStartDate).format("YY.MM.DD")}~${moment(col.enrollEndDate).format("YY.MM.DD")}`
-              : '24.08.12~24.08.22'}
-          </td>
-          <td onClick={() => handleRowClick(col.missionId)}>
-            {col.brand || '오르페셰'}
-          </td>
-          <td onClick={() => handleRowClick(col.missionId)}>
+          <td>
             {col.enrollCount || '0'}/{col.maxEnroll || '0'}
           </td>
-          <td onClick={() => handleRowClick(col.missionId)}>
+          <td>
             {col.selectDate ? moment(col.selectDate).format("YY.MM.DD") : '24.08.12'}
           </td>
-          <td onClick={() => handleRowClick(col.missionId)}>
-            <span className={`status-badge ${col.status || 'new'}`}>
-              {statusMap[col.status] || '초대대기'}
-            </span>
+          <td>
+            <div style={{ padding: "2px 8px", width: "fit-content", whiteSpace: "nowrap", borderRadius: "100px", border: "1px solid #E4E6EA", fontSize: "12px", color: getSelectionStatus(col).color }}>
+              {getSelectionStatus(col).label}
+            </div>
           </td>
-          <td onClick={() => handleRowClick(col.missionId)}>
-            {col.selectedCount || '-'}
+          <td>
+            {col.selectedParticipantCount || '0'}
           </td>
           <td className="action-cell" onClick={(e) => e.stopPropagation()}>
-            <Button color="link" className="action-btn">
-              <MoreVertical size={20} />
-            </Button>
+            <div className="form-check form-switch">
+              <Input
+                type="switch"
+                id={`draft-switch-${col.missionId}`}
+                checked={col.is_public}
+                onChange={(e) => {
+                  e.stopPropagation()
+                  handleDraftStatusChange(col.missionId, e.target.checked)
+                }}
+              />
+            </div>
           </td>
         </tr>
       )
@@ -239,13 +393,6 @@ const MissionList = () => {
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
-  }
-
-  const handleSearchKeyPress = async (e) => {
-    if (e.key === 'Enter') {
-      const result = await fetchData(currentPage, itemsPerPage, search, filters)
-      setData(result.missions || { data: [], paging: {} })
-    }
   }
 
   const totalPages = data?.paging?.totalPages || 1
@@ -263,7 +410,7 @@ const MissionList = () => {
                   <ChevronDown size={16} className="ms-auto" />
                 </DropdownToggle>
                 <DropdownMenu className="filter-menu">
-                  {statusOptions.map((option) => (
+                  {getStatusOptions(filterCounts.status).map((option) => (
                     <DropdownItem key={option.value} toggle={false} className="filter-item">
                       <Label check className="filter-checkbox-label">
                         <Input
@@ -284,13 +431,40 @@ const MissionList = () => {
               </Dropdown>
             </Col>
             <Col md="2">
+              <Dropdown isOpen={dropdownOpen.selection_status} toggle={() => toggleDropdown('selection_status')} className="filter-dropdown">
+                <DropdownToggle caret className="filter-toggle">
+                  {getFilterLabel('selection_status')}
+                  <ChevronDown size={16} className="ms-auto" />
+                </DropdownToggle>
+                <DropdownMenu className="filter-menu">
+                  {getSelectionStatusOptions(filterCounts.selection_status).map((option) => (
+                    <DropdownItem key={option.value} toggle={false} className="filter-item">
+                      <Label check className="filter-checkbox-label">
+                        <Input
+                          type="checkbox"
+                          checked={filters.selection_status.includes(option.value)}
+                          onChange={() => handleFilterChange('selection_status', option.value)}
+                        />
+                        <span className="filter-label-text">{option.label}</span>
+                        <span className="filter-count">{option.count}</span>
+                      </Label>
+                    </DropdownItem>
+                  ))}
+                  <DropdownItem divider />
+                  <DropdownItem className="filter-reset" onClick={() => resetFilter('selection_status')}>
+                    필터 초기화
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </Col>
+            <Col md="2">
               <Dropdown isOpen={dropdownOpen.region} toggle={() => toggleDropdown('region')} className="filter-dropdown">
                 <DropdownToggle caret className="filter-toggle">
                   {getFilterLabel('region')}
                   <ChevronDown size={16} className="ms-auto" />
                 </DropdownToggle>
                 <DropdownMenu className="filter-menu">
-                  {regionOptions.map((option) => (
+                  {getRegionOptions(filterCounts.region).map((option) => (
                     <DropdownItem key={option.value} toggle={false} className="filter-item">
                       <Label check className="filter-checkbox-label">
                         <Input
@@ -317,7 +491,7 @@ const MissionList = () => {
                   <ChevronDown size={16} className="ms-auto" />
                 </DropdownToggle>
                 <DropdownMenu className="filter-menu">
-                  {categoryOptions.map((option) => (
+                  {getCategoryOptions(filterCounts.category).map((option) => (
                     <DropdownItem key={option.value} toggle={false} className="filter-item">
                       <Label check className="filter-checkbox-label">
                         <Input
@@ -338,19 +512,19 @@ const MissionList = () => {
               </Dropdown>
             </Col>
             <Col md="2">
-              <Dropdown isOpen={dropdownOpen.media} toggle={() => toggleDropdown('media')} className="filter-dropdown">
+              <Dropdown isOpen={dropdownOpen.social} toggle={() => toggleDropdown('social')} className="filter-dropdown">
                 <DropdownToggle caret className="filter-toggle">
-                  {getFilterLabel('media')}
+                  {getFilterLabel('social')}
                   <ChevronDown size={16} className="ms-auto" />
                 </DropdownToggle>
                 <DropdownMenu className="filter-menu">
-                  {mediaOptions.map((option) => (
+                  {getSocialOptions(filterCounts.social).map((option) => (
                     <DropdownItem key={option.value} toggle={false} className="filter-item">
                       <Label check className="filter-checkbox-label">
                         <Input
                           type="checkbox"
-                          checked={filters.media.includes(option.value)}
-                          onChange={() => handleFilterChange('media', option.value)}
+                          checked={filters.social.includes(option.value)}
+                          onChange={() => handleFilterChange('social', option.value)}
                         />
                         <span className="filter-label-text">{option.label}</span>
                         <span className="filter-count">{option.count}</span>
@@ -358,13 +532,13 @@ const MissionList = () => {
                     </DropdownItem>
                   ))}
                   <DropdownItem divider />
-                  <DropdownItem className="filter-reset" onClick={() => resetFilter('media')}>
+                  <DropdownItem className="filter-reset" onClick={() => resetFilter('social')}>
                     필터 초기화
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </Col>
-            <Col md="4" className="d-flex justify-content-end">
+            <Col md="2" className="d-flex justify-content-end">
               <Button
                 color="primary"
                 style={{ height: '48px', fontSize: '16px', minWidth: '120px' }}
@@ -383,7 +557,6 @@ const MissionList = () => {
               style={{ fontSize: '16px', height: '48px' }}
               value={search}
               onChange={handleSearchChange}
-              onKeyPress={handleSearchKeyPress}
             />
           </div>
 
@@ -392,14 +565,13 @@ const MissionList = () => {
             <Table className="mission-table" responsive>
               <thead>
                 <tr>
-                  <th style={{ width: '80px' }}>번제</th>
-                  <th>산업/기업</th>
-                  <th style={{ width: '140px' }}>상태</th>
-                  <th style={{ width: '120px' }}>산업/업태</th>
-                  <th style={{ width: '100px' }}>산업/업태</th>
-                  <th style={{ width: '100px' }}>산업/업태</th>
-                  <th style={{ width: '100px' }}>진행상태</th>
-                  <th style={{ width: '100px' }}>공개여부</th>
+                  <th style={{ width: '80px' }}>캠페인</th>
+                  <th style={{ width: '140px' }}>신청기간</th>
+                  <th style={{ width: '120px' }}>상태</th>
+                  <th style={{ width: '100px' }}>신청/선정</th>
+                  <th style={{ width: '100px' }}>선정일</th>
+                  <th style={{ width: '100px' }}>선정상태</th>
+                  <th style={{ width: '100px' }}>선정자</th>
                   <th style={{ width: '60px' }}>공개여부</th>
                 </tr>
               </thead>

@@ -14,7 +14,7 @@ const UserHeader = ({ stats }) => {
       <div className='user-header-title'>
         <div className='title-wrapper'>
           <h1 className='page-title'>회원 관리</h1>
-          <div className='member-badge'>100,000명</div>
+          <div className='member-badge'>{stats.totalMembers}명</div>
         </div>
         <p className='page-subtitle'>회원 리스트 관리 페이지</p>
       </div>

@@ -47,6 +47,7 @@ const UserDetail = () => {
             enrollData={data?.enrollMission?.data ? data?.enrollMission?.data : []}
             selectData={data?.selectMission?.data ? data?.selectMission?.data : []}
             completeData={data?.completeMission?.data ? data?.completeMission?.data : []}
+            endedData={data?.endedMission?.data ? data?.endedMission?.data : []}
           />
         </Col>
       </Row>

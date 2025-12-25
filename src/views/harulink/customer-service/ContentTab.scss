@@ -1,0 +1,47 @@
+.content-tab-card {
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  box-shadow: none;
+
+  .btn-primary {
+    background-color: #00D9A3;
+    border-color: #00D9A3;
+    border-radius: 8px;
+    font-weight: 500;
+
+    &:hover {
+      background-color: #00C291;
+      border-color: #00C291;
+    }
+
+    &:focus,
+    &:active {
+      background-color: #00C291;
+      border-color: #00C291;
+      box-shadow: 0 0 0 0.2rem rgba(0, 217, 163, 0.25);
+    }
+
+    &:disabled {
+      background-color: #9CA3AF;
+      border-color: #9CA3AF;
+      cursor: not-allowed;
+    }
+  }
+
+  .editor-wrapper {
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    overflow: hidden;
+    min-height: 400px;
+
+    .ck-editor__editable {
+      min-height: 400px;
+    }
+  }
+
+  h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+  }
+}

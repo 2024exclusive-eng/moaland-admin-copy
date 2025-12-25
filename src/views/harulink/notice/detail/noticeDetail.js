@@ -37,30 +37,6 @@ const TextareaDefault = () => {
       [name]: value
     }))
   }
-  const handleSave = async () => {
-
-    if (!data.title || !data.contents) {
-      alert('제목과 콘텐츠를 모두 입력하세요.')
-      return
-    }
-
-    try {
-      await axios.post(`/admin/notice`, { ...data, id: id === "new" ? null : id })
-      alert('공지사항이 저장되었습니다.')
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    }
-  }
-
-  const handleDelete = async () => {
-    try {
-      await axios.delete(`/admin/notice/${id}`)
-      alert('공지사항이 삭제되었습니다.')
-      window.location.href = '/harulink/manage/notice'
-    } catch (error) {
-      console.error('Error deleting data:', error)
-    }
-  }
 
   return (
     <Card>
@@ -91,11 +67,6 @@ const TextareaDefault = () => {
           onChange={handleChange}
           className='mb-2'
         />
-
-        <div className='d-flex justify-content-end mt-2'>
-          {id !== 'new' && <Button color='primary' onClick={handleDelete} className='me-2'>삭제</Button>}
-          <Button color='primary' onClick={handleSave}>저장</Button>
-        </div>
       </CardBody>
     </Card>
   )

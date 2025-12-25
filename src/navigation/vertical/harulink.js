@@ -168,18 +168,18 @@ export default [
         icon: <Home />,
         navLink: "/harulink/manage/campaign",
       },
-      {
-        id: "recommendedCampaign",
-        title: "추천 캠페인",
-        icon: <PushPin />,
-        navLink: "/harulink/manage/recommended-campaign",
-      },
     ],
   },
   {
     id: "operations",
     title: "운영",
     children: [
+      {
+        id: "recommendedCampaign",
+        title: "추천 캠페인",
+        icon: <PushPin />,
+        navLink: "/harulink/manage/recommended-campaign",
+      },
       {
         id: "manageBanner",
         title: "배너 관리",

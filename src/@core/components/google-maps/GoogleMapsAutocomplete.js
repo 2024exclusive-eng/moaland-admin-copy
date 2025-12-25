@@ -1,0 +1,192 @@
+import { useState, useRef, useCallback } from 'react'
+import { GoogleMap, Marker, Autocomplete } from '@react-google-maps/api'
+import { Input } from 'reactstrap'
+import PropTypes from 'prop-types'
+import './GoogleMapsAutocomplete.scss'
+
+const mapContainerStyle = {
+  width: '100%',
+  height: '300px',
+  borderRadius: '8px',
+  marginTop: '12px'
+}
+
+const defaultCenter = {
+  lat: 37.5665,
+  lng: 126.978
+}
+
+const GoogleMapsAutocomplete = ({
+  value,
+  onChange,
+  onPlaceSelect,
+  latitude,
+  longitude,
+  placeholder,
+  className,
+  name
+}) => {
+  const [map, setMap] = useState(null)
+  const [markerPosition, setMarkerPosition] = useState(
+    latitude && longitude ? { lat: parseFloat(latitude), lng: parseFloat(longitude) } : null
+  )
+
+  const autocompleteRef = useRef(null)
+
+  const onMapLoad = useCallback((mapInstance) => {
+    setMap(mapInstance)
+  }, [])
+
+  const onAutocompleteLoad = useCallback((autocomplete) => {
+    autocompleteRef.current = autocomplete
+  }, [])
+
+  const onPlaceChanged = useCallback(() => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace()
+
+      if (place.geometry && place.geometry.location) {
+        const lat = place.geometry.location.lat()
+        const lng = place.geometry.location.lng()
+        const address = place.formatted_address || ''
+
+        // Update marker position
+        const position = { lat, lng }
+        setMarkerPosition(position)
+
+        // Pan map to new location
+        if (map) {
+          map.panTo(position)
+          map.setZoom(15)
+        }
+
+        // Call parent callback with place data
+        if (onPlaceSelect) {
+          onPlaceSelect({
+            address,
+            latitude: lat,
+            longitude: lng,
+            placeId: place.place_id,
+            name: place.name || ''
+          })
+        }
+
+        // Update input value
+        if (onChange) {
+          onChange({
+            target: {
+              name: 'address',
+              value: address
+            }
+          })
+        }
+      }
+    }
+  }, [map, onChange, onPlaceSelect])
+
+  const handleInputChange = useCallback((e) => {
+    if (onChange) {
+      onChange(e)
+    }
+  }, [onChange])
+
+  const handleMapClick = useCallback((event) => {
+    const lat = event.latLng.lat()
+    const lng = event.latLng.lng()
+    const position = { lat, lng }
+
+    // Update marker position immediately
+    setMarkerPosition(position)
+
+    // Reverse geocode to get address
+    const geocoder = new window.google.maps.Geocoder()
+    geocoder.geocode({ location: position }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        const address = results[0].formatted_address
+
+        // Call parent callback with place data
+        if (onPlaceSelect) {
+          onPlaceSelect({
+            address,
+            latitude: lat,
+            longitude: lng,
+            placeId: results[0].place_id,
+            name: results[0].name || ''
+          })
+        }
+
+        // Update input value
+        if (onChange) {
+          onChange({
+            target: {
+              name: name || 'address',
+              value: address
+            }
+          })
+        }
+      } else {
+        console.warn(`Geocoder failed due to:  ${status}`)
+        // Still update coordinates even if address lookup fails
+        if (onPlaceSelect) {
+          onPlaceSelect({
+            address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+            latitude: lat,
+            longitude: lng,
+            placeId: null,
+            name: ''
+          })
+        }
+      }
+    })
+  }, [onChange, onPlaceSelect, name])
+
+  return (
+    <div className="google-maps-autocomplete">
+      <Autocomplete
+        onLoad={onAutocompleteLoad}
+        onPlaceChanged={onPlaceChanged}
+        options={{
+          componentRestrictions: { country: ['kr', 'jp', 'cn', 'id'] },
+          fields: ['formatted_address', 'geometry', 'name', 'place_id']
+        }}
+      >
+        <Input
+          type="text"
+          name={name}
+          value={value || ''}
+          onChange={handleInputChange}
+          placeholder={placeholder || '주소를 입력하거나 검색하세요'}
+          className={className}
+        />
+      </Autocomplete>
+
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        center={markerPosition || defaultCenter}
+        zoom={markerPosition ? 15 : 11}
+        onClick={handleMapClick}
+        onLoad={onMapLoad}
+        options={{
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: true
+        }}
+      >
+        {markerPosition && <Marker position={markerPosition} />}
+      </GoogleMap>
+    </div>
+  )
+}
+
+GoogleMapsAutocomplete.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  onPlaceSelect: PropTypes.func,
+  latitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  longitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  placeholder: PropTypes.string,
+  className: PropTypes.string,
+  name: PropTypes.string
+}
+
+export default GoogleMapsAutocomplete

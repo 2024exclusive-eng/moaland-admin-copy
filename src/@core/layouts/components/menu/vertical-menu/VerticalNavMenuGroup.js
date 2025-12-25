@@ -39,46 +39,21 @@ const VerticalNavMenuGroup = ({
   // ** Toggle Open Group
   const toggleOpenGroup = (item, parent) => {
     const openGroup = groupOpen
-    const activeGroup = groupActive
 
-    // ** If Group is already open and clicked, close the group
+    // ** Simple toggle: if open, close it; if closed, open it
     if (openGroup.includes(item.id)) {
+      // Close the group
       openGroup.splice(openGroup.indexOf(item.id), 1)
 
       // ** If clicked Group has open group children, Also remove those children to close those groups
       if (item.children) {
         removeChildren(item.children, openGroup, groupActive)
       }
-    } else if (activeGroup.includes(item.id) || currentActiveGroup.includes(item.id)) {
-      // ** If Group clicked is Active Group
-
-      // ** If Active group is closed and clicked again, we should open active group else close active group
-      if (!activeGroup.includes(item.id) && currentActiveGroup.includes(item.id)) {
-        activeGroup.push(item.id)
-      } else {
-        activeGroup.splice(activeGroup.indexOf(item.id), 1)
-      }
-
-      // ** Update Active Group
-      setGroupActive([...activeGroup])
-    } else if (parent) {
-      // ** If Group clicked is the child of a open group, first remove all the open groups under that parent
-      if (parent.children) {
-        removeChildren(parent.children, openGroup, groupActive)
-      }
-
-      // ** After removing all the open groups under that parent, add the clicked group to open group array
-      if (!openGroup.includes(item.id)) {
-        openGroup.push(item.id)
-      }
     } else {
-      // ** If clicked on another group that is not active or open, add it to open groups
-
-      // ** Push current clicked group item to Open Group array (allow multiple groups to be open)
-      if (!openGroup.includes(item.id)) {
-        openGroup.push(item.id)
-      }
+      // Open the group
+      openGroup.push(item.id)
     }
+
     setGroupOpen([...openGroup])
   }
 
@@ -88,6 +63,14 @@ const VerticalNavMenuGroup = ({
 
     e.preventDefault()
   }
+
+  // ** On mount, add this group to groupOpen to make it open by default
+  useEffect(() => {
+    if (!groupOpen.includes(item.id)) {
+      groupOpen.push(item.id)
+      setGroupOpen([...groupOpen])
+    }
+  }, [])
 
   // ** Checks url & updates active item
   useEffect(() => {
@@ -99,7 +82,6 @@ const VerticalNavMenuGroup = ({
     }
     setGroupActive([...groupActive])
     setCurrentActiveGroup([...groupActive])
-    setGroupOpen([])
   }, [location])
 
   // ** Returns condition to add open class

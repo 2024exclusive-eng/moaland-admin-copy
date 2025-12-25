@@ -20,6 +20,8 @@ import {
 import axios from 'axios'
 import moment from 'moment'
 
+import { getMissionEnrollmentStatus, getSelectionStatus } from "../../../../utility/missionStatus";
+
 // ** Icons
 import {
   ChevronLeft,
@@ -121,82 +123,7 @@ const getSocialOptions = (counts = {}) => [
   { value: 'Instagram', label: '인스타', count: counts.Instagram || 0 },
   { value: 'YouTube', label: '유튜브', count: counts.YouTube || 0 }
 ]
-
-const getMissionEnrollmentStatus = (mission) => {
-  const now = moment()
-  const enrollStart = mission.enrollStartDate ? moment(mission.enrollStartDate) : null
-  const enrollEnd = mission.enrollEndDate ? moment(mission.enrollEndDate) : null
-  const selectDate = mission.selectDate ? moment(mission.selectDate) : null
-  const missionStart = mission.missionStartDate ? moment(mission.missionStartDate) : null
-  const missionEnd = mission.missionEndDate ? moment(mission.missionEndDate) : null
-  const contentStart = mission.contentStartDate ? moment(mission.contentStartDate) : null
-  const contentEnd = mission.contentEndDate ? moment(mission.contentEndDate) : null
-
-  if (enrollStart && now.isBefore(enrollStart, 'day')) {
-    return { label: 'Opening Soon', color: '#6C757D' }
-  }
-
-  if (enrollStart && enrollEnd &&
-      now.isSameOrAfter(enrollStart, 'day') && now.isSameOrBefore(enrollEnd, 'day')) {
-    return { label: 'Applying', color: '#4CAF50' }
-  }
-
-  if (selectDate && now.isSame(selectDate, 'day')) {
-    return { label: 'Application Deadline', color: '#FF6B6B' }
-  }
-
-  if (missionStart && missionEnd &&
-      now.isSameOrAfter(missionStart, 'day') && now.isSameOrBefore(missionEnd, 'day')) {
-    return { label: 'In Progress', color: '#2196F3' }
-  }
-
-  if (contentStart && contentEnd &&
-      now.isSameOrAfter(contentStart, 'day') && now.isSameOrBefore(contentEnd, 'day')) {
-    return { label: 'Registration Deadline', color: '#FF9800' }
-  }
-
-  if (contentEnd && now.isAfter(contentEnd, 'day')) {
-    return { label: 'End', color: '#9E9E9E' }
-  }
-
-  return { label: 'Opening Soon', color: '#6C757D' }
-}
-
-const getSelectionStatus = (mission) => {
-  const now = moment()
-  const selectDate = mission.selectDate ? moment(mission.selectDate) : null
-  const selectedCount = mission.selectedParticipantCount || 0
-  const contentEnd = mission.contentEndDate ? moment(mission.contentEndDate) : null
-  const contentStart = mission.contentStartDate ? moment(mission.contentStartDate) : null
-
-  if (!selectDate) {
-    return { label: 'Waiting', color: '#111827' }
-  }
-
-  if (now.isBefore(selectDate, 'day')) {
-    return { label: 'Waiting', color: '#111827' }
-  }
-
-  if (now.isSame(selectDate, 'day')) {
-    return { label: 'Selection date', color: '#509594' }
-  }
-
-  if (now.isAfter(selectDate, 'day')) {
-    if (selectedCount === 0) {
-      return { label: 'Delayed', color: '#ea3a50' }
-    }
-
-    if (now.isAfter(contentEnd, 'day')) {
-      return { label: 'Selection deadline', color: '#a5a5a5' }
-    }
-
-    return { label: 'Completed', color: '#a5a5a5' }
-  }
-
-
-  return { label: 'Waiting', color: '#111827' }
-}
-
+ 
 const MissionList = () => {
   const [data, setData] = useState({ data: [], paging: {} })
   const [currentPage, setCurrentPage] = useState(1)

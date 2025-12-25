@@ -14,6 +14,7 @@ import {
 } from 'reactstrap'
 import axios from 'axios'
 import Editor from '@components/editor/editor'
+import { GoogleMapsAutocomplete } from '@components/google-maps'
 import './missionInfo.scss'
 
 const formatDate = (date) => {
@@ -57,7 +58,8 @@ const HorizontalFormIcons = ({ missionData }) => {
         provisionDetails: missionData.goodsContents,
         filmingMission: missionData.missionContents,
         additionalInfo: missionData.additionalInfo,
-        guideline: missionData.guideline
+        guideline: missionData.guideline,
+        isRecommended: missionData.isRecommended === true
       })
     } else {
       setFormData({})
@@ -88,6 +90,15 @@ const HorizontalFormIcons = ({ missionData }) => {
     setFormData({
       ...formData,
       [name]: data
+    })
+  }
+
+  const handlePlaceSelect = (placeData) => {
+    setFormData({
+      ...formData,
+      address: placeData.address,
+      latitude: placeData.latitude,
+      longitude: placeData.longitude
     })
   }
 
@@ -172,11 +183,12 @@ const HorizontalFormIcons = ({ missionData }) => {
       goodsContents: formData.provisionDetails,
       missionContents: formData.filmingMission,
       additionalInfo: formData.additionalInfo,
-      guideline: formData.guideline
+      guideline: formData.guideline,
+      isRecommended: formData.isRecommended
     }
 
     console.log(dataToSave)
-    axios.post(`/admin/campaign/${id ? id : 'new'}`, dataToSave, {
+    axios.post(`/admin/mission/${id ? id : 'new'}`, dataToSave, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -184,7 +196,7 @@ const HorizontalFormIcons = ({ missionData }) => {
       .then(response => {
         if (response.success) {
           alert('저장되었습니다.')
-          navigate('/harulink/manage/mission')
+          navigate('/admin/manage/campaign')
         }
       })
       .catch(error => {
@@ -361,13 +373,15 @@ const HorizontalFormIcons = ({ missionData }) => {
             {/* Address */}
             <div className="form-group">
               <Label className="form-label">주소 (구글맵)</Label>
-              <Input
-                type="text"
-                name="address"
-                className="form-input"
-                placeholder="Place holder"
+              <GoogleMapsAutocomplete
                 value={formData?.address || ''}
                 onChange={handleChange}
+                onPlaceSelect={handlePlaceSelect}
+                latitude={formData?.latitude}
+                longitude={formData?.longitude}
+                name="address"
+                placeholder="주소를 입력하거나 검색하세요"
+                className="form-input"
               />
             </div>
           </CardBody>

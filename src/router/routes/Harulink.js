@@ -11,6 +11,10 @@ const ManageNoticeDetail = lazy(() => import('../../views/harulink/notice/detail
 const ManageMission = lazy(() => import('../../views/harulink/mission/list'))
 const ManageMissionDetail = lazy(() => import('../../views/harulink/mission/detail/missionDetail'))
 const ManageMissionModify = lazy(() => import('../../views/harulink/mission/detail/newMission'))
+const RecommendedCampaign = lazy(() => import('../../views/harulink/recommended-campaign'))
+const BannerManagement = lazy(() => import('../../views/harulink/banner'))
+const CommunityManagement = lazy(() => import('../../views/harulink/community'))
+const CustomerServiceManagement = lazy(() => import('../../views/harulink/customer-service'))
 
 const AppRoutes = [
   {
@@ -49,6 +53,22 @@ const AppRoutes = [
   {
     path: '/harulink/manage/notice/:id',
     element: <ManageNoticeDetail />
+  },
+  {
+    path: '/harulink/manage/recommended-campaign',
+    element: <RecommendedCampaign />
+  },
+  {
+    path: '/harulink/manage/banner',
+    element: <BannerManagement />
+  },
+  {
+    path: '/harulink/manage/community',
+    element: <CommunityManagement />
+  },
+  {
+    path: '/harulink/manage/customer-service',
+    element: <CustomerServiceManagement />
   }
 ]
 

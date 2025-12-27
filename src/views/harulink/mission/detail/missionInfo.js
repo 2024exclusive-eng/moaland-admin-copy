@@ -102,40 +102,85 @@ const HorizontalFormIcons = ({ missionData }) => {
     })
   }
 
-  const [thumbnailImage, setThumbnailImage] = useState(null)
-  const [detailedImage, setDetailedImage] = useState(null)
+  // Image states - storing both File objects and URLs
+  const [thumbnailFile, setThumbnailFile] = useState(null)
+  const [detailedFile, setDetailedFile] = useState(null)
+  const [thumbnailPreview, setThumbnailPreview] = useState(null)
+  const [detailedPreview, setDetailedPreview] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
-    setThumbnailImage(missionData?.thumbnailImg || null)
-    setDetailedImage(missionData?.detailImg || null)
+    // Load existing images from missionData
+    if (missionData?.thumbnailImg) {
+      setThumbnailPreview(missionData.thumbnailImg)
+    }
+    if (missionData?.detailImg) {
+      setDetailedPreview(missionData.detailImg)
+    }
   }, [missionData])
 
-  const handleImageUpload = async (event, type) => {
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(thumbnailPreview)
+      }
+      if (detailedPreview && detailedPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(detailedPreview)
+      }
+    }
+  }, [thumbnailPreview, detailedPreview])
+
+  const handleImageSelect = (event, type) => {
     const file = event.target.files[0]
     if (!file) return
 
-    const formDataUpload = new FormData()
-    formDataUpload.append('file', file)
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.')
+      return
+    }
 
-    try {
-      const response = await axios.post('/admin/image', formDataUpload, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('파일 크기는 5MB를 초과할 수 없습니다.')
+      return
+    }
 
-      if (type === 'thumbnail') {
-        setThumbnailImage(response.data.uri)
-      } else if (type === 'detailed') {
-        setDetailedImage(response.data.uri)
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file)
+
+    if (type === 'thumbnail') {
+      // Cleanup old preview URL if exists
+      if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(thumbnailPreview)
       }
-    } catch (error) {
-      console.error('Image upload error:', error)
-      alert('이미지 업로드 중 오류가 발생했습니다.')
+      setThumbnailFile(file)
+      setThumbnailPreview(previewUrl)
+    } else if (type === 'detailed') {
+      // Cleanup old preview URL if exists
+      if (detailedPreview && detailedPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(detailedPreview)
+      }
+      setDetailedFile(file)
+      setDetailedPreview(previewUrl)
     }
   }
 
-  const handleSave = () => {
+  const uploadImage = async (file) => {
+    const formDataUpload = new FormData()
+    formDataUpload.append('file', file)
+
+    const response = await axios.post('/admin/image', formDataUpload, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    return response.data.uri
+  }
+
+  const handleSave = async () => {
     // Validate required fields
     if (!formData.campaignName) {
       return alert('캠페인 이름을 입력해주세요.')
@@ -149,60 +194,91 @@ const HorizontalFormIcons = ({ missionData }) => {
     if (!formData.mediaType || formData.mediaType.length === 0) {
       return alert('미디어 타입을 최소 1개 이상 선택해주세요.')
     }
-    if (!thumbnailImage) {
+    if (!thumbnailPreview && !thumbnailFile) {
       return alert('썸네일 이미지를 업로드해주세요.')
     }
 
-    // Get current date as default
-    const now = moment()
-    const defaultStartDate = formatDateForServer(now)
-    const defaultEndDate = formatDateForServer(now.clone().add(30, 'days'))
+    try {
+      setIsUploading(true)
 
-    // Prepare data to be sent to the server
-    const dataToSave = {
-      category: formData.category,
-      enrollStartDate: formatDateForServer(formData.applicationStartDate) || defaultStartDate,
-      enrollEndDate: formatDateForServer(formData.applicationEndDate) || defaultEndDate,
-      selectDate: formatDateForServer(formData.selectionDate),
-      paymentDate: formatDateForServer(formData.paymentDate),
-      missionStartDate: formatDateForServer(formData.visitStartDate),
-      missionEndDate: formatDateForServer(formData.visitEndDate),
-      contentStartDate: formatDateForServer(formData.contentStartDate),
-      contentEndDate: formatDateForServer(formData.contentEndDate),
-      social: formData.mediaType ? formData.mediaType.join(',') : null,
-      region: formData.region,
-      address: formData.address,
-      latitude: formData.latitude || null,
-      longitude: formData.longitude || null,
-      point: formData.point || 0,
-      maxEnroll: formData.selectedCandidates || 0,
-      brand: formData.brand || null,
-      title: formData.campaignName,
-      thumbnailImg: thumbnailImage,
-      detailImg: detailedImage,
-      goodsContents: formData.provisionDetails,
-      missionContents: formData.filmingMission,
-      additionalInfo: formData.additionalInfo,
-      guideline: formData.guideline,
-      isRecommended: formData.isRecommended
-    }
+      // Upload images if new files are selected
+      let thumbnailUrl = thumbnailPreview
+      let detailedUrl = detailedPreview
 
-    console.log(dataToSave)
-    axios.post(`/admin/mission/${id ? id : 'new'}`, dataToSave, {
-      headers: {
-        'Content-Type': 'application/json'
+      // Upload thumbnail if new file selected
+      if (thumbnailFile) {
+        try {
+          thumbnailUrl = await uploadImage(thumbnailFile)
+        } catch (error) {
+          console.error('Thumbnail upload error:', error)
+          alert('썸네일 이미지 업로드 중 오류가 발생했습니다.')
+          setIsUploading(false)
+          return
+        }
       }
-    })
-      .then(response => {
-        if (response.success) {
-          alert('저장되었습니다.')
-          navigate('/admin/manage/campaign')
+
+      // Upload detailed image if new file selected
+      if (detailedFile) {
+        try {
+          detailedUrl = await uploadImage(detailedFile)
+        } catch (error) {
+          console.error('Detailed image upload error:', error)
+          alert('상세 이미지 업로드 중 오류가 발생했습니다.')
+          setIsUploading(false)
+          return
+        }
+      }
+
+      // Get current date as default
+      const now = moment()
+      const defaultStartDate = formatDateForServer(now)
+      const defaultEndDate = formatDateForServer(now.clone().add(30, 'days'))
+
+      // Prepare data to be sent to the server
+      const dataToSave = {
+        category: formData.category,
+        enrollStartDate: formatDateForServer(formData.applicationStartDate) || defaultStartDate,
+        enrollEndDate: formatDateForServer(formData.applicationEndDate) || defaultEndDate,
+        selectDate: formatDateForServer(formData.selectionDate),
+        paymentDate: formatDateForServer(formData.paymentDate),
+        missionStartDate: formatDateForServer(formData.visitStartDate),
+        missionEndDate: formatDateForServer(formData.visitEndDate),
+        contentStartDate: formatDateForServer(formData.contentStartDate),
+        contentEndDate: formatDateForServer(formData.contentEndDate),
+        social: formData.mediaType ? formData.mediaType.join(',') : null,
+        region: formData.region,
+        address: formData.address,
+        latitude: formData.latitude || null,
+        longitude: formData.longitude || null,
+        point: formData.point || 0,
+        maxEnroll: formData.selectedCandidates || 0,
+        brand: formData.brand || null,
+        title: formData.campaignName,
+        thumbnailImg: thumbnailUrl,
+        detailImg: detailedUrl,
+        goodsContents: formData.provisionDetails,
+        missionContents: formData.filmingMission,
+        additionalInfo: formData.additionalInfo,
+        guideline: formData.guideline,
+        isRecommended: formData.isRecommended
+      }
+
+      const response = await axios.post(`/admin/mission/${id ? id : 'new'}`, dataToSave, {
+        headers: {
+          'Content-Type': 'application/json'
         }
       })
-      .catch(error => {
-        console.error('Error:', error)
-        alert('저장 중 오류가 발생했습니다.')
-      })
+
+      if (response.success) {
+        alert('저장되었습니다.')
+        navigate('/harulink/manage/campaign')
+      }
+    } catch (error) {
+      console.error('Save error:', error)
+      alert('저장 중 오류가 발생했습니다.')
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   const handleCancel = () => {
@@ -216,11 +292,11 @@ const HorizontalFormIcons = ({ missionData }) => {
         <div className="campaign-header">
           <h1 className="campaign-title">캠페인 등록</h1>
           <div className="campaign-actions">
-            <Button className="btn-cancel" onClick={handleCancel}>
+            <Button className="btn-cancel" onClick={handleCancel} disabled={isUploading}>
               취소
             </Button>
-            <Button className="btn-register" onClick={handleSave}>
-              등록 하기
+            <Button className="btn-register" onClick={handleSave} disabled={isUploading}>
+              {isUploading ? '업로드 중...' : '등록 하기'}
             </Button>
           </div>
         </div>
@@ -238,8 +314,8 @@ const HorizontalFormIcons = ({ missionData }) => {
                   className="image-upload-box"
                   onClick={() => document.getElementById('thumbnailUpload').click()}
                 >
-                  {thumbnailImage ? (
-                    <img src={thumbnailImage} alt="Thumbnail" className="uploaded-image" />
+                  {thumbnailPreview ? (
+                    <img src={thumbnailPreview} alt="Thumbnail" className="uploaded-image" />
                   ) : (
                     <>
                       <div className="upload-icon">
@@ -256,7 +332,7 @@ const HorizontalFormIcons = ({ missionData }) => {
                   id="thumbnailUpload"
                   className="d-none"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e, 'thumbnail')}
+                  onChange={(e) => handleImageSelect(e, 'thumbnail')}
                 />
               </div>
             </div>
@@ -269,8 +345,8 @@ const HorizontalFormIcons = ({ missionData }) => {
                   className="image-upload-box"
                   onClick={() => document.getElementById('detailedUpload').click()}
                 >
-                  {detailedImage ? (
-                    <img src={detailedImage} alt="Detailed" className="uploaded-image" />
+                  {detailedPreview ? (
+                    <img src={detailedPreview} alt="Detailed" className="uploaded-image" />
                   ) : (
                     <>
                       <div className="upload-icon">
@@ -287,7 +363,7 @@ const HorizontalFormIcons = ({ missionData }) => {
                   id="detailedUpload"
                   className="d-none"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e, 'detailed')}
+                  onChange={(e) => handleImageSelect(e, 'detailed')}
                 />
               </div>
             </div>

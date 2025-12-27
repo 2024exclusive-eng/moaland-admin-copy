@@ -37,7 +37,7 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
 
   const [errors, setErrors] = useState({});
   const [imagePreview, setImagePreview] = useState(null);
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -50,7 +50,7 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
         isActive: event.isActive || "Y",
       });
       setImagePreview(event.thumbnailPath || null);
-      setThumbnailUrl(event.thumbnailPath || null);
+      setImageFile(null);
     } else {
       setFormData({
         name: "",
@@ -59,10 +59,19 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
         isActive: "Y",
       });
       setImagePreview(null);
-      setThumbnailUrl(null);
+      setImageFile(null);
     }
     setErrors({});
   }, [event, isOpen]);
+
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -71,39 +80,34 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
     }
   };
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show preview immediately
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
 
-    // Upload to server
-    const formDataUpload = new FormData();
-    formDataUpload.append("file", file);
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('파일 크기는 5MB를 초과할 수 없습니다.');
+      return;
+    }
 
-    try {
-      setUploading(true);
-      const response = await axios.post("/admin/image", formDataUpload, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    // Cleanup old preview URL if exists
+    if (imagePreview && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview);
+    }
 
-      setThumbnailUrl(response.data.uri);
-      if (errors.thumbnail) {
-        setErrors((prev) => ({ ...prev, thumbnail: "" }));
-      }
-    } catch (error) {
-      console.error("Image upload error:", error);
-      alert("이미지 업로드 중 오류가 발생했습니다.");
-      setImagePreview(null);
-    } finally {
-      setUploading(false);
+    // Create preview URL and store file
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+    setImageFile(file);
+
+    if (errors.thumbnail) {
+      setErrors((prev) => ({ ...prev, thumbnail: "" }));
     }
   };
 
@@ -111,6 +115,19 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
     if (!uploading) {
       fileInputRef.current?.click();
     }
+  };
+
+  const uploadImage = async (file) => {
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+
+    const response = await axios.post("/admin/image", formDataUpload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data.uri;
   };
 
   const validate = () => {
@@ -123,21 +140,45 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
     } else if (!isValidUrl(formData.link)) {
       newErrors.link = "올바른 URL 형식이 아닙니다";
     }
-    if (!thumbnailUrl) {
+    if (!imagePreview && !imageFile) {
       newErrors.thumbnail = "썸네일 이미지를 업로드해주세요";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
-    if (validate()) {
+  const handleSubmit = async () => {
+    if (!validate()) return;
+
+    try {
+      setUploading(true);
+
+      let thumbnailUrl = formData.thumbnailPath;
+
+      // Upload image if new file selected
+      if (imageFile) {
+        try {
+          thumbnailUrl = await uploadImage(imageFile);
+        } catch (error) {
+          console.error("Image upload error:", error);
+          alert("이미지 업로드 중 오류가 발생했습니다.");
+          setUploading(false);
+          return;
+        }
+      }
+
       const dataToSave = {
         ...formData,
         link: normalizeUrl(formData.link),
         thumbnailPath: thumbnailUrl,
       };
+
       onSave(dataToSave);
+    } catch (error) {
+      console.error("Submit error:", error);
+      alert("저장 중 오류가 발생했습니다.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -230,11 +271,11 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
         </Form>
       </ModalBody>
       <ModalFooter className="event-modal-footer">
-        <Button color="light" onClick={toggle} className="cancel-btn">
+        <Button color="light" onClick={toggle} className="cancel-btn" disabled={uploading}>
           취소
         </Button>
-        <Button color="primary" onClick={handleSubmit} className="submit-btn">
-          등록하기
+        <Button color="primary" onClick={handleSubmit} className="submit-btn" disabled={uploading}>
+          {uploading ? '업로드 중...' : '등록하기'}
         </Button>
       </ModalFooter>
     </Modal>

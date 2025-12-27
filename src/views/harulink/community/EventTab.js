@@ -9,7 +9,10 @@ import axios from "axios";
 import moment from "moment";
 
 // ** Icons
-import { Edit, Trash } from "react-feather";
+import { Edit, Trash, ExternalLink } from "react-feather";
+
+// ** Utils
+import { openUrlInNewTab } from "@utils";
 
 // ** Components
 import EventModal from "./EventModal";
@@ -167,22 +170,41 @@ const EventTab = () => {
           </td>
           <td>{event.name || "-"}</td>
           <td>
-            <div
-              style={{
-                padding: "2px 8px",
-                width: "fit-content",
-                whiteSpace: "nowrap",
-                fontSize: "12px",
-                color: "#509594",
-                textDecoration: "underline",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                window.open(event.url, "_blank")?.focus();
-              }}
-            >
-              URL
-            </div>
+            {event.link || event.url ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  color: "#509594",
+                  maxWidth: "180px",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openUrlInNewTab(event.link || event.url);
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.textDecoration = "underline";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.textDecoration = "none";
+                }}
+              >
+                <span
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  URL
+                </span>
+              </div>
+            ) : (
+              "-"
+            )}
           </td>
           <td>{moment(event.created).format("YY.MM.DD")}</td>
           <td className="action-cell" onClick={(e) => e.stopPropagation()}>

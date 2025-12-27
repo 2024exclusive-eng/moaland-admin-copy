@@ -33,7 +33,11 @@ import {
   Edit,
   Trash,
   Power,
+  ExternalLink,
 } from "react-feather";
+
+// ** Utils
+import { openUrlInNewTab } from "@utils";
 
 // ** Components
 import BannerModal from "./BannerModal";
@@ -262,7 +266,44 @@ const BannerList = () => {
               {getTypeLabel(banner.type)}
             </div>
           </td>
-          <td>{banner.link || "-"}</td>
+          <td>
+            {banner.link ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  cursor: "pointer",
+                  color: "#007bff",
+                  textDecoration: "none",
+                  maxWidth: "180px",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openUrlInNewTab(banner.link);
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.textDecoration = "underline";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.textDecoration = "none";
+                }}
+              >
+                <span
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {banner.link}
+                </span>
+                <ExternalLink size={14} />
+              </div>
+            ) : (
+              "-"
+            )}
+          </td>
           <td>
             <div
               style={{

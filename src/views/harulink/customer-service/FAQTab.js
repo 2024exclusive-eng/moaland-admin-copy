@@ -255,7 +255,7 @@ const FAQTab = ({ type, title }) => {
               style={{ height: "48px", fontSize: "16px", minWidth: "120px" }}
               onClick={handleCreate}
             >
-              {title} 생성
+              등록하기
             </Button>
           </div>
 

@@ -79,3 +79,73 @@ export const selectThemeColors = theme => ({
     neutral30: '#ededed' // for input hover border-color
   }
 })
+
+/**
+ ** Normalizes URL by adding protocol if missing and removing www prefix
+ ** Handles various URL formats like:
+ * @param {String} url URL to normalize
+ * @returns {String} Normalized URL with protocol and without www
+ */
+export const normalizeUrl = (url) => {
+  if (!url || typeof url !== 'string') return ''
+
+  let trimmedUrl = url.trim()
+  if (!trimmedUrl) return ''
+
+  // Check if URL already has a protocol
+  if (/^https?:\/\//i.test(trimmedUrl)) {
+    // Remove www. from the domain part
+    return trimmedUrl.replace(/^(https?:\/\/)www\./i, '$1')
+  }
+
+  // Check if URL starts with '//' (protocol-relative URL)
+  if (trimmedUrl.startsWith('//')) {
+    trimmedUrl = `https:${trimmedUrl}`
+    return trimmedUrl.replace(/^(https:\/\/)www\./i, '$1')
+  }
+
+  // Remove www. prefix if present
+  trimmedUrl = trimmedUrl.replace(/^www\./i, '')
+
+  console.log(trimmedUrl)
+
+  // Add https:// for all other cases
+  return `https://${trimmedUrl}`
+}
+
+/**
+ ** Validates if a string is a valid URL
+ * @param {String} url URL to validate
+ * @returns {Boolean} True if valid URL
+ */
+export const isValidUrl = (url) => {
+  if (!url || typeof url !== 'string') return false
+
+  try {
+    const normalizedUrl = normalizeUrl(url)
+    const urlObject = new URL(normalizedUrl)
+    return urlObject.protocol === 'http:' || urlObject.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+/**
+ ** Opens URL in new tab with security best practices
+ ** Prevents tabnabbing attacks by setting opener to null
+ * @param {String} url URL to open
+ */
+export const openUrlInNewTab = (url) => {
+  if (!url) return
+
+  console.log(url)
+  const normalizedUrl = normalizeUrl(url)
+  if (!isValidUrl(normalizedUrl)) {
+    console.warn('Invalid URL:', url)
+    return
+  }
+
+
+  const newWindow = window.open(normalizedUrl, '_blank', 'noopener,noreferrer')
+  if (newWindow) newWindow.opener = null
+}

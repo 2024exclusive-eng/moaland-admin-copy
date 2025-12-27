@@ -19,6 +19,9 @@ import { Upload } from "react-feather";
 // ** Axios
 import axios from "axios";
 
+// ** Utils
+import { normalizeUrl, isValidUrl } from "@utils";
+
 // ** Styles
 import "./BannerModal.scss";
 
@@ -124,6 +127,8 @@ const BannerModal = ({
     }
     if (!formData.link.trim()) {
       newErrors.link = "URL을 입력해주세요";
+    } else if (!isValidUrl(formData.link)) {
+      newErrors.link = "올바른 URL 형식이 아닙니다";
     }
     if (!thumbnailUrl) {
       newErrors.thumbnail = "썸네일 이미지를 업로드해주세요";
@@ -136,6 +141,7 @@ const BannerModal = ({
     if (validate()) {
       const dataToSave = {
         ...formData,
+        link: normalizeUrl(formData.link),
         thumbnailPath: thumbnailUrl,
       };
       onSave(dataToSave);

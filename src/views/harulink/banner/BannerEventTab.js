@@ -8,6 +8,8 @@ import { Table, Card, Button, Input } from "reactstrap";
 import axios from "axios";
 import moment from "moment";
 
+import { openUrlInNewTab } from "@utils";
+
 // ** Icons
 import { Edit, Trash } from "react-feather";
 
@@ -192,10 +194,9 @@ const BannerEventTab = () => {
                 textDecoration: "underline",
                 cursor: "pointer",
               }}
-              onClick={() => {
-                if (banner.link) {
-                  window.open(banner.link, "_blank")?.focus();
-                }
+              onClick={(e) => {
+                e.stopPropagation();
+                openUrlInNewTab(banner.link);
               }}
             >
               {banner.link ? "URL" : "-"}

@@ -105,7 +105,7 @@ const DataTableWithButtons = () => {
         <tr key={col.id} onClick={() => handleRowClick(col.id)}>
           <td>{col.id}</td>
           <td>{col.title}</td>
-          <td>{moment(col.created).format("YY.MM.DD")}</td>
+          <td>{moment(col.created).format("DD.MM.YY")}</td>
         </tr>
       )
     })

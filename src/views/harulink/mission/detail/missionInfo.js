@@ -15,6 +15,7 @@ import {
 import axios from 'axios'
 import Editor from '@components/editor/editor'
 import { GoogleMapsAutocomplete } from '@components/google-maps'
+import { getRegionOptions, getCategoryOptions, getMediaTypeOptions } from '../constants'
 import './missionInfo.scss'
 
 const formatDate = (date) => {
@@ -74,18 +75,6 @@ const HorizontalFormIcons = ({ missionData }) => {
     })
   }
 
-  const handleCheckboxChange = (name, value) => {
-    const currentValues = formData[name] || []
-    const newValues = currentValues.includes(value)
-      ? currentValues.filter(v => v !== value)
-      : [...currentValues, value]
-
-    setFormData({
-      ...formData,
-      [name]: newValues
-    })
-  }
-
   const handleEditorChange = (name, data) => {
     setFormData({
       ...formData,
@@ -99,6 +88,23 @@ const HorizontalFormIcons = ({ missionData }) => {
       address: placeData.address,
       latitude: placeData.latitude,
       longitude: placeData.longitude
+    })
+  }
+
+  const handleNumberKeyDown = (e) => {
+    // Prevent: e, E, +, -, .
+    if (['e', 'E', '+', '-', '.'].includes(e.key)) {
+      e.preventDefault()
+    }
+  }
+
+  const handleNumberChange = (e) => {
+    const { name, value } = e.target
+    // Only allow digits (remove any non-numeric characters)
+    const numericValue = value.replace(/[^0-9]/g, '')
+    setFormData({
+      ...formData,
+      [name]: numericValue
     })
   }
 
@@ -192,7 +198,7 @@ const HorizontalFormIcons = ({ missionData }) => {
       return alert('지역을 선택해주세요.')
     }
     if (!formData.mediaType || formData.mediaType.length === 0) {
-      return alert('미디어 타입을 최소 1개 이상 선택해주세요.')
+      return alert('미션 유형을 선택해주세요.')
     }
     if (!thumbnailPreview && !thumbnailFile) {
       return alert('썸네일 이미지를 업로드해주세요.')
@@ -372,14 +378,7 @@ const HorizontalFormIcons = ({ missionData }) => {
             <div className="form-group">
               <Label className="form-label">카테고리</Label>
               <div className="radio-group">
-                {[
-                  { value: 'restaurant', label: '맛집' },
-                  { value: 'Hospital', label: '병원' },
-                  { value: 'Beauty', label: '뷰티' },
-                  { value: 'Culture', label: '문화' },
-                  { value: 'Stay', label: '숙박' },
-                  { value: 'Massage', label: '여가시설' }
-                ].map((cat) => (
+                {getCategoryOptions().map((cat) => (
                   <div key={cat.value} className="radio-item">
                     <Input
                       type="radio"
@@ -399,12 +398,7 @@ const HorizontalFormIcons = ({ missionData }) => {
             <div className="form-group">
               <Label className="form-label">지역</Label>
               <div className="radio-group">
-                {[
-                  { value: 'Seoul', label: '서울' },
-                  { value: 'Busan', label: '부산' },
-                  { value: 'Jeju', label: '제주' },
-                  { value: 'Other', label: '기타' }
-                ].map((reg) => (
+                {getRegionOptions().map((reg) => (
                   <div key={reg.value} className="radio-item">
                     <Input
                       type="radio"
@@ -471,24 +465,18 @@ const HorizontalFormIcons = ({ missionData }) => {
             {/* Media Type */}
             <div className="form-group">
               <Label className="form-label">미션 유형</Label>
-              <div className="checkbox-group">
-                {[
-                  { value: 'Xiaohongshu', label: '샤오홍슈' },
-                  { value: 'Douyin', label: '도우인' },
-                  { value: 'Dajongdienping', label: '따중띠앤핑' },
-                  { value: 'Instagram', label: '인스타' },
-                  { value: 'YouTube', label: '유튜브' }
-                ].map((media) => (
-                  <div key={media.value} className="checkbox-item">
+              <div className="radio-group">
+                {getMediaTypeOptions().map((media) => (
+                  <div key={media.value} className="radio-item">
                     <Input
-                      type="checkbox"
+                      type="radio"
                       name="mediaType"
                       id={`media-${media.value}`}
                       value={media.value}
-                      checked={(formData?.mediaType || []).includes(media.value)}
-                      onChange={() => handleCheckboxChange('mediaType', media.value)}
+                      checked={(formData?.mediaType || [])[0] === media.value}
+                      onChange={() => setFormData({ ...formData, mediaType: [media.value] })}
                     />
-                    <Label for={`media-${media.value}`} className="checkbox-label">{media.label}</Label>
+                    <Label for={`media-${media.value}`} className="radio-label">{media.label}</Label>
                   </div>
                 ))}
               </div>
@@ -596,9 +584,10 @@ const HorizontalFormIcons = ({ missionData }) => {
                 type="number"
                 name="selectedCandidates"
                 className="form-input"
-                placeholder="Place holder"
+                placeholder="제공내역을 입력해주세요"
                 value={formData?.selectedCandidates || ''}
-                onChange={handleChange}
+                onChange={handleNumberChange}
+                onKeyDown={handleNumberKeyDown}
               />
             </div>
 

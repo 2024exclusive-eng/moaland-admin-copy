@@ -221,7 +221,7 @@ const EventTab = () => {
                   whiteSpace: "nowrap",
                 }}
               >
-                <span style={{ color: "#374151" }}>삭제</span>
+                <span style={{ color: "#374151" }}>수정</span>
               </Button>
               <Button
                 color="light"
@@ -235,7 +235,7 @@ const EventTab = () => {
                   whiteSpace: "nowrap",
                 }}
               >
-                <span style={{ color: "#374151" }}>수정</span>
+                <span style={{ color: "#374151" }}>삭제</span>
               </Button>
             </div>
           </td>

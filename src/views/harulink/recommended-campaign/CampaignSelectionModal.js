@@ -120,6 +120,7 @@ const CampaignSelectionModal = ({ isOpen, toggle, onSelect }) => {
   };
 
   const handleSelectCampaign = (campaignId) => {
+    console.log(campaignId)
     setSelectedCampaigns((prev) => {
       if (prev.includes(campaignId)) {
         return prev.filter((id) => id !== campaignId);
@@ -214,12 +215,12 @@ const CampaignSelectionModal = ({ isOpen, toggle, onSelect }) => {
             <tbody>
               {campaigns.map((campaign, index) => {
                 const isLast = campaigns.length === index + 1;
-                const isSelected = selectedCampaigns.includes(campaign.id);
+                const isSelected = selectedCampaigns.includes(campaign.missionId);
                 const isAlreadyRecommended = campaign.isRecommended === 1;
 
                 return (
                   <tr
-                    key={campaign.id}
+                    key={campaign.missionId}
                     ref={isLast ? lastCampaignRef : null}
                     className={isSelected ? "table-active" : ""}
                     style={{
@@ -231,7 +232,7 @@ const CampaignSelectionModal = ({ isOpen, toggle, onSelect }) => {
                       <Input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={() => handleSelectCampaign(campaign.id)}
+                        onChange={() => handleSelectCampaign(campaign.missionId)}
                         disabled={isAlreadyRecommended}
                       />
                     </td>

@@ -51,6 +51,10 @@ const AppRoutes = [
     element: <ManageNotice />
   },
   {
+    path: '/harulink/manage/community/new',
+    element: <ManageNoticeDetail />
+  },
+  {
     path: '/harulink/manage/notice/:id',
     element: <ManageNoticeDetail />
   },

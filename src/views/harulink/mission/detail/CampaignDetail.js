@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import moment from "moment";
 import { Card, CardBody, Button, Table, Badge } from "reactstrap";
 import axios from "axios";
+import { getRegionLabel, getCategoryLabel } from '../constants';
 import "./CampaignDetail.scss";
 
 const CampaignDetail = () => {
@@ -70,7 +71,7 @@ const CampaignDetail = () => {
   const enrollUsers = data?.enrollUsers || [];
   const selectUsers = data?.selectUsers || [];
   const completedUsers = data?.completeUsers || [];
-  console.log(completedUsers, data)
+  console.log(completedUsers, data);
   const socialPlatforms = mission.social ? mission.social.split(",") : [];
   const linkTitles = {
     Xiaohongshu: "샤오홍슈",
@@ -146,7 +147,7 @@ const CampaignDetail = () => {
                 </div>
                 <div className="info-table-cell label">지역/장소명</div>
                 <div className="info-table-cell value">
-                  {mission.region || "-"}
+                  {mission.region ? getRegionLabel(mission.region) : "-"}
                 </div>
               </div>
 
@@ -176,11 +177,11 @@ const CampaignDetail = () => {
               <div className="info-table-row">
                 <div className="info-table-cell label">지역</div>
                 <div className="info-table-cell value">
-                  {mission.region || "-"}
+                  {mission.region ? getRegionLabel(mission.region) : "-"}
                 </div>
                 <div className="info-table-cell label">카테고리</div>
                 <div className="info-table-cell value">
-                  {mission.category || "-"}
+                  {mission.category ? getCategoryLabel(mission.category) : "-"}
                 </div>
               </div>
 
@@ -207,14 +208,14 @@ const CampaignDetail = () => {
             <h2 className="section-title">캠페인 정보</h2>
             <div className="info-table">
               <div className="info-table-row four-cols">
-                <div className="info-table-cell label">
+                <div className="info-table-cell label">샤오홍슈</div>
+                <div className="info-table-cell value">
                   {socialPlatforms[0]}
                 </div>
-                <div className="info-table-cell value">test</div>
-                <div className="info-table-cell label">
-                  {socialPlatforms[1]}
+                <div className="info-table-cell label">선정수</div>
+                <div className="info-table-cell value">
+                  {mission?.selectedParticipantCount ?? 0}
                 </div>
-                <div className="info-table-cell value">testt</div>
               </div>
 
               <div className="info-table-row">
@@ -420,7 +421,10 @@ const CampaignDetail = () => {
                                   : "#fff",
                             }}
                             onClick={() =>
-                              handleSelectApplicant(user.missionEnrollId, 'completed')
+                              handleSelectApplicant(
+                                user.missionEnrollId,
+                                "completed"
+                              )
                             }
                             disabled={
                               !user.link ||

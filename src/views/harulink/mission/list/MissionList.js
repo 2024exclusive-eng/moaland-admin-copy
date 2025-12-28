@@ -21,6 +21,7 @@ import axios from 'axios'
 import moment from 'moment'
 
 import { getMissionEnrollmentStatus, getSelectionStatus } from "../../../../utility/missionStatus";
+import { getRegionOptions, getCategoryOptions, getMediaTypeOptions } from '../constants';
 
 // ** Icons
 import {
@@ -93,35 +94,11 @@ const getStatusOptions = (counts = {}) => [
 ]
 
 const getSelectionStatusOptions = (counts = {}) => [
-  { value: 'waiting', label: 'Waiting', count: counts.waiting || 0 },
-  { value: 'selection_date', label: 'Selection Date', count: counts.selection_date || 0 },
-  { value: 'delayed', label: 'Delayed', count: counts.delayed || 0 },
-  { value: 'completed', label: 'Completed', count: counts.completed || 0 },
-  { value: 'selection_deadline', label: 'Selection Deadline', count: counts.selection_deadline || 0 }
-]
-
-const getRegionOptions = (counts = {}) => [
-  { value: 'Seoul', label: '서울', count: counts.Seoul || 0 },
-  { value: 'Busan', label: '부산', count: counts.Busan || 0 },
-  { value: 'Jeju', label: '제주', count: counts.Jeju || 0 },
-  { value: 'Other', label: '기타', count: counts.Other || 0 }
-]
-
-const getCategoryOptions = (counts = {}) => [
-  { value: 'restaurant', label: '맛집', count: counts.restaurant || 0 },
-  { value: 'Hospital', label: '병원', count: counts.Hospital || 0 },
-  { value: 'Beauty', label: '뷰티', count: counts.Beauty || 0 },
-  { value: 'Culture', label: '문화', count: counts.Culture || 0 },
-  { value: 'Stay', label: '숙박', count: counts.Stay || 0 },
-  { value: 'Massage', label: '마사지', count: counts.Massage || 0 }
-]
-
-const getSocialOptions = (counts = {}) => [
-  { value: 'Xiaohongshu', label: '식으홍슈', count: counts.Xiaohongshu || 0 },
-  { value: 'Douyin', label: '도우안', count: counts.Douyin || 0 },
-  { value: 'Dajongdienping', label: '따졋디앤팀', count: counts.Dajongdienping || 0 },
-  { value: 'Instagram', label: '인스타', count: counts.Instagram || 0 },
-  { value: 'YouTube', label: '유튜브', count: counts.YouTube || 0 }
+  { value: 'waiting', label: '선정대기', count: counts.waiting || 0 },
+  { value: 'selection_date', label: '선정일', count: counts.selection_date || 0 },
+  { value: 'delayed', label: '선정지연', count: counts.delayed || 0 },
+  { value: 'completed', label: '선정완료', count: counts.completed || 0 },
+  { value: 'selection_deadline', label: '선정지연', count: counts.selection_deadline || 0 }
 ]
  
 const MissionList = () => {
@@ -445,7 +422,7 @@ const MissionList = () => {
                   <ChevronDown size={16} className="ms-auto" />
                 </DropdownToggle>
                 <DropdownMenu className="filter-menu">
-                  {getSocialOptions(filterCounts.social).map((option) => (
+                  {getMediaTypeOptions(filterCounts.social).map((option) => (
                     <DropdownItem key={option.value} toggle={false} className="filter-item">
                       <Label check className="filter-checkbox-label">
                         <Input

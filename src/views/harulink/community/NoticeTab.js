@@ -153,7 +153,7 @@ const NoticeTab = () => {
               color="primary"
               style={{ height: "48px", fontSize: "16px", minWidth: "140px" }}
               onClick={() => {
-                window.location.href = "/harulink/manage/notice/new";
+                window.location.href = "/harulink/manage/community/new";
               }}
             >
               등록하기

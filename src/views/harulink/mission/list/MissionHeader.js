@@ -13,10 +13,10 @@ const MissionHeader = ({ stats }) => {
       {/* Page Title Section */}
       <div className="user-header-title">
         <div className="title-wrapper">
-          <h1 className="page-title">회원 관리</h1>
+          <h1 className="page-title">캠페인 관리</h1>
           <div className="member-badge">{stats.totalMissions}명</div>
         </div>
-        <p className="page-subtitle">회원 리스트 관리 페이지</p>
+        <p className="page-subtitle">캠페인 리스트 관리 페이지</p>
       </div>
 
       {/* Statistics Cards */}
@@ -24,7 +24,7 @@ const MissionHeader = ({ stats }) => {
         <Col md="4" sm="12">
           <Card className="stat-card">
             <CardBody>
-              <p className="stat-label">오늘 미션 생성수</p>
+              <p className="stat-label">오늘 선정할 캠페인</p>
               <h2 className="stat-value danger">
                 {stats?.mustSelectToday}
               </h2>
@@ -34,7 +34,7 @@ const MissionHeader = ({ stats }) => {
         <Col md="4" sm="12">
           <Card className="stat-card">
             <CardBody>
-              <p className="stat-label">신규 지원</p>
+              <p className="stat-label">선정 지연</p>
               <h2 className="stat-value danger">
                 {stats?.delayedEnrollments }
               </h2>
@@ -44,7 +44,7 @@ const MissionHeader = ({ stats }) => {
         <Col md="4" sm="12">
           <Card className="stat-card">
             <CardBody>
-              <p className="stat-label">운영중</p>
+              <p className="stat-label">진행중</p>
               <h2 className="stat-value underlined">
                 {stats?.inProgress}
               </h2>

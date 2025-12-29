@@ -324,7 +324,7 @@ const HorizontalFormIcons = ({ missionData }) => {
   }
 
   const handleCancel = () => {
-    navigate('/harulink/manage/mission')
+    navigate('/harulink/manage/campaign')
   }
 
   if (loading) {
@@ -335,7 +335,6 @@ const HorizontalFormIcons = ({ missionData }) => {
     )
   }
 
-  console.log(formData)
   return (
     <Fragment>
       <div className="campaign-registration">
@@ -629,7 +628,7 @@ const HorizontalFormIcons = ({ missionData }) => {
                 type="number"
                 name="selectedCandidates"
                 className="form-input"
-                placeholder="제공내역을 입력해주세요"
+                placeholder="선정자 수를 숫자로 입력해주세요."
                 value={formData?.selectedCandidates || ''}
                 onChange={handleNumberChange}
                 onKeyDown={handleNumberKeyDown}

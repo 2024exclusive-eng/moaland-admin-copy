@@ -88,8 +88,8 @@ const getStatusOptions = (counts = {}) => [
   { value: 'opening_soon', label: '오픈예정', count: counts.opening_soon || 0 },
   { value: 'applying', label: '신청중', count: counts.applying || 0 },
   { value: 'application_deadline', label: '선정대기', count: counts.application_deadline || 0 },
-  { value: 'in_progress', label: '선정완료', count: counts.in_progress || 0 },
-  { value: 'registration_deadline', label: '진행중', count: counts.registration_deadline || 0 },
+  { value: 'in_progress', label: '진행중', count: counts.in_progress || 0 },
+  { value: 'registration_deadline', label: '선정완료', count: counts.registration_deadline || 0 },
   { value: 'end', label: '종료', count: counts.end || 0 }
 ]
 
@@ -98,7 +98,7 @@ const getSelectionStatusOptions = (counts = {}) => [
   { value: 'selection_date', label: '선정일', count: counts.selection_date || 0 },
   { value: 'delayed', label: '선정지연', count: counts.delayed || 0 },
   { value: 'completed', label: '선정완료', count: counts.completed || 0 },
-  { value: 'selection_deadline', label: '선정지연', count: counts.selection_deadline || 0 }
+  { value: 'selection_deadline', label: '선정마감', count: counts.selection_deadline || 0 }
 ]
  
 const MissionList = () => {

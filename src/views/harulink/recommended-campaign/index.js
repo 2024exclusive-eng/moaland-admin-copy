@@ -53,7 +53,7 @@ const RecommendedCampaign = () => {
   const handleAddCampaign = async (campaign) => {
     try {
       // Only update if the campaign is not already recommended
-      if (campaign.isRecommended === "Y") {
+      if (campaign.isRecommended) {
         return;
       }
 

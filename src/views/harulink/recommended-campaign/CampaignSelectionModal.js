@@ -131,7 +131,7 @@ const CampaignSelectionModal = ({ isOpen, toggle, onSelect }) => {
   };
 
   const handleRegister = () => {
-    const selected = campaigns.filter((c) => selectedCampaigns.includes(c.id));
+    const selected = campaigns.filter((c) => selectedCampaigns.includes(c.missionId));
     selected.forEach((campaign) => {
       onSelect(campaign);
     });

@@ -32,63 +32,106 @@ const HorizontalFormIcons = ({ missionData }) => {
   const { id } = useParams()
   const navigate = useNavigate()
 
+  const [thumbnailFile, setThumbnailFile] = useState(null)
+  const [detailedFile, setDetailedFile] = useState(null)
+  const [thumbnailPreview, setThumbnailPreview] = useState(null)
+  const [detailedPreview, setDetailedPreview] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
   const [formData, setFormData] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [fetchedMissionData, setFetchedMissionData] = useState(null)
 
+  // Fetch mission detail when editing
   useEffect(() => {
-    if (missionData) {
+    const fetchMissionDetail = async () => {
+      if (!id || id === 'new') {
+        return
+      }
+
+      try {
+        setLoading(true)
+        const response = await axios.get(`/admin/mission/${id}`)
+
+        if (response.success) {
+          setFetchedMissionData(response.mission)
+          setThumbnailPreview(response.mission.thumbnailImg)
+          setDetailedPreview(response.mission.detailImg)
+        }
+      } catch (error) {
+        console.error('Failed to fetch mission details:', error)
+        alert('미션 정보를 불러오는데 실패했습니다.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMissionDetail()
+  }, [id])
+
+  // Populate form when mission data is available
+  useEffect(() => {
+    const dataSource = missionData || fetchedMissionData
+
+    if (dataSource) {
       // Map server data to form fields
       setFormData({
-        category: missionData.category,
-        applicationStartDate: missionData.enrollStartDate,
-        applicationEndDate: missionData.enrollEndDate,
-        selectionDate: missionData.selectDate,
-        paymentDate: missionData.paymentDate,
-        visitStartDate: missionData.missionStartDate,
-        visitEndDate: missionData.missionEndDate,
-        contentStartDate: missionData.contentStartDate,
-        contentEndDate: missionData.contentEndDate,
-        mediaType: missionData.social ? missionData.social.split(',') : [],
-        region: missionData.region,
-        address: missionData.address,
-        latitude: missionData.latitude,
-        longitude: missionData.longitude,
-        point: missionData.point,
-        selectedCandidates: missionData.maxEnroll,
-        brand: missionData.brand,
-        campaignName: missionData.title,
-        provisionDetails: missionData.goodsContents,
-        filmingMission: missionData.missionContents,
-        additionalInfo: missionData.additionalInfo,
-        guideline: missionData.guideline,
-        isRecommended: missionData.isRecommended === true
+        category: dataSource.category,
+        applicationStartDate: dataSource.enrollStartDate,
+        applicationEndDate: dataSource.enrollEndDate,
+        selectionDate: dataSource.selectDate,
+        paymentDate: dataSource.paymentDate,
+        visitStartDate: dataSource.missionStartDate,
+        visitEndDate: dataSource.missionEndDate,
+        contentStartDate: dataSource.contentStartDate,
+        contentEndDate: dataSource.contentEndDate,
+        mediaType: dataSource.social ? dataSource.social.split(',') : [],
+        region: dataSource.region,
+        address: dataSource.address,
+        latitude: dataSource.latitude,
+        longitude: dataSource.longitude,
+        point: dataSource.point,
+        selectedCandidates: dataSource.maxEnroll,
+        brand: dataSource.brand,
+        campaignName: dataSource.title,
+        provisionDetails: dataSource.goodsContents,
+        filmingMission: dataSource.missionContents,
+        additionalInfo: dataSource.additionalInfo,
+        guideline: dataSource.guideline,
+        isRecommended: dataSource.isRecommended === true
       })
     } else {
       setFormData({})
     }
-  }, [missionData])
+  }, [missionData, fetchedMissionData])
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value
-    })
+    const { name, value, latitude, longitude } = e.target
+    const updates = { [name]: value }
+
+    // Capture latitude and longitude if present (from GoogleMapsAutocomplete)
+    if (latitude !== undefined) updates.latitude = latitude
+    if (longitude !== undefined) updates.longitude = longitude
+
+    setFormData(prev => ({
+      ...prev,
+      ...updates
+    }))
   }
 
   const handleEditorChange = (name, data) => {
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: data
-    })
+    }))
   }
 
   const handlePlaceSelect = (placeData) => {
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       address: placeData.address,
       latitude: placeData.latitude,
       longitude: placeData.longitude
-    })
+    }))
   }
 
   const handleNumberKeyDown = (e) => {
@@ -102,18 +145,11 @@ const HorizontalFormIcons = ({ missionData }) => {
     const { name, value } = e.target
     // Only allow digits (remove any non-numeric characters)
     const numericValue = value.replace(/[^0-9]/g, '')
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: numericValue
-    })
+    }))
   }
-
-  // Image states - storing both File objects and URLs
-  const [thumbnailFile, setThumbnailFile] = useState(null)
-  const [detailedFile, setDetailedFile] = useState(null)
-  const [thumbnailPreview, setThumbnailPreview] = useState(null)
-  const [detailedPreview, setDetailedPreview] = useState(null)
-  const [isUploading, setIsUploading] = useState(false)
 
   useEffect(() => {
     // Load existing images from missionData
@@ -291,18 +327,27 @@ const HorizontalFormIcons = ({ missionData }) => {
     navigate('/harulink/manage/mission')
   }
 
+  if (loading) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <div style={{ fontSize: '16px', color: '#666' }}>로딩 중...</div>
+      </div>
+    )
+  }
+
+  console.log(formData)
   return (
     <Fragment>
       <div className="campaign-registration">
         {/* Header */}
         <div className="campaign-header">
-          <h1 className="campaign-title">캠페인 등록</h1>
+          <h1 className="campaign-title">{id && id !== 'new' ? '캠페인 수정' : '캠페인 등록'}</h1>
           <div className="campaign-actions">
             <Button className="btn-cancel" onClick={handleCancel} disabled={isUploading}>
               취소
             </Button>
             <Button className="btn-register" onClick={handleSave} disabled={isUploading}>
-              {isUploading ? '업로드 중...' : '등록 하기'}
+              {isUploading ? '업로드 중...' : (id && id !== 'new' ? '수정 하기' : '등록 하기')}
             </Button>
           </div>
         </div>
@@ -434,7 +479,7 @@ const HorizontalFormIcons = ({ missionData }) => {
                 type="text"
                 name="provisionDetails"
                 className="form-input"
-                placeholder="Place holder"
+                placeholder="제공내역을 입력해주세요"
                 value={formData?.provisionDetails || ''}
                 onChange={handleChange}
               />
@@ -474,7 +519,7 @@ const HorizontalFormIcons = ({ missionData }) => {
                       id={`media-${media.value}`}
                       value={media.value}
                       checked={(formData?.mediaType || [])[0] === media.value}
-                      onChange={() => setFormData({ ...formData, mediaType: [media.value] })}
+                      onChange={() => setFormData(prev => ({ ...prev, mediaType: [media.value] }))}
                     />
                     <Label for={`media-${media.value}`} className="radio-label">{media.label}</Label>
                   </div>

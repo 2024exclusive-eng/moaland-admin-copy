@@ -32,7 +32,7 @@ const CampaignDetail = () => {
       try {
         await axios.delete(`/admin/campaign/${id}`);
         alert("삭제되었습니다.");
-        navigate("/harulink/manage/mission");
+        navigate("/harulink/manage/campaign");
       } catch (error) {
         console.error("Error deleting campaign:", error);
         alert("삭제 중 오류가 발생했습니다.");
@@ -41,7 +41,7 @@ const CampaignDetail = () => {
   };
 
   const handleCorrection = () => {
-    navigate(`/harulink/manage/mission/modify/${id}`);
+    navigate(`/harulink/manage/campaign/modify/${id}`);
   };
 
   const handleSelectApplicant = async (enrollId, type = "selected") => {

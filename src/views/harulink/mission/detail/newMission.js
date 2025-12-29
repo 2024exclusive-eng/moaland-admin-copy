@@ -1,6 +1,7 @@
-import MissionInfo from "./missionInfo";
+import MissionInfo from "./missionInfo"
 
 const FormLayouts = () => {
-  return <MissionInfo  />;
-};
-export default FormLayouts;
+  return <MissionInfo />
+}
+
+export default FormLayouts

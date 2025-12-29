@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { GoogleMap, Marker, Autocomplete } from '@react-google-maps/api'
 import { Input } from 'reactstrap'
 import PropTypes from 'prop-types'
@@ -32,6 +32,20 @@ const GoogleMapsAutocomplete = ({
   )
 
   const autocompleteRef = useRef(null)
+
+  // Update marker position when latitude/longitude props change
+  useEffect(() => {
+    if (latitude && longitude) {
+      const position = { lat: parseFloat(latitude), lng: parseFloat(longitude) }
+      setMarkerPosition(position)
+
+      // Pan map to the position if map is loaded
+      if (map) {
+        map.panTo(position)
+        map.setZoom(15)
+      }
+    }
+  }, [latitude, longitude, map])
 
   const onMapLoad = useCallback((mapInstance) => {
     setMap(mapInstance)
@@ -75,8 +89,10 @@ const GoogleMapsAutocomplete = ({
         if (onChange) {
           onChange({
             target: {
-              name: 'address',
-              value: address
+              name,
+              value: address,
+              latitude: lat,
+              longitude: lng
             }
           })
         }

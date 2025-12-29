@@ -33,7 +33,7 @@ export const getMissionEnrollmentStatus = (mission) => {
     return { label: '등록마감', color: '#FF9800' }
   }
 
-  if ((contentEnd && now.isAfter(contentEnd, 'day')) || now.isAfter(enrollEnd, 'day')) {
+  if (contentEnd && now.isAfter(contentEnd, 'day') && now.isAfter(enrollEnd, 'day')) {
     return { label: '종료', color: '#9E9E9E' }
   }
 

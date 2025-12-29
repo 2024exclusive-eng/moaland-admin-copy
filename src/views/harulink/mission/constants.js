@@ -19,7 +19,7 @@ export const getCategoryOptions = (counts = {}) => [
 export const getMediaTypeOptions = (counts = {}) => [
   { value: 'Xiaohongshu', label: '샤오홍슈', count: counts.Xiaohongshu || 0 },
   { value: 'Douyin', label: '도우인', count: counts.Douyin || 0 },
-  { value: 'Dajongdienping', label: '따중띠앤핑', count: counts.Dajongdienping || 0 },
+  { value: 'Dajongdienping', label: '따종디엔핑', count: counts.Dajongdienping || 0 },
   { value: 'Instagram', label: '인스타', count: counts.Instagram || 0 },
   { value: 'YouTube', label: '유튜브', count: counts.YouTube || 0 }
 ]

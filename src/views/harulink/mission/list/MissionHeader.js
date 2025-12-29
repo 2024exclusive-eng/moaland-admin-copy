@@ -14,7 +14,7 @@ const MissionHeader = ({ stats }) => {
       <div className="user-header-title">
         <div className="title-wrapper">
           <h1 className="page-title">캠페인 관리</h1>
-          <div className="member-badge">{stats.totalMissions}명</div>
+          <div className="member-badge">{stats.totalMissions}캠페인</div>
         </div>
         <p className="page-subtitle">캠페인 리스트 관리 페이지</p>
       </div>

@@ -18,7 +18,7 @@ const fetchData = async (page, item, search) => {
     };
 
     if (search) {
-      params.search = search;
+      params.title = search;
     }
 
     const response = await axios.get("/admin/notice", { params });
@@ -56,7 +56,7 @@ const NoticeTab = () => {
   };
 
   const handleRowClick = (id) => {
-    window.location.href = `/harulink/manage/notice/${id}`;
+    window.location.href = `/harulink/manage/community/${id}`;
   };
 
   const handleDelete = async (id) => {

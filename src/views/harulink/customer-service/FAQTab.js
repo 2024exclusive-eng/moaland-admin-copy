@@ -46,7 +46,7 @@ const fetchData = async (type, page, item, search) => {
     };
 
     if (search) {
-      params.search = search;
+      params.title = search;
     }
 
     const response = await axios.get("/admin/faq", { params });
@@ -189,7 +189,7 @@ const FAQTab = ({ type, title }) => {
               textOverflow: "ellipsis",
             }}
           >
-            {faq.answer}
+            {moment(faq.created).format("YY.MM.DD")}
           </td>
           <td className="action-cell" onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>

@@ -48,6 +48,7 @@ const UserDetail = () => {
             selectData={data?.selectMission?.data ? data?.selectMission?.data : []}
             completeData={data?.completeMission?.data ? data?.completeMission?.data : []}
             endedData={data?.endedMission?.data ? data?.endedMission?.data : []}
+            userData={data?.user}
           />
         </Col>
       </Row>

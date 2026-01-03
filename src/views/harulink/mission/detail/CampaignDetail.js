@@ -337,9 +337,13 @@ const CampaignDetail = () => {
                                   : "#fff",
                             }}
                             disabled={user.status === "selected"}
-                            onClick={() =>
+                            onClick={() => {
+                              if (!mission.selectDate || !moment(mission.selectDate).isSame(moment(), 'day')) {
+                                alert('선정일이 아닙니다.')
+                                return
+                              }
                               handleSelectApplicant(user.missionEnrollId)
-                            }
+                            }}
                           >
                             {user.status === "selected" ? "선정됨" : "선정하기"}
                           </Button>

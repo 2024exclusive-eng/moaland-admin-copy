@@ -3,16 +3,34 @@ import { Fragment, useState } from 'react'
 import moment from 'moment/moment'
 
 // ** Reactstrap Imports
-import { Card, Table, Nav, NavItem, NavLink, Button } from 'reactstrap'
+import { Card, Table, Nav, NavItem, NavLink, Button, Modal, ModalHeader, ModalBody } from 'reactstrap'
 
 // ** Styles
 import './CampaignDetails.scss'
 
-const CampaignDetails = ({ enrollData, selectData, completeData }) => {
+const CampaignDetails = ({ enrollData, selectData, completeData, userData }) => {
   const [activeTab, setActiveTab] = useState('applied')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [contentModalOpen, setContentModalOpen] = useState(false)
+  const [selectedCampaign, setSelectedCampaign] = useState(null)
+
+  const toggleModal = () => setModalOpen(!modalOpen)
+  const toggleContentModal = () => setContentModalOpen(!contentModalOpen)
+
+  const handleViewApplication = (e, campaign) => {
+    e.stopPropagation()
+    setSelectedCampaign(campaign)
+    setModalOpen(true)
+  }
+
+  const handleViewContent = (e, campaign) => {
+    e.stopPropagation()
+    setSelectedCampaign(campaign)
+    setContentModalOpen(true)
+  }
 
   const handleRowClick = (id) => {
-    window.location.href = `/harulink/manage/mission/${id}`
+    window.location.href = `/harulink/manage/campaign/${id}`
   }
 
   const renderEnrolledData = () => {
@@ -35,7 +53,7 @@ const CampaignDetails = ({ enrollData, selectData, completeData }) => {
           <td>{moment(col.created).format("YY.MM.DD")}~{moment(col.created).format("YY.MM.DD")}</td>
           <td>{moment(col.created).format("YY.MM.DD")}</td>
           <td>
-            <Button color="light" size="sm" className='view-btn'>
+            <Button color="light" size="sm" className='view-btn' onClick={(e) => handleViewApplication(e, col)}>
               신청서 보기
             </Button>
           </td>
@@ -64,7 +82,7 @@ const CampaignDetails = ({ enrollData, selectData, completeData }) => {
           <td>{moment(col.created).format("YY.MM.DD")}~{moment(col.created).format("YY.MM.DD")}</td>
           <td>{col.linkUpdated ? moment(col.linkUpdated).format("YY.MM.DD") : '-'}</td>
           <td>
-            <Button color="light" size="sm" className='view-btn'>
+            <Button color="light" size="sm" className='view-btn' onClick={(e) => handleViewContent(e, col)}>
               신청서 보기
             </Button>
           </td>
@@ -73,7 +91,7 @@ const CampaignDetails = ({ enrollData, selectData, completeData }) => {
     })
   }
 
-  const renderCompletedData = () => {
+  const renderCompletedData = (isEnded) => {
     if (!completeData || completeData.length === 0) {
       return (
         <tr>
@@ -93,8 +111,8 @@ const CampaignDetails = ({ enrollData, selectData, completeData }) => {
           <td>{moment(col.created).format("YY.MM.DD")}~{moment(col.created).format("YY.MM.DD")}</td>
           <td>{col.linkUpdated ? moment(col.linkUpdated).format("YY.MM.DD") : '-'}</td>
           <td>
-            <Button color="light" size="sm" className='view-btn'>
-              신청서 보기
+            <Button color="light" size="sm" className='view-btn' onClick={(e) => handleViewContent(e, col)}>
+              {isEnded ? "콘텐츠 보기" : "콘텐츠 보기"}
             </Button>
           </td>
         </tr>
@@ -109,9 +127,9 @@ const CampaignDetails = ({ enrollData, selectData, completeData }) => {
       case 'selected':
         return renderSelectedData()
       case 'registered':
-        return renderCompletedData()
+        return renderCompletedData(false)
       case 'ended':
-        return renderCompletedData()
+        return renderCompletedData(true)
       default:
         return renderEnrolledData()
     }
@@ -179,6 +197,78 @@ const CampaignDetails = ({ enrollData, selectData, completeData }) => {
           </div>
         </div>
       </Card>
+
+      {/* Application Modal */}
+      <Modal isOpen={modalOpen} toggle={toggleModal} className="application-modal" centered>
+        <ModalHeader toggle={toggleModal} className="application-modal-header">
+          캠페인 신청서
+        </ModalHeader>
+        <ModalBody className="application-modal-body">
+          {selectedCampaign && (
+            <>
+              <div className="modal-section">
+                <label className="modal-label">신청 캠페인</label>
+                <div className="modal-campaign-info">
+                  <p className="campaign-title">{selectedCampaign.title}</p>
+                  <p className="campaign-desc">{selectedCampaign.goodsContents || '-'}</p>
+                </div>
+              </div>
+              <hr className="modal-divider" />
+              <div className="modal-section">
+                <label className="modal-label">이름</label>
+                <p className="modal-value">{userData?.name || '-'}</p>
+              </div>
+              <div className="modal-section">
+                <label className="modal-label">SNS</label>
+                <p className="modal-value">{userData?.instagram_link || userData?.sns || '-'}</p>
+              </div>
+              <div className="modal-section">
+                <label className="modal-label">방문일 및 시간</label>
+                <p className="modal-value">
+                  {selectedCampaign.visit_datetime_start ? moment(selectedCampaign.visit_datetime_start).format("YY.MM.DD a h시") : '-'}
+                </p>
+              </div>
+            </>
+          )}
+        </ModalBody>
+      </Modal>
+
+      {/* Content Modal */}
+      <Modal isOpen={contentModalOpen} toggle={toggleContentModal} className="application-modal" centered>
+        <ModalHeader toggle={toggleContentModal} className="application-modal-header">
+          등록된 콘텐츠
+        </ModalHeader>
+        <ModalBody className="application-modal-body">
+          {selectedCampaign && (
+            <>
+              <div className="modal-section">
+                <label className="modal-label">신청 캠페인</label>
+                <div className="modal-campaign-info">
+                  <p className="campaign-title">{selectedCampaign.title}</p>
+                  <p className="campaign-desc">{selectedCampaign.goodsContents || '-'}</p>
+                </div>
+              </div>
+              <div className="modal-section">
+                <label className="modal-label">콘텐츠 등록기간</label>
+                <p className="modal-value">
+                  {selectedCampaign.contentStartDate && selectedCampaign.contentEndDate ? `${moment(selectedCampaign.contentStartDate).format("MM.DD")}~${moment(selectedCampaign.contentEndDate).format("MM.DD")}` : '-'}
+                </p>
+              </div>
+              <hr className="modal-divider" />
+              <div className="modal-section">
+                <label className="modal-label">콘텐츠 URL</label>
+                {selectedCampaign.link ? (
+                  <a href={selectedCampaign.link} target="_blank" rel="noopener noreferrer" className="modal-link">
+                    콘텐츠 URL
+                  </a>
+                ) : (
+                  <p className="modal-value">-</p>
+                )}
+              </div>
+            </>
+          )}
+        </ModalBody>
+      </Modal>
     </Fragment>
   )
 }

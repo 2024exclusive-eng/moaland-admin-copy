@@ -119,3 +119,104 @@
     }
   }
 }
+
+// Application Modal Styles
+.application-modal {
+  .modal-content {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .application-modal-header {
+    background-color: #ffffff;
+    padding: 16px 21px;
+    border-bottom: none;
+
+    .modal-title {
+      font-family: 'Pretendard', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #242424;
+    }
+
+    .btn-close {
+      opacity: 1;
+    }
+  }
+
+  .application-modal-body {
+    background-color: #ffffff;
+    padding: 16px 21px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .modal-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .modal-label {
+        font-family: 'Pretendard', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #4b5563;
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .modal-campaign-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .campaign-title {
+          font-family: 'Pretendard', sans-serif;
+          font-size: 16px;
+          font-weight: 500;
+          color: #000000;
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        .campaign-desc {
+          font-family: 'Pretendard', sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          color: #6b7280;
+          line-height: 20px;
+          margin: 0;
+        }
+      }
+
+      .modal-value {
+        font-family: 'Pretendard', sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        color: #374151;
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .modal-link {
+        font-family: 'Pretendard', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
+        line-height: 20px;
+        text-decoration: underline;
+        text-underline-position: from-font;
+
+        &:hover {
+          color: #4b5563;
+        }
+      }
+    }
+
+    .modal-divider {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 0;
+    }
+  }
+}

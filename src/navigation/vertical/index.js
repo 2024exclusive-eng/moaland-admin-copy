@@ -1,5 +1,5 @@
 // ** Navigation imports
-import Harulink from './harulink'
+import Moaland from './moaland'
 import apps from './apps'
 import pages from './pages'
 import forms from './forms'
@@ -10,5 +10,5 @@ import dashboards from './dashboards'
 import uiElements from './ui-elements'
 
 // ** Merge & Export
-// export default [...Harulink]
-export default [...Harulink]
+// export default [...Moaland]
+export default [...Moaland]

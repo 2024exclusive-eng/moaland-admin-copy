@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 
 // 기능 설명 : 라우트를 가져오는 데 사용되는 파일입니다.
 // ** Routes Imports
-import HarulinkRoutes from './Harulink'
+import MoalandRoutes from './Moaland'
 import AppRoutes from './Apps'
 import FormRoutes from './Forms'
 import PagesRoutes from './Pages'
@@ -38,11 +38,11 @@ const getLayout = {
 const TemplateTitle = '%s - 하루링크 운영센터'
 
 // ** Default Route
-const DefaultRoute = '/harulink/manage/user'
+const DefaultRoute = '/moaland/manage/user'
 
 // ** Merge Routes
 const Routes = [
-  ...HarulinkRoutes
+  ...MoalandRoutes
   // ...AuthenticationRoutes,
   // ...DashboardRoutes,
   // ...AppRoutes,

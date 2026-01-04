@@ -10,7 +10,7 @@ import { LogIn } from 'react-feather'
 // ** Vertical Menu Components
 import VerticalMenuHeader from './VerticalMenuHeader'
 import VerticalNavMenuItems from './VerticalNavMenuItems'
-import { Logout } from '../../../../../navigation/vertical/harulink'
+import { Logout } from '../../../../../navigation/vertical/moaland'
 
 const Sidebar = props => {
   // ** Props
@@ -62,7 +62,7 @@ const Sidebar = props => {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('userData')
-    navigate('/harulink/auth/intro')
+    navigate('/moaland/auth/intro')
   }
 
   return (

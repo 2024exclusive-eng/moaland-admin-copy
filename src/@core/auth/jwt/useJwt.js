@@ -69,7 +69,7 @@ class JwtService {
           localStorage.removeItem('userData')
           localStorage.removeItem(this.authConfig.storageTokenKeyName)
           localStorage.removeItem(this.authConfig.storageRefreshTokenKeyName)
-          window.location.href = '/harulink/auth/intro'
+          window.location.href = '/moaland/auth/intro'
           return Promise.reject(error)
           if (!this.isAlreadyFetchingAccessToken) {
             this.isAlreadyFetchingAccessToken = true
@@ -96,7 +96,7 @@ class JwtService {
         }
         if (response && response.status === 403) {
           alert('관리자 로그인을 해주세요.')
-          window.location.href = '/harulink/auth/intro'
+          window.location.href = '/moaland/auth/intro'
         }
         return Promise.reject(error)
       }

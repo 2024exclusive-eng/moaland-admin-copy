@@ -58,13 +58,13 @@ const CampaignDetail = () => {
 
   const formatDate = (date) => {
     if (!date) return "-";
-    return moment(date).format("YY.MM.DD-HH:MM");
+    return moment(date).format("YY.MM.DD");
   };
 
   const formatDateRange = (start, end) => {
     if (!start || !end) return "-";
-    return `${moment(start).format("YY.MM.DD-HH:MM")} - ${moment(end).format(
-      "YY.MM.DD-HH:MM"
+    return `${moment(start).format("YY.MM.DD")} - ${moment(end).format(
+      "YY.MM.DD"
     )}`;
   };
 
@@ -337,7 +337,7 @@ const CampaignDetail = () => {
                                   ? "#F3F4F6 !important"
                                   : "#fff",
                             }}
-                            disabled={user.status === "selected"}
+                            disabled={user.status === "selected" || user.is_delete === "Y"}
                             onClick={() => {
                               if (!mission.selectDate || !moment(mission.selectDate).isSame(moment(), 'day')) {
                                 alert('선정일이 아닙니다.')

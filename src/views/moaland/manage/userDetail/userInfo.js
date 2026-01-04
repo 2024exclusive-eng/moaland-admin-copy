@@ -38,7 +38,11 @@ const UserInfo = ({ data }) => {
           </div>
           <div className="info-row">
             <div className="info-label">탈퇴일</div>
-            <div className="info-value">-</div>
+            <div className="info-value">
+              {data?.deleted
+                ? moment(data?.deleted).format("YYYY년 MM월 DD일")
+                : "-"}
+            </div>
           </div>
         </div>
 

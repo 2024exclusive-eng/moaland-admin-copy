@@ -6,6 +6,7 @@ import moment from "moment";
 import { Card, CardBody, Button, Table, Badge } from "reactstrap";
 import axios from "axios";
 import { getRegionLabel, getCategoryLabel } from '../constants';
+import "@components/editor/editor.css";
 import "./CampaignDetail.scss";
 
 const CampaignDetail = () => {
@@ -251,14 +252,14 @@ const CampaignDetail = () => {
               <div className="info-table-row">
                 <div className="info-table-cell label">가이드라인</div>
                 <div
-                  className="info-table-cell value"
+                  className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{ __html: mission.guideline || "-" }}
                 />
               </div>
               <div className="info-table-row">
                 <div className="info-table-cell label">촬영/편집 미션</div>
                 <div
-                  className="info-table-cell value"
+                  className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{
                     __html: mission.missionContents || "-",
                   }}
@@ -267,7 +268,7 @@ const CampaignDetail = () => {
               <div className="info-table-row">
                 <div className="info-table-cell label">주의 안내사항</div>
                 <div
-                  className="info-table-cell value"
+                  className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{
                     __html: mission.additionalInfo || "-",
                   }}

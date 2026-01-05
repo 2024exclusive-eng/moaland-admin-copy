@@ -118,7 +118,7 @@ const DataTableWithButtons = () => {
           </td>
           <td>{index + 1}</td>
           <td>
-            {col.is_delete === "Y" ? "탈퇴" : "활동적인"}
+            {col.is_delete === "Y" ? "탈퇴" : "활성"}
           </td>
           <td>{col.email}</td>
           <td>

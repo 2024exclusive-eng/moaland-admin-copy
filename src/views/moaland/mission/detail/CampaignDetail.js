@@ -5,7 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import moment from "moment";
 import { Card, CardBody, Button, Table, Badge } from "reactstrap";
 import axios from "axios";
-import { getRegionLabel, getCategoryLabel } from '../constants';
+import { getRegionLabel, getCategoryLabel } from "../constants";
 import "@components/editor/editor.css";
 import "./CampaignDetail.scss";
 
@@ -328,26 +328,39 @@ const CampaignDetail = () => {
                         </td>
                         <td>{user.memo}</td>
                         <td>
-                          <Button
-                            size="sm"
-                            className="btn-select"
-                            style={{
-                              backgroundColor:
-                                user.status === "selected"
-                                  ? "#F3F4F6 !important"
-                                  : "#fff",
-                            }}
-                            disabled={user.status === "selected" || user.is_delete === "Y"}
-                            onClick={() => {
-                              if (!mission.selectDate || !moment(mission.selectDate).isSame(moment(), 'day')) {
-                                alert('선정일이 아닙니다.')
-                                return
+                          {user.is_delete === "Y" ? null : (
+                            <Button
+                              size="sm"
+                              className="btn-select"
+                              style={{
+                                backgroundColor:
+                                  user.status === "selected"
+                                    ? "#F3F4F6 !important"
+                                    : "#fff",
+                              }}
+                              disabled={
+                                user.status === "selected" ||
+                                user.is_delete === "Y"
                               }
-                              handleSelectApplicant(user.missionEnrollId)
-                            }}
-                          >
-                            {user.status === "selected" ? "선정됨" : "선정하기"}
-                          </Button>
+                              onClick={() => {
+                                if (
+                                  !mission.selectDate ||
+                                  !moment(mission.selectDate).isSame(
+                                    moment(),
+                                    "day"
+                                  )
+                                ) {
+                                  alert("선정일이 아닙니다.");
+                                  return;
+                                }
+                                handleSelectApplicant(user.missionEnrollId);
+                              }}
+                            >
+                              {user.status === "selected"
+                                ? "선정됨"
+                                : "선정하기"}
+                            </Button>
+                          )}
                         </td>
                       </tr>
                     ))

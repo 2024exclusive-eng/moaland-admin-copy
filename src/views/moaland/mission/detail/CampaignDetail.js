@@ -48,7 +48,7 @@ const CampaignDetail = () => {
   const handleSelectApplicant = async (enrollId, type = "selected") => {
     try {
       await axios.post(`/admin/mission/status/${enrollId}/${type}`);
-      alert("선정이 완료되었습니다.");
+      alert("검수가 완료되었습니다");
       window.location.reload();
     } catch (error) {
       console.error("Error selecting applicant:", error);

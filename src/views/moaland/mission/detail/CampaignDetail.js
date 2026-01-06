@@ -378,7 +378,7 @@ const CampaignDetail = () => {
               <h2 className="section-title">
                 선정자{" "}
                 <span style={{ color: "#509594" }}>
-                  {selectUsers.length}/{mission.maxEnroll || 20}
+                  {selectUsers.length + completedUsers.length}/{mission.maxEnroll || 20}
                 </span>
               </h2>
             </div>
@@ -452,7 +452,7 @@ const CampaignDetail = () => {
                           >
                             {user.status === "completed"
                               ? "검수완료"
-                              : "검수중"}
+                              : "검수 완료"}
                           </Button>
                         </td>
                       </tr>

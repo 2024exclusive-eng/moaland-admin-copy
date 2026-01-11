@@ -5,6 +5,9 @@ import { Fragment, useState, useEffect } from "react";
 // ** Reactstrap Imports
 import { Table, Card, Button, Input } from "reactstrap";
 
+// ** Third Party Components
+import { ReactSortable } from "react-sortablejs";
+
 import axios from "axios";
 import moment from "moment";
 
@@ -12,6 +15,29 @@ import { openUrlInNewTab } from "@utils";
 
 // ** Icons
 import { Edit, Trash } from "react-feather";
+import sortIcon from "@src/assets/images/icons/sort.svg";
+
+const ReorderIcon = () => (
+<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
+  <path d="M7.28104 12.22C7.35077 12.2896 7.40609 12.3723 7.44384 12.4634C7.48158 12.5544 7.50101 12.652 7.50101 12.7506C7.50101 12.8492 7.48158 12.9467 7.44384 13.0378C7.40609 13.1288 7.35077 13.2116 7.28104 13.2812L4.28104 16.2812C4.21139 16.3509 4.12867 16.4063 4.03762 16.444C3.94657 16.4818 3.84898 16.5012 3.75042 16.5012C3.65186 16.5012 3.55426 16.4818 3.46321 16.444C3.37216 16.4063 3.28945 16.3509 3.21979 16.2812L0.219792 13.2812C0.150109 13.2115 0.0948341 13.1288 0.0571221 13.0378C0.0194101 12.9467 0 12.8491 0 12.7506C0 12.652 0.0194101 12.5545 0.0571221 12.4634C0.0948341 12.3724 0.150109 12.2896 0.219792 12.22C0.360523 12.0792 0.551394 12.0002 0.750417 12.0002C0.848963 12.0002 0.946545 12.0196 1.03759 12.0573C1.12863 12.095 1.21136 12.1503 1.28104 12.22L3.00042 13.9403V0.75059C3.00042 0.551678 3.07943 0.360912 3.22009 0.22026C3.36074 0.0796079 3.5515 0.000590086 3.75042 0.000590086C3.94933 0.000590086 4.14009 0.0796079 4.28075 0.22026C4.4214 0.360912 4.50042 0.551678 4.50042 0.75059V13.9403L6.21979 12.22C6.28945 12.1502 6.37216 12.0949 6.46321 12.0572C6.55426 12.0194 6.65186 12 6.75042 12C6.84898 12 6.94657 12.0194 7.03762 12.0572C7.12867 12.0949 7.21139 12.1502 7.28104 12.22ZM16.281 3.21996L13.281 0.219965C13.2114 0.150233 13.1287 0.0949136 13.0376 0.0571704C12.9466 0.0194272 12.849 0 12.7504 0C12.6519 0 12.5543 0.0194272 12.4632 0.0571704C12.3722 0.0949136 12.2894 0.150233 12.2198 0.219965L9.21979 3.21996C9.07906 3.3607 9 3.55157 9 3.75059C9 3.94961 9.07906 4.14048 9.21979 4.28122C9.36052 4.42195 9.55139 4.50101 9.75042 4.50101C9.94944 4.50101 10.1403 4.42195 10.281 4.28122L12.0004 2.5609V15.7506C12.0004 15.9495 12.0794 16.1403 12.2201 16.2809C12.3607 16.4216 12.5515 16.5006 12.7504 16.5006C12.9493 16.5006 13.1401 16.4216 13.2807 16.2809C13.4214 16.1403 13.5004 15.9495 13.5004 15.7506V2.5609L15.2198 4.28122C15.3605 4.42195 15.5514 4.50101 15.7504 4.50101C15.9494 4.50101 16.1403 4.42195 16.281 4.28122C16.4218 4.14048 16.5008 3.94961 16.5008 3.75059C16.5008 3.55157 16.4218 3.3607 16.281 3.21996Z" fill="black"/>
+</svg>
+);
+const CheckIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 12L10 17L20 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const DragHandleIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="9" cy="6" r="1.5" fill="#999"/>
+    <circle cx="15" cy="6" r="1.5" fill="#999"/>
+    <circle cx="9" cy="12" r="1.5" fill="#999"/>
+    <circle cx="15" cy="12" r="1.5" fill="#999"/>
+    <circle cx="9" cy="18" r="1.5" fill="#999"/>
+    <circle cx="15" cy="18" r="1.5" fill="#999"/>
+  </svg>
+);
 
 // ** Components
 import BannerModal from "./BannerModal";
@@ -47,6 +73,8 @@ const BannerNoticeTab = () => {
   const [search, setSearch] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [targetPage, setTargetPage] = useState("");
+  const [isReorderMode, setIsReorderMode] = useState(false);
+  const [reorderedList, setReorderedList] = useState([]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -135,72 +163,87 @@ const BannerNoticeTab = () => {
     setSearch(e.target.value);
   };
 
-  const renderData = () => {
-    if (!data.data || data.data.length === 0) {
-      return (
-        <tr>
-          <td colSpan="6" className="text-center" style={{ padding: "40px" }}>
-            데이터가 없습니다
-          </td>
-        </tr>
-      );
-    }
+  const handleEnterReorderMode = () => {
+    setReorderedList([...data.data]);
+    setIsReorderMode(true);
+  };
 
-    return data.data.map((banner, index) => {
-      return (
-        <tr key={banner.id}>
-          <td>{index + 1}</td>
+  const handleCancelReorder = () => {
+    setIsReorderMode(false);
+    setReorderedList([]);
+  };
+
+  const handleSaveReorder = async () => {
+    try {
+      const banners = reorderedList.map((banner, index) => ({
+        id: banner.id,
+        order: index + 1,
+      }));
+
+      await axios.post("/admin/banner/reorder", { banners });
+      setIsReorderMode(false);
+      setReorderedList([]);
+      loadData();
+    } catch (error) {
+      console.error("Error reordering banners:", error);
+      alert("배너 순서 변경에 실패했습니다.");
+    }
+  };
+
+  const renderRow = (banner, index) => {
+    return (
+      <tr key={banner.id}>
+        {isReorderMode && (
           <td
-            className="thumbnail-cell"
-            style={{ display: "flex", alignItems: "center", gap: "12px" }}
+            className="drag-handle-cell"
+            style={{
+              width: "57px",
+              padding: "16px",
+              cursor: "grab",
+            }}
           >
-            <div className="thumbnail-wrapper">
-              <img
-                src={banner.thumbnailPath}
-                alt={banner.name}
-                width={42}
-                height={42}
-                style={{ objectFit: "cover" }}
-              />
-            </div>
+            <DragHandleIcon />
           </td>
-          <td>{banner.name || "-"}</td>
-          <td>
-            <div
-              style={{
-                padding: "2px 8px",
-                width: "fit-content",
-                whiteSpace: "nowrap",
-                fontSize: "12px",
-                color: "#509594",
-                textDecoration: "underline",
-                cursor: "pointer",
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                openUrlInNewTab(banner.link);
-              }}
-            >
-              {banner.link ? "URL" : "-"}
-            </div>
-          </td>
-          <td>{moment(banner.created).format("YY.MM.DD")}</td>
+        )}
+        <td style={{ width: "57px" }}>{index + 1}</td>
+        <td
+          className="thumbnail-cell"
+          style={{ display: "flex", alignItems: "center", gap: "12px" }}
+        >
+          <div className="thumbnail-wrapper">
+            <img
+              src={banner.thumbnailPath}
+              alt={banner.name}
+              width={42}
+              height={42}
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+        </td>
+        <td>{banner.name || "-"}</td>
+        <td>
+          <div
+            style={{
+              padding: "2px 8px",
+              width: "fit-content",
+              whiteSpace: "nowrap",
+              fontSize: "12px",
+              color: "#509594",
+              textDecoration: "underline",
+              cursor: "pointer",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              openUrlInNewTab(banner.link);
+            }}
+          >
+            {banner.link ? "URL" : "-"}
+          </div>
+        </td>
+        <td>{moment(banner.created).format("YY.MM.DD")}</td>
+        {!isReorderMode && (
           <td className="action-cell" onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-              <Button
-                color="light"
-                size="sm"
-                onClick={() => handleEdit(banner)}
-                style={{
-                  border: "1px solid #E5E7EB",
-                  background: "white",
-                  borderRadius: "6px",
-                  height: "32px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <span style={{ color: "#374151" }}>수정</span>
-              </Button>
               <Button
                 color="light"
                 size="sm"
@@ -215,11 +258,45 @@ const BannerNoticeTab = () => {
               >
                 <span style={{ color: "#374151" }}>삭제</span>
               </Button>
+              <Button
+                color="light"
+                size="sm"
+                onClick={() => handleEdit(banner)}
+                style={{
+                  border: "1px solid #E5E7EB",
+                  background: "white",
+                  borderRadius: "6px",
+                  height: "32px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span style={{ color: "#374151" }}>수정</span>
+              </Button>
             </div>
+          </td>
+        )}
+      </tr>
+    );
+  };
+
+  const renderData = () => {
+    const listToRender = isReorderMode ? reorderedList : data.data;
+
+    if (!listToRender || listToRender.length === 0) {
+      return (
+        <tr>
+          <td
+            colSpan={isReorderMode ? 6 : 6}
+            className="text-center"
+            style={{ padding: "40px" }}
+          >
+            데이터가 없습니다
           </td>
         </tr>
       );
-    });
+    }
+
+    return listToRender.map((banner, index) => renderRow(banner, index));
   };
 
   const totalPages = data?.paging?.totalPages || 1;
@@ -238,31 +315,97 @@ const BannerNoticeTab = () => {
               gap: "12px",
             }}
           >
-            <h4 className="mb-0">등록된 배너 {data.data.length}</h4>
+            <h4 className="mb-0" style={{ fontSize: "20px", fontWeight: "600" }}>
+              등록된 배너 {data.data.length}/6
+            </h4>
 
-            <Button
-              color="primary"
-              style={{ height: "48px", fontSize: "16px", minWidth: "120px" }}
-              onClick={handleCreate}
-            >
-              배너 생성
-            </Button>
+            <div style={{ display: "flex", gap: "12px" }}>
+              {isReorderMode ? (
+                <Button
+                  color="light"
+                  style={{
+                    height: "48px",
+                    fontSize: "18px",
+                    minWidth: "120px",
+                    border: "1px solid #E5E7EB",
+                    background: "white",
+                    borderRadius: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "5px",
+                  }}
+                  onClick={handleSaveReorder}
+                >
+                  <CheckIcon />
+                  <span style={{ fontWeight: "600" }}>순서 저장</span>
+                </Button>
+              ) : (
+                <Button
+                  color="light"
+                  style={{
+                    height: "48px",
+                    fontSize: "18px",
+                    minWidth: "120px",
+                    border: "1px solid #E5E7EB",
+                    background: "white",
+                    borderRadius: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "5px",
+                  }}
+                  onClick={handleEnterReorderMode}
+                  disabled={!data.data || data.data.length === 0}
+                >
+                  <ReorderIcon />
+                  <span style={{ fontWeight: "600" }}>순서 변경</span>
+                </Button>
+              )}
+              <Button
+                color="primary"
+                style={{
+                  height: "48px",
+                  fontSize: "18px",
+                  minWidth: "120px",
+                  borderRadius: "6px",
+                  fontWeight: "600",
+                }}
+                onClick={handleCreate}
+                disabled={isReorderMode}
+              >
+                등록하기
+              </Button>
+            </div>
           </div>
 
           {/* Table */}
           <div className="table-wrapper" style={{ marginBottom: "12px" }}>
-            <Table className="event-table" responsive>
+            <Table className="banner-table" responsive>
               <thead>
                 <tr>
-                  <th>순서</th>
+                  {isReorderMode && <th style={{ width: "57px" }}></th>}
+                  <th style={{ width: "57px" }}>순서</th>
                   <th>썸네일</th>
-                  <th>배너명</th>
+                  <th>배너관리명</th>
                   <th>URL</th>
-                  <th>등록일자</th>
-                  <th></th>
+                  <th style={{ width: "160px" }}>등록일자</th>
+                  {!isReorderMode && <th style={{ width: "140px" }}></th>}
                 </tr>
               </thead>
-              <tbody>{renderData()}</tbody>
+              {isReorderMode ? (
+                <ReactSortable
+                  tag="tbody"
+                  list={reorderedList}
+                  setList={setReorderedList}
+                  handle=".drag-handle-cell"
+                  animation={200}
+                >
+                  {reorderedList.map((banner, index) => renderRow(banner, index))}
+                </ReactSortable>
+              ) : (
+                <tbody>{renderData()}</tbody>
+              )}
             </Table>
           </div>
         </div>

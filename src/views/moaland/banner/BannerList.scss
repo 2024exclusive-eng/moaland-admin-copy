@@ -137,10 +137,10 @@
 
       th {
         font-weight: 600;
-        color: #666;
+        color: #000;
         font-size: 14px;
-        padding: 16px 12px;
-        border-bottom: 1px solid #E5E7EB;
+        padding: 16px;
+        border-bottom: 1px solid #E2E8F0;
         vertical-align: middle;
         white-space: nowrap;
       }
@@ -155,24 +155,34 @@
           background-color: #F9FAFB;
         }
 
+        &.sortable-ghost {
+          opacity: 0.4;
+          background-color: #F0F0F0;
+        }
+
+        &.sortable-drag {
+          background-color: #FFF;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
         td {
-          padding: 16px 12px;
+          padding: 16px;
           vertical-align: middle;
-          border-bottom: 1px solid #E5E7EB;
-          color: #333;
+          border-bottom: 1px solid #E2E8F0;
+          color: #3B3F4A;
 
           &.thumbnail-cell {
-            padding: 8px 12px;
+            padding: 8px 16px;
 
             .thumbnail-wrapper {
-              width: 60px;
-              height: 60px;
-              border-radius: 0;
+              width: 42px;
+              height: 42px;
+              border-radius: 2px;
               overflow: hidden;
               display: flex;
               align-items: center;
               justify-content: center;
-              background-color: #F3F4F6;
+              background-color: #999;
 
               img {
                 width: 100%;
@@ -182,8 +192,16 @@
             }
           }
 
+          &.drag-handle-cell {
+            cursor: grab;
+
+            &:active {
+              cursor: grabbing;
+            }
+          }
+
           &.action-cell {
-            padding: 8px 12px;
+            padding: 8px 16px;
           }
         }
       }

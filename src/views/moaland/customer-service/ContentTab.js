@@ -2,7 +2,7 @@
 import { Fragment, useState, useEffect } from "react";
 
 // ** Reactstrap Imports
-import { Card, Button } from "reactstrap";
+import { Card, Button, Row, Col } from "reactstrap";
 
 import axios from "axios";
 
@@ -30,6 +30,7 @@ const fetchData = async (type) => {
 
 const ContentTab = ({ type, title }) => {
   const [content, setContent] = useState("");
+  const [contentCn, setContentCn] = useState("");
   const [existingId, setExistingId] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -39,9 +40,11 @@ const ContentTab = ({ type, title }) => {
       if (result && result.data && result.data.length > 0) {
         const firstItem = result.data[0];
         setContent(firstItem.answer || "");
+        setContentCn(firstItem.answerCn || "");
         setExistingId(firstItem.id);
       } else {
         setContent("");
+        setContentCn("");
         setExistingId(null);
       }
     };
@@ -50,6 +53,10 @@ const ContentTab = ({ type, title }) => {
 
   const handleEditorChange = (data) => {
     setContent(data);
+  };
+
+  const handleEditorChangeCn = (data) => {
+    setContentCn(data);
   };
 
   const handleSave = async () => {
@@ -61,6 +68,7 @@ const ContentTab = ({ type, title }) => {
         type,
         title,
         answer: content,
+        answerCn: contentCn,
       });
 
       alert("저장되었습니다.");
@@ -105,9 +113,20 @@ const ContentTab = ({ type, title }) => {
           </div>
 
           {/* Editor */}
-          <div className="editor-wrapper">
-            <Editor content={content} onChange={handleEditorChange} />
-          </div>
+          <Row>
+            <Col md={6}>
+              <h5 className="mb-2">콘텐츠 (한국어)</h5>
+              <div className="editor-wrapper">
+                <Editor content={content} onChange={handleEditorChange} />
+              </div>
+            </Col>
+            <Col md={6}>
+              <h5 className="mb-2">콘텐츠 (중국어)</h5>
+              <div className="editor-wrapper">
+                <Editor content={contentCn} onChange={handleEditorChangeCn} />
+              </div>
+            </Col>
+          </Row>
         </div>
       </Card>
     </Fragment>

@@ -93,10 +93,15 @@ const HorizontalFormIcons = ({ missionData }) => {
         selectedCandidates: dataSource.maxEnroll,
         brand: dataSource.brand,
         campaignName: dataSource.title,
+        campaignNameCn: dataSource.titleCn,
         provisionDetails: dataSource.goodsContents,
+        provisionDetailsCn: dataSource.goodsContentsCn,
         filmingMission: dataSource.missionContents,
+        filmingMissionCn: dataSource.missionContentsCn,
         additionalInfo: dataSource.additionalInfo,
+        additionalInfoCn: dataSource.additionalInfoCn,
         guideline: dataSource.guideline,
+        guidelineCn: dataSource.guidelineCn,
         isRecommended: dataSource.isRecommended === true
       })
     } else {
@@ -296,12 +301,17 @@ const HorizontalFormIcons = ({ missionData }) => {
         maxEnroll: formData.selectedCandidates || 0,
         brand: formData.brand || null,
         title: formData.campaignName,
+        titleCn: formData.campaignNameCn,
         thumbnailImg: thumbnailUrl,
         detailImg: detailedUrl,
         goodsContents: formData.provisionDetails,
+        goodsContentsCn: formData.provisionDetailsCn,
         missionContents: formData.filmingMission,
+        missionContentsCn: formData.filmingMissionCn,
         additionalInfo: formData.additionalInfo,
+        additionalInfoCn: formData.additionalInfoCn,
         guideline: formData.guideline,
+        guidelineCn: formData.guidelineCn,
         isRecommended: formData.isRecommended
       }
 
@@ -459,30 +469,64 @@ const HorizontalFormIcons = ({ missionData }) => {
             </div>
 
             {/* Campaign Name */}
-            <div className="form-group">
-              <Label className="form-label">캠페인 이름</Label>
-              <Input
-                type="text"
-                name="campaignName"
-                className="form-input"
-                placeholder="예) [지역] 장소이름"
-                value={formData?.campaignName || ''}
-                onChange={handleChange}
-              />
-            </div>
+            <Row className="form-row">
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">캠페인 이름 (한국어)</Label>
+                  <Input
+                    type="text"
+                    name="campaignName"
+                    className="form-input"
+                    placeholder="예) [지역] 장소이름"
+                    value={formData?.campaignName || ''}
+                    onChange={handleChange}
+                  />
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">캠페인 이름 (중국어)</Label>
+                  <Input
+                    type="text"
+                    name="campaignNameCn"
+                    className="form-input"
+                    placeholder="예) [地区] 地点名称"
+                    value={formData?.campaignNameCn || ''}
+                    onChange={handleChange}
+                  />
+                </div>
+              </Col>
+            </Row>
 
             {/* Provision Details */}
-            <div className="form-group">
-              <Label className="form-label">제공내역</Label>
-              <Input
-                type="text"
-                name="provisionDetails"
-                className="form-input"
-                placeholder="제공내역을 입력해주세요"
-                value={formData?.provisionDetails || ''}
-                onChange={handleChange}
-              />
-            </div>
+            <Row className="form-row">
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">제공내역 (한국어)</Label>
+                  <Input
+                    type="text"
+                    name="provisionDetails"
+                    className="form-input"
+                    placeholder="제공내역을 입력해주세요"
+                    value={formData?.provisionDetails || ''}
+                    onChange={handleChange}
+                  />
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">제공내역 (중국어)</Label>
+                  <Input
+                    type="text"
+                    name="provisionDetailsCn"
+                    className="form-input"
+                    placeholder="请输入提供内容"
+                    value={formData?.provisionDetailsCn || ''}
+                    onChange={handleChange}
+                  />
+                </div>
+              </Col>
+            </Row>
 
             {/* Address */}
             <div className="form-group">
@@ -636,31 +680,70 @@ const HorizontalFormIcons = ({ missionData }) => {
             </div>
 
             {/* Guideline */}
-            <div className="form-group">
-              <Label className="form-label">가이드라인</Label>
-              <Editor
-                content={formData?.guideline || ''}
-                onChange={(data) => handleEditorChange('guideline', data)}
-              />
-            </div>
+            <Row className="form-row">
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">가이드라인 (한국어)</Label>
+                  <Editor
+                    content={formData?.guideline || ''}
+                    onChange={(data) => handleEditorChange('guideline', data)}
+                  />
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">가이드라인 (중국어)</Label>
+                  <Editor
+                    content={formData?.guidelineCn || ''}
+                    onChange={(data) => handleEditorChange('guidelineCn', data)}
+                  />
+                </div>
+              </Col>
+            </Row>
 
             {/* Filming/Editing Mission */}
-            <div className="form-group">
-              <Label className="form-label">촬영/편집 미션</Label>
-              <Editor
-                content={formData?.filmingMission || ''}
-                onChange={(data) => handleEditorChange('filmingMission', data)}
-              />
-            </div>
+            <Row className="form-row">
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">촬영/편집 미션 (한국어)</Label>
+                  <Editor
+                    content={formData?.filmingMission || ''}
+                    onChange={(data) => handleEditorChange('filmingMission', data)}
+                  />
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">촬영/편집 미션 (중국어)</Label>
+                  <Editor
+                    content={formData?.filmingMissionCn || ''}
+                    onChange={(data) => handleEditorChange('filmingMissionCn', data)}
+                  />
+                </div>
+              </Col>
+            </Row>
 
             {/* Additional Information */}
-            <div className="form-group">
-              <Label className="form-label">주의 안내사항</Label>
-              <Editor
-                content={formData?.additionalInfo || ''}
-                onChange={(data) => handleEditorChange('additionalInfo', data)}
-              />
-            </div>
+            <Row className="form-row">
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">주의 안내사항 (한국어)</Label>
+                  <Editor
+                    content={formData?.additionalInfo || ''}
+                    onChange={(data) => handleEditorChange('additionalInfo', data)}
+                  />
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className="form-group">
+                  <Label className="form-label">주의 안내사항 (중국어)</Label>
+                  <Editor
+                    content={formData?.additionalInfoCn || ''}
+                    onChange={(data) => handleEditorChange('additionalInfoCn', data)}
+                  />
+                </div>
+              </Col>
+            </Row>
           </CardBody>
         </Card>
       </div>

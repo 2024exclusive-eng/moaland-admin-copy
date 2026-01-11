@@ -142,13 +142,23 @@ const CampaignDetail = () => {
             <h2 className="section-title">제공 정보</h2>
             <div className="info-table">
               <div className="info-table-row">
-                <div className="info-table-cell label">캠페인 이름</div>
+                <div className="info-table-cell label">캠페인 이름 (한국어)</div>
                 <div className="info-table-cell value">
                   {mission.title || "-"}
                 </div>
+                <div className="info-table-cell label">캠페인 이름 (중국어)</div>
+                <div className="info-table-cell value">
+                  {mission.titleCn || "-"}
+                </div>
+              </div>
+              <div className="info-table-row">
                 <div className="info-table-cell label">지역/장소명</div>
                 <div className="info-table-cell value">
                   {mission.region ? getRegionLabel(mission.region) : "-"}
+                </div>
+                <div className="info-table-cell label">카테고리</div>
+                <div className="info-table-cell value">
+                  {mission.category ? getCategoryLabel(mission.category) : "-"}
                 </div>
               </div>
 
@@ -176,20 +186,13 @@ const CampaignDetail = () => {
               </div>
 
               <div className="info-table-row">
-                <div className="info-table-cell label">지역</div>
+                <div className="info-table-cell label">제공내역 (한국어)</div>
                 <div className="info-table-cell value">
-                  {mission.region ? getRegionLabel(mission.region) : "-"}
-                </div>
-                <div className="info-table-cell label">카테고리</div>
-                <div className="info-table-cell value">
-                  {mission.category ? getCategoryLabel(mission.category) : "-"}
-                </div>
-              </div>
-
-              <div className="info-table-row">
-                <div className="info-table-cell label">제공내역</div>
-                <div className="info-table-cell value" colSpan={3}>
                   {mission.goodsContents || "-"}
+                </div>
+                <div className="info-table-cell label">제공내역 (중국어)</div>
+                <div className="info-table-cell value">
+                  {mission.goodsContentsCn || "-"}
                 </div>
               </div>
 
@@ -250,27 +253,46 @@ const CampaignDetail = () => {
                 </div>
               </div>
               <div className="info-table-row">
-                <div className="info-table-cell label">가이드라인</div>
+                <div className="info-table-cell label">가이드라인 (한국어)</div>
                 <div
                   className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{ __html: mission.guideline || "-" }}
                 />
+                <div className="info-table-cell label">가이드라인 (중국어)</div>
+                <div
+                  className="info-table-cell value ck-content"
+                  dangerouslySetInnerHTML={{ __html: mission.guidelineCn || "-" }}
+                />
               </div>
               <div className="info-table-row">
-                <div className="info-table-cell label">촬영/편집 미션</div>
+                <div className="info-table-cell label">촬영/편집 미션 (한국어)</div>
                 <div
                   className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{
                     __html: mission.missionContents || "-",
                   }}
                 />
+                <div className="info-table-cell label">촬영/편집 미션 (중국어)</div>
+                <div
+                  className="info-table-cell value ck-content"
+                  dangerouslySetInnerHTML={{
+                    __html: mission.missionContentsCn || "-",
+                  }}
+                />
               </div>
               <div className="info-table-row">
-                <div className="info-table-cell label">주의 안내사항</div>
+                <div className="info-table-cell label">주의 안내사항 (한국어)</div>
                 <div
                   className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{
                     __html: mission.additionalInfo || "-",
+                  }}
+                />
+                <div className="info-table-cell label">주의 안내사항 (중국어)</div>
+                <div
+                  className="info-table-cell value ck-content"
+                  dangerouslySetInnerHTML={{
+                    __html: mission.additionalInfoCn || "-",
                   }}
                 />
               </div>

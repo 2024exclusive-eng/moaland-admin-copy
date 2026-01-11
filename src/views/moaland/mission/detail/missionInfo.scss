@@ -334,5 +334,88 @@
         margin-bottom: 0;
       }
     }
+
+    // CKEditor adjustments for 50:50 layout
+    .ck-editor {
+      width: 100%;
+
+      .ck-editor__top {
+        .ck-toolbar {
+          flex-wrap: wrap !important;
+          border-top-left-radius: 8px !important;
+          border-top-right-radius: 8px !important;
+
+          .ck-toolbar__items {
+            flex-wrap: wrap !important;
+          }
+        }
+      }
+
+      .ck-editor__main {
+        .ck-editor__editable {
+          min-height: 150px;
+          border-bottom-left-radius: 8px !important;
+          border-bottom-right-radius: 8px !important;
+        }
+      }
+    }
+  }
+
+  // Global CKEditor compact toolbar for narrow containers
+  .col-md-6 {
+    // Override min-width from editor.css
+    .editor-container_classic-editor .editor-container__editor {
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+
+    .main-container {
+      max-width: 100% !important;
+      overflow: hidden;
+    }
+
+    .ck-editor {
+      max-width: 100% !important;
+
+      .ck-editor__top {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+
+        &::-webkit-scrollbar {
+          height: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 3px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 3px;
+
+          &:hover {
+            background: #a1a1a1;
+          }
+        }
+
+        .ck-sticky-panel__content {
+          overflow-x: auto !important;
+        }
+
+        .ck-toolbar {
+          flex-wrap: nowrap !important;
+
+          .ck-toolbar__items {
+            flex-wrap: nowrap !important;
+          }
+        }
+      }
+
+      .ck-editor__editable {
+        min-height: 150px !important;
+      }
+    }
   }
 }

@@ -19,13 +19,18 @@ const fetchData = async (id) => {
 const FormLayouts = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [data, setData] = useState({ title: '', contents: '' })
+  const [data, setData] = useState({ title: '', titleCn: '', contents: '', contentsCn: '' })
 
   useEffect(() => {
     if (id !== 'new') {
       const fetchInitialData = async () => {
         const result = await fetchData(id)
-        setData(result)
+        setData({
+          title: result?.title || '',
+          titleCn: result?.titleCn || '',
+          contents: result?.contents || '',
+          contentsCn: result?.contentsCn || ''
+        })
       }
       fetchInitialData()
     }
@@ -47,7 +52,10 @@ const FormLayouts = () => {
 
     try {
       await axios.post('/admin/notice', {
-        ...data,
+        title: data.title,
+        titleCn: data.titleCn,
+        contents: data.contents,
+        contentsCn: data.contentsCn,
         id: id === 'new' ? null : id
       })
       alert('공지사항이 저장되었습니다.')
@@ -101,28 +109,57 @@ const FormLayouts = () => {
             </CardHeader>
 
             <CardBody>
-              <h5>제목</h5>
-              <Input
-                type='text'
-                name='title'
-                id='title'
-                placeholder='제목을 입력하세요'
-                value={data?.title || ''}
-                onChange={handleChange}
-                className='mb-2'
-              />
+              <Row className='mb-2'>
+                <Col md={6}>
+                  <h5>제목 (한국어)</h5>
+                  <Input
+                    type='text'
+                    name='title'
+                    id='title'
+                    placeholder='제목을 입력하세요'
+                    value={data?.title || ''}
+                    onChange={handleChange}
+                  />
+                </Col>
+                <Col md={6}>
+                  <h5>제목 (중국어)</h5>
+                  <Input
+                    type='text'
+                    name='titleCn'
+                    id='titleCn'
+                    placeholder='请输入标题'
+                    value={data?.titleCn || ''}
+                    onChange={handleChange}
+                  />
+                </Col>
+              </Row>
 
-              <h5 className={'mt-1'}>콘텐츠</h5>
-              <Input
-                type='textarea'
-                name='contents'
-                id='contents'
-                rows='3'
-                placeholder='콘텐츠를 입력하세요'
-                value={data?.contents || ''}
-                onChange={handleChange}
-                className='mb-2'
-              />
+              <Row className='mb-2'>
+                <Col md={6}>
+                  <h5>콘텐츠 (한국어)</h5>
+                  <Input
+                    type='textarea'
+                    name='contents'
+                    id='contents'
+                    rows='5'
+                    placeholder='콘텐츠를 입력하세요'
+                    value={data?.contents || ''}
+                    onChange={handleChange}
+                  />
+                </Col>
+                <Col md={6}>
+                  <h5>콘텐츠 (중국어)</h5>
+                  <Input
+                    type='textarea'
+                    name='contentsCn'
+                    id='contentsCn'
+                    rows='5'
+                    placeholder='请输入内容'
+                    value={data?.contentsCn || ''}
+                    onChange={handleChange}
+                  />
+                </Col>
+              </Row>
             </CardBody>
           </Card>
         </Col>

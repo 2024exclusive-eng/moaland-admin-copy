@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { GoogleMap, Marker, Autocomplete } from '@react-google-maps/api'
 import { Input } from 'reactstrap'
 import PropTypes from 'prop-types'
+import axios from 'axios'
 import './GoogleMapsAutocomplete.scss'
 
 const mapContainerStyle = {
@@ -55,16 +56,51 @@ const GoogleMapsAutocomplete = ({
     autocompleteRef.current = autocomplete
   }, [])
 
+  // Helper function to translate address to Chinese using backend API
+  const translateToChinese = useCallback(async (address) => {
+    if (!address) return ''
+
+    try {
+      const response = await axios.post('/admin/translate/address', {
+        address,
+        targetLanguage: 'zh-CN'
+      })
+
+      if (response.success) {
+        console.log(`[API] Chinese translation: ${response.data.translatedAddress}`)
+        return response.data.translatedAddress
+      }
+
+      console.log('[API] Translation failed:', response.error)
+      return ''
+    } catch (error) {
+      console.error('[API] Translation error:', error)
+      return ''
+    }
+  }, [])
+
   // Helper function to get address in a specific language
   const getAddressInLanguage = useCallback((lat, lng, language) => {
     return new Promise((resolve) => {
       const geocoder = new window.google.maps.Geocoder()
+
+      // Map language to region for better translation results
+      const regionMap = {
+        ko: 'KR',
+        en: 'US'
+      }
+      const region = regionMap[language] || 'KR'
+
       geocoder.geocode(
-        { location: { lat, lng }, language },
+        { location: { lat, lng }, language, region },
         (results, status) => {
           if (status === 'OK' && results[0]) {
-            resolve(results[0].formatted_address)
+            const address = results[0].formatted_address
+            console.log(`[Geocoder] Language: ${language}, Region: ${region}`)
+            console.log(`[Geocoder] Result: ${address}`)
+            resolve(address)
           } else {
+            console.log(`[Geocoder] Failed - Language: ${language}, Status: ${status}`)
             resolve('')
           }
         }
@@ -91,12 +127,13 @@ const GoogleMapsAutocomplete = ({
           map.setZoom(15)
         }
 
-        // Fetch addresses in Korean, Chinese, and English
-        const [addressKo, addressCn, addressEn] = await Promise.all([
+        // Fetch addresses in Korean and English from Google, Chinese via OpenAI
+        const [addressKo, addressEn] = await Promise.all([
           getAddressInLanguage(lat, lng, 'ko'),
-          getAddressInLanguage(lat, lng, 'zh-CN'),
           getAddressInLanguage(lat, lng, 'en')
         ])
+        // Translate English address to Chinese using OpenAI
+        const addressCn = await translateToChinese(addressEn)
 
         // Call parent callback with place data including all languages
         if (onPlaceSelect) {
@@ -124,7 +161,7 @@ const GoogleMapsAutocomplete = ({
         }
       }
     }
-  }, [map, onChange, onPlaceSelect, getAddressInLanguage])
+  }, [map, onChange, onPlaceSelect, getAddressInLanguage, translateToChinese])
 
   const handleInputChange = useCallback((e) => {
     if (onChange) {
@@ -140,12 +177,13 @@ const GoogleMapsAutocomplete = ({
     // Update marker position immediately
     setMarkerPosition(position)
 
-    // Fetch addresses in Korean, Chinese, and English
-    const [addressKo, addressCn, addressEn] = await Promise.all([
+    // Fetch addresses in Korean and English from Google, Chinese via OpenAI
+    const [addressKo, addressEn] = await Promise.all([
       getAddressInLanguage(lat, lng, 'ko'),
-      getAddressInLanguage(lat, lng, 'zh-CN'),
       getAddressInLanguage(lat, lng, 'en')
     ])
+    // Translate English address to Chinese using OpenAI
+    const addressCn = await translateToChinese(addressEn)
 
     if (addressKo) {
       // Call parent callback with place data including all languages
@@ -185,7 +223,7 @@ const GoogleMapsAutocomplete = ({
         })
       }
     }
-  }, [onChange, onPlaceSelect, name, getAddressInLanguage])
+  }, [onChange, onPlaceSelect, name, getAddressInLanguage, translateToChinese])
 
   return (
     <div className="google-maps-autocomplete">

@@ -87,6 +87,8 @@ const HorizontalFormIcons = ({ missionData }) => {
         mediaType: dataSource.social ? dataSource.social.split(',') : [],
         region: dataSource.region,
         address: dataSource.address,
+        addressCn: dataSource.addressCn,
+        addressEn: dataSource.addressEn,
         latitude: dataSource.latitude,
         longitude: dataSource.longitude,
         point: dataSource.point,
@@ -134,6 +136,8 @@ const HorizontalFormIcons = ({ missionData }) => {
     setFormData(prev => ({
       ...prev,
       address: placeData.address,
+      addressCn: placeData.addressCn || '',
+      addressEn: placeData.addressEn || '',
       latitude: placeData.latitude,
       longitude: placeData.longitude
     }))
@@ -295,6 +299,8 @@ const HorizontalFormIcons = ({ missionData }) => {
         social: formData.mediaType ? formData.mediaType.join(',') : null,
         region: formData.region,
         address: formData.address,
+        addressCn: formData.addressCn,
+        addressEn: formData.addressEn,
         latitude: formData.latitude || null,
         longitude: formData.longitude || null,
         point: formData.point || 0,

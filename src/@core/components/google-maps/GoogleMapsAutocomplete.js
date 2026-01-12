@@ -55,7 +55,24 @@ const GoogleMapsAutocomplete = ({
     autocompleteRef.current = autocomplete
   }, [])
 
-  const onPlaceChanged = useCallback(() => {
+  // Helper function to get address in a specific language
+  const getAddressInLanguage = useCallback((lat, lng, language) => {
+    return new Promise((resolve) => {
+      const geocoder = new window.google.maps.Geocoder()
+      geocoder.geocode(
+        { location: { lat, lng }, language },
+        (results, status) => {
+          if (status === 'OK' && results[0]) {
+            resolve(results[0].formatted_address)
+          } else {
+            resolve('')
+          }
+        }
+      )
+    })
+  }, [])
+
+  const onPlaceChanged = useCallback(async () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace()
 
@@ -74,10 +91,19 @@ const GoogleMapsAutocomplete = ({
           map.setZoom(15)
         }
 
-        // Call parent callback with place data
+        // Fetch addresses in Korean, Chinese, and English
+        const [addressKo, addressCn, addressEn] = await Promise.all([
+          getAddressInLanguage(lat, lng, 'ko'),
+          getAddressInLanguage(lat, lng, 'zh-CN'),
+          getAddressInLanguage(lat, lng, 'en')
+        ])
+
+        // Call parent callback with place data including all languages
         if (onPlaceSelect) {
           onPlaceSelect({
-            address,
+            address: addressKo || address,
+            addressCn: addressCn || '',
+            addressEn: addressEn || '',
             latitude: lat,
             longitude: lng,
             placeId: place.place_id,
@@ -85,12 +111,12 @@ const GoogleMapsAutocomplete = ({
           })
         }
 
-        // Update input value
+        // Update input value with Korean address
         if (onChange) {
           onChange({
             target: {
               name,
-              value: address,
+              value: addressKo || address,
               latitude: lat,
               longitude: lng
             }
@@ -98,7 +124,7 @@ const GoogleMapsAutocomplete = ({
         }
       }
     }
-  }, [map, onChange, onPlaceSelect])
+  }, [map, onChange, onPlaceSelect, getAddressInLanguage])
 
   const handleInputChange = useCallback((e) => {
     if (onChange) {
@@ -106,7 +132,7 @@ const GoogleMapsAutocomplete = ({
     }
   }, [onChange])
 
-  const handleMapClick = useCallback((event) => {
+  const handleMapClick = useCallback(async (event) => {
     const lat = event.latLng.lat()
     const lng = event.latLng.lng()
     const position = { lat, lng }
@@ -114,47 +140,52 @@ const GoogleMapsAutocomplete = ({
     // Update marker position immediately
     setMarkerPosition(position)
 
-    // Reverse geocode to get address
-    const geocoder = new window.google.maps.Geocoder()
-    geocoder.geocode({ location: position }, (results, status) => {
-      if (status === 'OK' && results[0]) {
-        const address = results[0].formatted_address
+    // Fetch addresses in Korean, Chinese, and English
+    const [addressKo, addressCn, addressEn] = await Promise.all([
+      getAddressInLanguage(lat, lng, 'ko'),
+      getAddressInLanguage(lat, lng, 'zh-CN'),
+      getAddressInLanguage(lat, lng, 'en')
+    ])
 
-        // Call parent callback with place data
-        if (onPlaceSelect) {
-          onPlaceSelect({
-            address,
-            latitude: lat,
-            longitude: lng,
-            placeId: results[0].place_id,
-            name: results[0].name || ''
-          })
-        }
-
-        // Update input value
-        if (onChange) {
-          onChange({
-            target: {
-              name: name || 'address',
-              value: address
-            }
-          })
-        }
-      } else {
-        console.warn(`Geocoder failed due to:  ${status}`)
-        // Still update coordinates even if address lookup fails
-        if (onPlaceSelect) {
-          onPlaceSelect({
-            address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
-            latitude: lat,
-            longitude: lng,
-            placeId: null,
-            name: ''
-          })
-        }
+    if (addressKo) {
+      // Call parent callback with place data including all languages
+      if (onPlaceSelect) {
+        onPlaceSelect({
+          address: addressKo,
+          addressCn: addressCn || '',
+          addressEn: addressEn || '',
+          latitude: lat,
+          longitude: lng,
+          placeId: null,
+          name: ''
+        })
       }
-    })
-  }, [onChange, onPlaceSelect, name])
+
+      // Update input value with Korean address
+      if (onChange) {
+        onChange({
+          target: {
+            name: name || 'address',
+            value: addressKo
+          }
+        })
+      }
+    } else {
+      console.warn('Geocoder failed to get address')
+      // Still update coordinates even if address lookup fails
+      if (onPlaceSelect) {
+        onPlaceSelect({
+          address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+          addressCn: '',
+          addressEn: '',
+          latitude: lat,
+          longitude: lng,
+          placeId: null,
+          name: ''
+        })
+      }
+    }
+  }, [onChange, onPlaceSelect, name, getAddressInLanguage])
 
   return (
     <div className="google-maps-autocomplete">

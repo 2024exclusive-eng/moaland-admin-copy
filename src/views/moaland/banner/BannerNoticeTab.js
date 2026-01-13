@@ -7,6 +7,7 @@ import { Table, Card, Button, Input } from "reactstrap";
 
 // ** Third Party Components
 import { ReactSortable } from "react-sortablejs";
+import toast from "react-hot-toast";
 
 import axios from "axios";
 import moment from "moment";
@@ -106,6 +107,10 @@ const BannerNoticeTab = () => {
   };
 
   const handleCreate = () => {
+    if (data.data.length >= 6) {
+      toast.error("더 이상 생성할 수 없습니다.");
+      return;
+    }
     setSelectedBanner(null);
     setModalOpen(true);
   };

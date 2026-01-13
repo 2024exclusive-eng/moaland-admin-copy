@@ -1,15 +1,15 @@
 import moment from 'moment'
 
 export const getMissionEnrollmentStatus = (mission) => {
-    // Use UTC for all date comparisons to match backend
-    const now = moment.utc()
-    const enrollStart = mission.enrollStartDate ? moment.utc(mission.enrollStartDate) : null
-    const enrollEnd = mission.enrollEndDate ? moment.utc(mission.enrollEndDate) : null
-    const selectDate = mission.selectDate ? moment.utc(mission.selectDate) : null
-    const missionStart = mission.missionStartDate ? moment.utc(mission.missionStartDate) : null
-    const missionEnd = mission.missionEndDate ? moment.utc(mission.missionEndDate) : null
-    const contentStart = mission.contentStartDate ? moment.utc(mission.contentStartDate) : null
-    const contentEnd = mission.contentEndDate ? moment.utc(mission.contentEndDate) : null
+    // Use Korea timezone (UTC+9) for all date comparisons
+    const now = moment().utcOffset(540) // 540 minutes = 9 hours
+    const enrollStart = mission.enrollStartDate ? moment(mission.enrollStartDate).utcOffset(540) : null
+    const enrollEnd = mission.enrollEndDate ? moment(mission.enrollEndDate).utcOffset(540) : null
+    const selectDate = mission.selectDate ? moment(mission.selectDate).utcOffset(540) : null
+    const missionStart = mission.missionStartDate ? moment(mission.missionStartDate).utcOffset(540) : null
+    const missionEnd = mission.missionEndDate ? moment(mission.missionEndDate).utcOffset(540) : null
+    const contentStart = mission.contentStartDate ? moment(mission.contentStartDate).utcOffset(540) : null
+    const contentEnd = mission.contentEndDate ? moment(mission.contentEndDate).utcOffset(540) : null
 
     // CASE 1: opening_soon - when current date is before enroll_start_date
     if (enrollStart && now.isBefore(enrollStart, 'day')) {
@@ -51,11 +51,11 @@ export const getMissionEnrollmentStatus = (mission) => {
   }
 
   export const getSelectionStatus = (mission) => {
-    // Use UTC for all date comparisons to match backend
-    const now = moment.utc()
-    const selectDate = mission.selectDate ? moment.utc(mission.selectDate) : null
+    // Use Korea timezone (UTC+9) for all date comparisons
+    const now = moment().utcOffset(540) // 540 minutes = 9 hours
+    const selectDate = mission.selectDate ? moment(mission.selectDate).utcOffset(540) : null
     const selectedCount = mission.selectedParticipantCount || 0
-    const contentEnd = mission.contentEndDate ? moment.utc(mission.contentEndDate) : null
+    const contentEnd = mission.contentEndDate ? moment(mission.contentEndDate).utcOffset(540) : null
 
     // CASE 1: waiting - when select_date is NULL OR current date < select_date
     if (!selectDate || now.isBefore(selectDate, 'day')) {

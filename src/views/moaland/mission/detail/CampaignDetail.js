@@ -112,7 +112,7 @@ const CampaignDetail = () => {
       "SNS 링크": user.instagram_link || "-",
       "위챗 아이디": user.wechat_id || "-",
       "방문 날짜 시간": moment(user.visit_datetime_start).format(
-        "MMMM DD, YYYY - HH:mm"
+        "YYYY.MM.DD HH:mm"
       ),
       메모: user.memo || "-",
       상태: user.status === "selected" ? "선정됨" : "대기중",
@@ -149,7 +149,7 @@ const CampaignDetail = () => {
       "SNS 링크": user.instagram_link || "-",
       "위챗 아이디": user.wechat_id || "-",
       "방문 날짜 시간": moment(user.visit_datetime_start).format(
-        "MMMM DD, YYYY - HH:mm"
+        "YYYY.MM.DD HH:mm"
       ),
       메모: user.memo || "-",
       "등록한 콘텐츠": user.link || "-",
@@ -455,7 +455,7 @@ const CampaignDetail = () => {
                         <td>{user.wechat_id}</td>
                         <td>
                           {moment(user.visit_datetime_start).format(
-                            "MMMM DD, YYYY - HH:mm"
+                            "YYYY.MM.DD HH:mm"
                           )}
                         </td>
                         <td>{user.memo}</td>
@@ -561,7 +561,7 @@ const CampaignDetail = () => {
                         <td>{user.wechat_id}</td>
                         <td>
                           {moment(user.visit_datetime_start).format(
-                            "MMMM DD, YYYY - HH:mm"
+                            "YYYY.MM.DD HH:mm"
                           )}
                         </td>
                         <td>{user.memo}</td>

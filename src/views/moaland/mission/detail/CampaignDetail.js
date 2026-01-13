@@ -86,13 +86,13 @@ const CampaignDetail = () => {
   };
 
   // Check if current date is between content start and end dates
-  const now = moment();
+  const now = moment().utcOffset(540); // Korea timezone (UTC+9)
   const isContentPeriod =
     mission.contentStartDate &&
     mission.contentEndDate &&
     now.isBetween(
-      moment(mission.contentStartDate),
-      moment(mission.contentEndDate),
+      moment(mission.contentStartDate).utcOffset(540),
+      moment(mission.contentEndDate).utcOffset(540),
       null,
       "[]"
     );
@@ -477,8 +477,8 @@ const CampaignDetail = () => {
                               onClick={() => {
                                 if (
                                   !mission.selectDate ||
-                                  !moment(mission.selectDate).isSame(
-                                    moment(),
+                                  !moment(mission.selectDate).utcOffset(540).isSame(
+                                    moment().utcOffset(540),
                                     "day"
                                   )
                                 ) {

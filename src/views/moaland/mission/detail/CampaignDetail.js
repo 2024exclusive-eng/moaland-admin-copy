@@ -6,6 +6,9 @@ import moment from "moment";
 import { Card, CardBody, Button, Table, Badge } from "reactstrap";
 import axios from "axios";
 import { getRegionLabel, getCategoryLabel } from "../constants";
+import { utils, write } from "xlsx";
+import { saveAs } from "file-saver";
+import { Download } from "react-feather";
 import "@components/editor/editor.css";
 import "./CampaignDetail.scss";
 
@@ -94,6 +97,81 @@ const CampaignDetail = () => {
       "[]"
     );
 
+  const downloadApplicantsExcel = () => {
+    const applicants = [...enrollUsers, ...selectUsers];
+
+    if (applicants.length === 0) {
+      alert("다운로드할 데이터가 없습니다.");
+      return;
+    }
+
+    const excelData = applicants.map((user, index) => ({
+      No: index + 1,
+      "가입 메일주소": user.email || "-",
+      이름: user.name || "-",
+      "SNS 링크": user.instagram_link || "-",
+      "위챗 아이디": user.wechat_id || "-",
+      "방문 날짜 시간": moment(user.visit_datetime_start).format(
+        "MMMM DD, YYYY - HH:mm"
+      ),
+      메모: user.memo || "-",
+      상태: user.status === "selected" ? "선정됨" : "대기중",
+    }));
+
+    const worksheet = utils.json_to_sheet(excelData);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, "신청자");
+
+    const excelBuffer = write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const dataBlob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const fileName = `${mission.title}_신청자.xlsx`;
+    saveAs(dataBlob, fileName);
+  };
+
+  const downloadSelectedExcel = () => {
+    const selected = [...selectUsers, ...completedUsers];
+
+    if (selected.length === 0) {
+      alert("다운로드할 데이터가 없습니다.");
+      return;
+    }
+
+    const excelData = selected.map((user, index) => ({
+      No: index + 1,
+      "가입 메일주소": user.email || "-",
+      이름: user.name || "-",
+      "SNS 링크": user.instagram_link || "-",
+      "위챗 아이디": user.wechat_id || "-",
+      "방문 날짜 시간": moment(user.visit_datetime_start).format(
+        "MMMM DD, YYYY - HH:mm"
+      ),
+      메모: user.memo || "-",
+      "등록한 콘텐츠": user.link || "-",
+      검수상태: user.status === "completed" ? "검수완료" : "검수대기",
+    }));
+
+    const worksheet = utils.json_to_sheet(excelData);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, "선정자");
+
+    const excelBuffer = write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const dataBlob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const fileName = `${mission.title}_선정자.xlsx`;
+    saveAs(dataBlob, fileName);
+  };
+
   return (
     <div>
       <div
@@ -142,11 +220,15 @@ const CampaignDetail = () => {
             <h2 className="section-title">제공 정보</h2>
             <div className="info-table">
               <div className="info-table-row">
-                <div className="info-table-cell label">캠페인 이름 (한국어)</div>
+                <div className="info-table-cell label">
+                  캠페인 이름 (한국어)
+                </div>
                 <div className="info-table-cell value">
                   {mission.title || "-"}
                 </div>
-                <div className="info-table-cell label">캠페인 이름 (중국어)</div>
+                <div className="info-table-cell label">
+                  캠페인 이름 (중국어)
+                </div>
                 <div className="info-table-cell value">
                   {mission.titleCn || "-"}
                 </div>
@@ -261,18 +343,24 @@ const CampaignDetail = () => {
                 <div className="info-table-cell label">가이드라인 (중국어)</div>
                 <div
                   className="info-table-cell value ck-content"
-                  dangerouslySetInnerHTML={{ __html: mission.guidelineCn || "-" }}
+                  dangerouslySetInnerHTML={{
+                    __html: mission.guidelineCn || "-",
+                  }}
                 />
               </div>
               <div className="info-table-row">
-                <div className="info-table-cell label">촬영/편집 미션 (한국어)</div>
+                <div className="info-table-cell label">
+                  촬영/편집 미션 (한국어)
+                </div>
                 <div
                   className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{
                     __html: mission.missionContents || "-",
                   }}
                 />
-                <div className="info-table-cell label">촬영/편집 미션 (중국어)</div>
+                <div className="info-table-cell label">
+                  촬영/편집 미션 (중국어)
+                </div>
                 <div
                   className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{
@@ -281,14 +369,18 @@ const CampaignDetail = () => {
                 />
               </div>
               <div className="info-table-row">
-                <div className="info-table-cell label">주의 안내사항 (한국어)</div>
+                <div className="info-table-cell label">
+                  주의 안내사항 (한국어)
+                </div>
                 <div
                   className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{
                     __html: mission.additionalInfo || "-",
                   }}
                 />
-                <div className="info-table-cell label">주의 안내사항 (중국어)</div>
+                <div className="info-table-cell label">
+                  주의 안내사항 (중국어)
+                </div>
                 <div
                   className="info-table-cell value ck-content"
                   dangerouslySetInnerHTML={{
@@ -304,15 +396,33 @@ const CampaignDetail = () => {
         <Card className="detail-card">
           <CardBody>
             <div className="table-header">
-              <h2 className="section-title">
-                신청자{" "}
-                <span style={{ color: "#509594" }}>
-                  {enrollUsers.length + selectUsers.length}
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <h2 className="section-title">
+                  신청자{" "}
+                  <span style={{ color: "#509594" }}>
+                    {enrollUsers.length + selectUsers.length}
+                  </span>
+                </h2>
+              </div>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "16px" }}
+              >
+                <span className="table-subtitle">
+                  *인플루언서 선정은 취소불가능합니다.
                 </span>
-              </h2>
-              <span className="table-subtitle">
-                *인플루언서 선정은 취소불가능합니다.
-              </span>
+                <Button
+                  color="primary"
+                  size="sm"
+                  onClick={downloadApplicantsExcel}
+                  disabled={enrollUsers.length + selectUsers.length === 0}
+                  style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                >
+                  <Download size={14} />
+                  엑셀 다운받기
+                </Button>
+              </div>
             </div>
             <div className="table-responsive">
               <Table className="detail-table">
@@ -321,7 +431,7 @@ const CampaignDetail = () => {
                     <th>No</th>
                     <th>가입 메일주소</th>
                     <th>이름</th>
-                    <th>인스타 링크</th>
+                    <th>SNS 링크</th>
                     <th>위챗 아이디</th>
                     <th>방문 날짜 시간</th>
                     <th>메모</th>
@@ -397,12 +507,27 @@ const CampaignDetail = () => {
         <Card className="detail-card">
           <CardBody>
             <div className="table-header">
-              <h2 className="section-title">
-                선정자{" "}
-                <span style={{ color: "#509594" }}>
-                  {selectUsers.length + completedUsers.length}/{mission.maxEnroll || 20}
-                </span>
-              </h2>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <h2 className="section-title">
+                  선정자{" "}
+                  <span style={{ color: "#509594" }}>
+                    {selectUsers.length + completedUsers.length}/
+                    {mission.maxEnroll || 20}
+                  </span>
+                </h2>
+              </div>
+              <Button
+                color="primary"
+                size="sm"
+                onClick={downloadSelectedExcel}
+                disabled={selectUsers.length + completedUsers.length === 0}
+                style={{ display: "flex", alignItems: "center", gap: "4px" }}
+              >
+                <Download size={14} />
+                엑셀 다운받기
+              </Button>
             </div>
             <div className="table-responsive">
               <Table className="detail-table">
@@ -411,7 +536,7 @@ const CampaignDetail = () => {
                     <th>No</th>
                     <th>가입 메일주소</th>
                     <th>이름</th>
-                    <th>인스타 링크</th>
+                    <th>SNS 링크</th>
                     <th>위챗 아이디</th>
                     <th>방문 날짜 시간</th>
                     <th>메모</th>

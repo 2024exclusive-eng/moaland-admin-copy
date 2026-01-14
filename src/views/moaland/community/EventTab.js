@@ -5,6 +5,9 @@ import { Fragment, useState, useEffect } from "react";
 // ** Reactstrap Imports
 import { Table, Card, Button, Input } from "reactstrap";
 
+// ** Third Party Components
+import toast from "react-hot-toast";
+
 import axios from "axios";
 import moment from "moment";
 
@@ -78,6 +81,10 @@ const EventTab = () => {
   };
 
   const handleCreate = () => {
+    if (data.data.length >= 6) {
+      toast.error("더 이상 생성할 수 없습니다.");
+      return;
+    }
     setSelectedEvent(null);
     setModalOpen(true);
   };
@@ -88,9 +95,8 @@ const EventTab = () => {
   };
 
   const handleSave = async (formData) => {
-    if (data.data.length === 6) {
-      alert("최대 데이터는 6입니다.");
-
+    if (!selectedEvent && data.data.length >= 6) {
+      toast.error("더 이상 생성할 수 없습니다.");
       return;
     }
     try {

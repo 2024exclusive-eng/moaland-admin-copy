@@ -476,16 +476,16 @@ const CampaignDetail = () => {
                               }
                               onClick={() => {
                                 const now = moment().utcOffset(540);
-                                const isSelectionDate = mission.selectDate &&
-                                  moment(mission.selectDate).utcOffset(540).isSame(now, "day");
+                                const isAfterSelectionDate = mission.selectDate &&
+                                  now.isSameOrAfter(moment(mission.selectDate).utcOffset(540).startOf("day"));
                                 const isBeforeVisitEnd = user.visit_datetime_end &&
                                   now.isBefore(moment(user.visit_datetime_end).utcOffset(540));
 
-                                if (!mission.selectDate || (!isSelectionDate && !isBeforeVisitEnd)) {
+                                if (isAfterSelectionDate && isBeforeVisitEnd) {
+                                  handleSelectApplicant(user.missionEnrollId);
+                                } else {
                                   alert("선정일이 아니거나 방문 기간이 지났습니다.");
-                                  return;
                                 }
-                                handleSelectApplicant(user.missionEnrollId);
                               }}
                             >
                               {user.status === "selected"

@@ -5,6 +5,9 @@ import { Fragment, useState, useEffect } from "react";
 // ** Reactstrap Imports
 import { Card, Table, Button } from "reactstrap";
 
+// ** Third Party Components
+import toast from "react-hot-toast";
+
 import axios from "axios";
 import moment from "moment";
 
@@ -50,6 +53,14 @@ const RecommendedCampaign = () => {
     setModalOpen(!modalOpen);
   };
 
+  const handleOpenModal = () => {
+    if (data.length >= 4) {
+      toast.error("더 이상 생성할 수 없습니다.");
+      return;
+    }
+    toggleModal();
+  };
+
   const handleAddCampaign = async (campaign) => {
     try {
       // Only update if the campaign is not already recommended
@@ -57,9 +68,8 @@ const RecommendedCampaign = () => {
         return;
       }
 
-      if (data.length === 4) {
-        alert("최대 데이터는 4입니다.");
-
+      if (data.length >= 4) {
+        toast.error("더 이상 생성할 수 없습니다.");
         return;
       }
 
@@ -254,7 +264,7 @@ const RecommendedCampaign = () => {
           >
             <h4 className="mb-0">등록된 캠페인 {data.length}/4</h4>
             <Button
-              onClick={toggleModal}
+              onClick={handleOpenModal}
               color="primary"
               style={{ height: "44px", fontSize: "16px", minWidth: "67px" }}
             >

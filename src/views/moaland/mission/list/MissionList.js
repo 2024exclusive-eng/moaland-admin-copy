@@ -250,7 +250,18 @@ const MissionList = () => {
             <div className="thumbnail-wrapper">
               <img src={col.thumbnailImg} style={{ objectFit: "cover"}} alt={col.title}  width={60} height={60}/>
             </div>
-            <a href={`/moaland/manage/campaign/${col.missionId}`} style={{ color: "#509594", maxWidth: "400px" }} onClick={(e) => e.preventDefault()}>
+            <a
+              href={`/moaland/manage/campaign/${col.missionId}`}
+              style={{
+                color: "#509594",
+                maxWidth: "400px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "inline-block"
+              }}
+              onClick={(e) => e.preventDefault()}
+            >
               {col.title}
             </a>
           </td>

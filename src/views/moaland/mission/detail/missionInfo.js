@@ -290,7 +290,7 @@ const HorizontalFormIcons = ({ missionData }) => {
         category: formData.category,
         enrollStartDate: formatDateForServer(formData.applicationStartDate) || defaultStartDate,
         enrollEndDate: formatDateForServer(formData.applicationEndDate) || defaultEndDate,
-        selectDate: formatDateForServer(formData.selectionDate),
+        selectDate: formatDateForServer(formData.selectionDate || formData.applicationEndDate),
         paymentDate: formatDateForServer(formData.paymentDate),
         missionStartDate: formatDateForServer(formData.visitStartDate),
         missionEndDate: formatDateForServer(formData.visitEndDate),

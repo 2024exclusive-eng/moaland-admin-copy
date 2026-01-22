@@ -13,7 +13,8 @@ export const getCategoryOptions = (counts = {}) => [
   { value: 'Beauty', label: '뷰티', count: counts.Beauty || 0 },
   { value: 'Culture', label: '문화', count: counts.Culture || 0 },
   { value: 'Stay', label: '숙박', count: counts.Stay || 0 },
-  { value: 'Massage', label: '여가시설', count: counts.Massage || 0 }
+  { value: 'Massage', label: '마사지', count: counts.Massage || 0 },
+  { value: 'Others', label: '기타', count: counts.Others || 0 }
 ]
 
 export const getMediaTypeOptions = (counts = {}) => [

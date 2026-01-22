@@ -23,6 +23,78 @@
 	max-width: 100%;
 }
 
+/* Fix toolbar dropdown panels to display properly */
+.ck.ck-editor__top {
+	overflow: visible !important;
+}
+
+.ck.ck-sticky-panel {
+	overflow: visible !important;
+}
+
+.ck.ck-sticky-panel__content {
+	overflow: visible !important;
+}
+
+.ck.ck-toolbar {
+	overflow: visible !important;
+}
+
+.ck.ck-toolbar__items {
+	overflow: visible !important;
+}
+
+.ck.ck-dropdown {
+	overflow: visible !important;
+}
+
+.ck.ck-dropdown__panel {
+	z-index: 9999 !important;
+	max-height: none !important;
+	overflow: visible !important;
+	position: absolute !important;
+}
+
+.ck.ck-dropdown__panel .ck-list {
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+/* Heading dropdown specific styles */
+.ck.ck-heading-dropdown .ck-dropdown__panel {
+	z-index: 99999 !important;
+	overflow: visible !important;
+	max-height: none !important;
+}
+
+.ck.ck-heading-dropdown .ck-dropdown__panel .ck-list {
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+/* Ensure dropdown panel is not clipped by containers with CKEditor */
+.main-container,
+.editor-container,
+.editor-container_classic-editor,
+.editor-container__editor {
+	overflow: visible !important;
+}
+
+/* Target parent containers that contain CKEditor */
+.ck-editor {
+	overflow: visible !important;
+}
+
+/* When CKEditor dropdown is open, ensure parent chain allows overflow */
+.ck.ck-dropdown.ck-dropdown_active {
+	z-index: 9999 !important;
+}
+
+.ck.ck-dropdown.ck-dropdown_active .ck-dropdown__panel {
+	position: absolute !important;
+	z-index: 9999 !important;
+}
+
 /* CKEditor5 Content Styles */
 :root {
 	--ck-color-mention-background: hsla(341, 100%, 30%, 0.1);

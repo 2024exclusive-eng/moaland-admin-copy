@@ -75,7 +75,6 @@ const CampaignDetail = () => {
   const enrollUsers = data?.enrollUsers || [];
   const selectUsers = data?.selectUsers || [];
   const completedUsers = data?.completeUsers || [];
-  console.log(completedUsers, data);
   const socialPlatforms = mission.social ? mission.social.split(",") : [];
   const linkTitles = {
     Xiaohongshu: "샤오홍슈",
@@ -83,6 +82,25 @@ const CampaignDetail = () => {
     Instagram: "인스타",
     Dajongdienping: "따중띠앤핑",
     Youtube: "유튜브",
+  };
+
+  // Helper function to parse link JSON and get URL by social platform
+  const getContentUrl = (user) => {
+    if (!user?.link) return null;
+    try {
+      const linkObj = typeof user.link === "string" ? JSON.parse(user.link) : user.link;
+      // Use the mission's social field or user's social field to get the correct URL
+      const social = mission.social || user.social;
+      if (social && linkObj[social]) {
+        return linkObj[social];
+      }
+      // Fallback: return the first URL in the object
+      const keys = Object.keys(linkObj);
+      return keys.length > 0 ? linkObj[keys[0]] : null;
+    } catch (e) {
+      // If parsing fails, assume it's already a direct URL
+      return user.link;
+    }
   };
 
   // Check if current date is between content start and end dates
@@ -152,7 +170,7 @@ const CampaignDetail = () => {
         "YYYY.MM.DD HH:mm"
       ),
       메모: user.memo || "-",
-      "등록한 콘텐츠": user.link || "-",
+      "등록한 콘텐츠": getContentUrl(user) || "-",
       검수상태: user.status === "completed" ? "검수완료" : "검수대기",
     }));
 
@@ -567,13 +585,22 @@ const CampaignDetail = () => {
                         <td>{user.memo}</td>
 
                         {isContentPeriod && (
-                          <td
-                            style={{
-                              textDecoration: user.link ? "underline" : "",
-                              cursor: user.link ? "pointer" : "",
-                            }}
-                          >
-                            {user.link ? "url" : "-"}
+                          <td>
+                            {getContentUrl(user) ? (
+                              <a
+                                href={getContentUrl(user)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  textDecoration: "underline",
+                                  color: "#509594",
+                                }}
+                              >
+                                콘텐츠 URL
+                              </a>
+                            ) : (
+                              "-"
+                            )}
                           </td>
                         )}
                         <td>

@@ -11,6 +11,24 @@ import {
 } from 'reactstrap'
 
 const DataTableWithButtons = ({ data }) => {
+  // Helper function to parse link JSON and get URL
+  const getContentUrl = (item) => {
+    if (!item?.link) return null
+    try {
+      const linkObj = typeof item.link === 'string' ? JSON.parse(item.link) : item.link
+      // Use the social field to get the correct URL
+      if (item.social && linkObj[item.social]) {
+        return linkObj[item.social]
+      }
+      // Fallback: return the first URL in the object
+      const keys = Object.keys(linkObj)
+      return keys.length > 0 ? linkObj[keys[0]] : null
+    } catch (e) {
+      // If parsing fails, assume it's already a direct URL
+      return item.link
+    }
+  }
+
   const renderData = () => {
     if (data.length === 0) {
       return (
@@ -27,7 +45,18 @@ const DataTableWithButtons = ({ data }) => {
           <td>{col.name}</td>
           <td>{col.social}</td>
           <td>{col.address}</td>
-          <td>{col.link}</td>
+          <td>
+            {getContentUrl(col) ? (
+              <a
+                href={getContentUrl(col)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: 'underline', color: '#509594' }}
+              >
+                {col.social || '콘텐츠'} URL
+              </a>
+            ) : '-'}
+          </td>
           <td>{col.linkUpdated ? moment(col.linkUpdated).format("YY.MM.DD") : ""}</td>
           <td>{moment(col.created).format("YY.MM.DD")}</td>
           <td>완료</td>

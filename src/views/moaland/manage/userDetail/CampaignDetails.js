@@ -14,6 +14,23 @@ const CampaignDetails = ({ enrollData, selectData, completeData, userData }) => 
   const [contentModalOpen, setContentModalOpen] = useState(false)
   const [selectedCampaign, setSelectedCampaign] = useState(null)
 
+  const getContentUrl = (campaign) => {
+    if (!campaign?.link) return null
+    try {
+      const linkObj = typeof campaign.link === 'string' ? JSON.parse(campaign.link) : campaign.link
+      // Use the social field to get the correct URL, or get the first available URL
+      if (campaign.social && linkObj[campaign.social]) {
+        return linkObj[campaign.social]
+      }
+      // Fallback: return the first URL in the object
+      const keys = Object.keys(linkObj)
+      return keys.length > 0 ? linkObj[keys[0]] : null
+    } catch (e) {
+      // If parsing fails, assume it's already a direct URL
+      return campaign.link
+    }
+  }
+
   const toggleModal = () => setModalOpen(!modalOpen)
   const toggleContentModal = () => setContentModalOpen(!contentModalOpen)
 
@@ -257,8 +274,8 @@ const CampaignDetails = ({ enrollData, selectData, completeData, userData }) => 
               <hr className="modal-divider" />
               <div className="modal-section">
                 <label className="modal-label">콘텐츠 URL</label>
-                {selectedCampaign.link ? (
-                  <a href={selectedCampaign.link} target="_blank" rel="noopener noreferrer" className="modal-link">
+                {getContentUrl(selectedCampaign) ? (
+                  <a href={getContentUrl(selectedCampaign)} target="_blank" rel="noopener noreferrer" className="modal-link">
                     콘텐츠 URL
                   </a>
                 ) : (

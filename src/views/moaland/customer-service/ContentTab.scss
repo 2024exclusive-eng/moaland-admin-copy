@@ -1,3 +1,31 @@
+// Global fix for CKEditor dropdown panels
+.content-tab-card,
+.content-tab-card .row,
+.content-tab-card [class*="col-"],
+.content-tab-card .editor-wrapper,
+.content-tab-card .main-container,
+.content-tab-card .editor-container,
+.content-tab-card .editor-container_classic-editor,
+.content-tab-card .editor-container__editor {
+  overflow: visible !important;
+}
+
+// Override min-width from editor.css for narrow containers
+.content-tab-card [class*="col-"] {
+  .editor-container_classic-editor .editor-container__editor {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .main-container {
+    max-width: 100% !important;
+  }
+
+  .ck-editor {
+    max-width: 100% !important;
+  }
+}
+
 .content-tab-card {
   border-radius: 12px;
   border: 1px solid #E5E7EB;
@@ -31,11 +59,48 @@
   .editor-wrapper {
     border: 1px solid #E5E7EB;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible !important;
     min-height: 400px;
 
-    .ck-editor__editable {
-      min-height: 400px;
+    .ck-editor {
+      overflow: visible !important;
+
+      .ck-editor__top {
+        overflow: visible !important;
+
+        .ck-sticky-panel {
+          overflow: visible !important;
+        }
+
+        .ck-sticky-panel__content {
+          overflow: visible !important;
+        }
+
+        .ck-toolbar {
+          flex-wrap: wrap !important;
+          overflow: visible !important;
+          border-top-left-radius: 8px !important;
+          border-top-right-radius: 8px !important;
+
+          .ck-toolbar__items {
+            flex-wrap: wrap !important;
+            overflow: visible !important;
+          }
+        }
+      }
+
+      .ck-editor__editable {
+        min-height: 400px;
+        border-bottom-left-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+      }
+
+      // Ensure dropdown panels display properly
+      .ck-dropdown__panel {
+        z-index: 9999 !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
     }
   }
 

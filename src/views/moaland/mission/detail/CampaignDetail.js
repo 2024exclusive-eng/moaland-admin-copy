@@ -84,6 +84,22 @@ const CampaignDetail = () => {
     Youtube: "유튜브",
   };
 
+  // Helper function to ensure URL has proper protocol
+  const ensureHttpsUrl = (url) => {
+    if (!url || typeof url !== "string") return null;
+    const trimmedUrl = url.trim();
+    if (!trimmedUrl) return null;
+    // If URL already has a protocol, return as-is (but upgrade http to https)
+    if (trimmedUrl.startsWith("http://")) {
+      return trimmedUrl.replace("http://", "https://");
+    }
+    if (trimmedUrl.startsWith("https://")) {
+      return trimmedUrl;
+    }
+    // Add https:// prefix for URLs without protocol
+    return `https://${trimmedUrl}`;
+  };
+
   // Helper function to parse link JSON and get URL by social platform
   const getContentUrl = (user) => {
     if (!user?.link) return null;
@@ -92,14 +108,14 @@ const CampaignDetail = () => {
       // Use the mission's social field or user's social field to get the correct URL
       const social = mission.social || user.social;
       if (social && linkObj[social]) {
-        return linkObj[social];
+        return ensureHttpsUrl(linkObj[social]);
       }
       // Fallback: return the first URL in the object
       const keys = Object.keys(linkObj);
-      return keys.length > 0 ? linkObj[keys[0]] : null;
+      return keys.length > 0 ? ensureHttpsUrl(linkObj[keys[0]]) : null;
     } catch (e) {
       // If parsing fails, assume it's already a direct URL
-      return user.link;
+      return ensureHttpsUrl(user.link);
     }
   };
 
@@ -582,7 +598,7 @@ const CampaignDetail = () => {
                             "YYYY.MM.DD HH:mm"
                           )}
                         </td>
-                        <td>{user.memo}</td>
+                        <td>{user.memo || "-"}</td>
 
                         {isContentPeriod && (
                           <td>

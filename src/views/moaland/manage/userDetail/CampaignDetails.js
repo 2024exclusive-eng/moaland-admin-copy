@@ -14,20 +14,36 @@ const CampaignDetails = ({ enrollData, selectData, completeData, userData }) => 
   const [contentModalOpen, setContentModalOpen] = useState(false)
   const [selectedCampaign, setSelectedCampaign] = useState(null)
 
+  // Helper function to ensure URL has proper protocol
+  const ensureHttpsUrl = (url) => {
+    if (!url || typeof url !== 'string') return null
+    const trimmedUrl = url.trim()
+    if (!trimmedUrl) return null
+    // If URL already has a protocol, return as-is (but upgrade http to https)
+    if (trimmedUrl.startsWith('http://')) {
+      return trimmedUrl.replace('http://', 'https://')
+    }
+    if (trimmedUrl.startsWith('https://')) {
+      return trimmedUrl
+    }
+    // Add https:// prefix for URLs without protocol
+    return `https://${trimmedUrl}`
+  }
+
   const getContentUrl = (campaign) => {
     if (!campaign?.link) return null
     try {
       const linkObj = typeof campaign.link === 'string' ? JSON.parse(campaign.link) : campaign.link
       // Use the social field to get the correct URL, or get the first available URL
       if (campaign.social && linkObj[campaign.social]) {
-        return linkObj[campaign.social]
+        return ensureHttpsUrl(linkObj[campaign.social])
       }
       // Fallback: return the first URL in the object
       const keys = Object.keys(linkObj)
-      return keys.length > 0 ? linkObj[keys[0]] : null
+      return keys.length > 0 ? ensureHttpsUrl(linkObj[keys[0]]) : null
     } catch (e) {
       // If parsing fails, assume it's already a direct URL
-      return campaign.link
+      return ensureHttpsUrl(campaign.link)
     }
   }
 

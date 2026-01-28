@@ -118,6 +118,24 @@ const CampaignDetail = () => {
       return ensureHttpsUrl(user.link);
     }
   };
+  
+  const getContentInstagramUrl = (user) => {
+    if (!user?.instagram_link) return null;
+    try {
+      const linkObj = typeof user.instagram_link === "string" ? JSON.parse(user.instagram_link) : user.instagram_link;
+      // Use the mission's social field or user's social field to get the correct URL
+      const social = mission.social || user.social;
+      if (social && linkObj[social]) {
+        return ensureHttpsUrl(linkObj[social]);
+      }
+      // Fallback: return the first URL in the object
+      const keys = Object.keys(linkObj);
+      return keys.length > 0 ? ensureHttpsUrl(linkObj[keys[0]]) : null;
+    } catch (e) {
+      // If parsing fails, assume it's already a direct URL
+      return ensureHttpsUrl(user.instagram_link);
+    }
+  };
 
   // Check if current date is between content start and end dates
   const now = moment().utcOffset(540); // Korea timezone (UTC+9)
@@ -485,7 +503,10 @@ const CampaignDetail = () => {
                         <td>{index + 1}</td>
                         <td>{user.email || "-"}</td>
                         <td>{user.name || "-"}</td>
-                        <td>{user.instagram_link || "-"}</td>
+                        <td><a  style={{
+                                  textDecoration: "underline",
+                                  color: "#509594",
+                                }} href={getContentInstagramUrl(user)} target="_blank" rel="noopener noreferrer">{user.instagram_link || "-"}</a></td>
                         <td>{user.wechat_id}</td>
                         <td>
                           {moment(user.visit_datetime_start).format(

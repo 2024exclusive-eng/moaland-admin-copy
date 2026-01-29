@@ -8,7 +8,7 @@ import { Card, Table, Nav, NavItem, NavLink, Button, Modal, ModalHeader, ModalBo
 // ** Styles
 import './CampaignDetails.scss'
 
-const CampaignDetails = ({ enrollData, selectData, completeData, userData }) => {
+const CampaignDetails = ({ enrollData, selectData, completeData, endedData, userData }) => {
   const [activeTab, setActiveTab] = useState('applied')
   const [modalOpen, setModalOpen] = useState(false)
   const [contentModalOpen, setContentModalOpen] = useState(false)
@@ -125,7 +125,7 @@ const CampaignDetails = ({ enrollData, selectData, completeData, userData }) => 
   }
 
   const renderCompletedData = (isEnded) => {
-    if (!completeData || completeData.length === 0) {
+    if (!(isEnded ? endedData : completeData) || (isEnded ? endedData : completeData).length === 0) {
       return (
         <tr>
           <td colSpan="8" className="text-center">데이터가 없습니다</td>
@@ -133,7 +133,7 @@ const CampaignDetails = ({ enrollData, selectData, completeData, userData }) => 
       )
     }
 
-    return completeData.map(col => {
+    return (isEnded ? endedData : completeData).map(col => {
       return (
         <tr key={col.missionId} onClick={() => handleRowClick(col.missionId)}>
           <td>{col.missionId}</td>

@@ -206,7 +206,6 @@ const CampaignSelectionModal = ({ isOpen, toggle, onSelect }) => {
                 <th style={{ width: "150px" }}>신청기간</th>
                 <th style={{ width: "80px" }}>신청자</th>
                 <th style={{ width: "80px" }}>선정수</th>
-                <th style={{ width: "100px" }}>선정일</th>
                 <th style={{ width: "80px" }}>선정자</th>
                 <th style={{ width: "150px" }}>방문기간</th>
                 <th style={{ width: "150px" }}>콘텐츠 등록기간</th>
@@ -312,7 +311,6 @@ const CampaignSelectionModal = ({ isOpen, toggle, onSelect }) => {
                     </td>
                     <td className="text-center">{campaign.enrollCount || 0}</td>
                     <td>{campaign.maxEnroll}</td>
-                    <td>{moment(campaign.selectDate).format("YY.MM.DD")}</td>
                     <td className="text-center">
                       {campaign.selectedParticipantCount || 0}
                     </td>

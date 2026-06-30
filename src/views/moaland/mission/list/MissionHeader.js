@@ -24,7 +24,7 @@ const MissionHeader = ({ stats }) => {
         <Col md="4" sm="12">
           <Card className="stat-card">
             <CardBody>
-              <p className="stat-label">오늘 선정할 캠페인</p>
+              <p className="stat-label">선정 필요한 캠페인</p>
               <h2 className="stat-value danger">
                 {stats?.mustSelectToday}
               </h2>

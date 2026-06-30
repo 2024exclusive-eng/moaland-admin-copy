@@ -193,11 +193,6 @@ const RecommendedCampaign = () => {
           <td style={{ textAlign: "center", padding: "16px" }}>
             {campaign.maxEnroll || 0}
           </td>
-          <td style={{ padding: "16px" }}>
-            {campaign.selectDate
-              ? moment(campaign.selectDate).format("YY.MM.DD")
-              : "-"}
-          </td>
           <td style={{ textAlign: "center", padding: "16px" }}>
             <a
               href={`/moaland/manage/campaign/${campaign.missionId}`}
@@ -302,7 +297,6 @@ const RecommendedCampaign = () => {
                     <th style={{ padding: "16px", width: "160px" }}>신청기간</th>
                     <th style={{ padding: "16px", width: "100px" }}>신청자</th>
                     <th style={{ padding: "16px", width: "100px" }}>선정수</th>
-                    <th style={{ padding: "16px", width: "120px" }}>선정일</th>
                     <th style={{ padding: "16px", width: "100px" }}>선정자</th>
                     <th style={{ padding: "16px", width: "160px" }}>방문기간</th>
                     <th style={{ padding: "16px", width: "160px" }}>

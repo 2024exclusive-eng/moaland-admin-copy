@@ -51,47 +51,19 @@ export const getMissionEnrollmentStatus = (mission) => {
   }
 
   export const getSelectionStatus = (mission) => {
-    // Use Korea timezone (UTC+9) for all date comparisons
-    const now = moment().utcOffset(540) // 540 minutes = 9 hours
-    const selectDate = mission.selectDate ? moment(mission.selectDate).utcOffset(540) : null
     const selectedCount = mission.selectedParticipantCount || 0
-    const contentEnd = mission.contentEndDate ? moment(mission.contentEndDate).utcOffset(540) : null
+    const appliedCount = mission.appliedParticipantCount || 0
 
-    // CASE 1: waiting - when select_date is NULL OR current date < select_date
-    if (!selectDate || now.isBefore(selectDate, 'day')) {
+    // 선정대기: 아무도 선정 안 함
+    if (selectedCount === 0) {
       return { label: '선정대기', color: '#111827', status: 'waiting' }
     }
-
-    // CASE 2: selection_date - when select_date is NOT NULL AND current date = select_date
-    if (selectDate && now.isSame(selectDate, 'day')) {
-      return { label: '선정일', color: '#509594', status: 'selection_date' }
-    }
-
-    // CASE 3: completed - when select_date is NOT NULL AND content_end_date is NOT NULL
-    // AND current date > select_date AND current date <= content_end_date
-    // AND selected participants count > 0
-    if (selectDate && contentEnd &&
-        now.isAfter(selectDate, 'day') && now.isSameOrBefore(contentEnd, 'day') &&
-        selectedCount > 0) {
+    // 선정완료: 미선정(대기) 신청자 없음 = 전원 선정/처리
+    if (appliedCount === 0) {
       return { label: '선정완료', color: '#4CAF50', status: 'completed' }
     }
-
-    // CASE 4: delayed - when select_date is NOT NULL AND content_end_date is NOT NULL
-    // AND current date > select_date AND current date <= content_end_date
-    // AND selected participants count = 0
-    if (selectDate && contentEnd &&
-        now.isAfter(selectDate, 'day') && now.isSameOrBefore(contentEnd, 'day') &&
-        selectedCount === 0) {
-      return { label: '선정지연', color: '#ea3a50', status: 'delayed' }
-    }
-
-    // CASE 5: selection_deadline - when content_end_date is NOT NULL AND current date > content_end_date
-    if (contentEnd && now.isAfter(contentEnd, 'day')) {
-      return { label: '선정마감', color: '#a5a5a5', status: 'selection_deadline' }
-    }
-
-    // Default: waiting
-    return { label: '선정대기', color: '#111827', status: 'waiting' }
+    // 선정중: 일부 선정
+    return { label: '선정중', color: '#2196F3', status: 'in_selection' }
   }
 
 export const getStatusBadgeConfig = (status) => {

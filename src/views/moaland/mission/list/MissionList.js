@@ -95,10 +95,8 @@ const getStatusOptions = (counts = {}) => [
 
 const getSelectionStatusOptions = (counts = {}) => [
   { value: 'waiting', label: '선정대기', count: counts.waiting || 0 },
-  { value: 'selection_date', label: '선정일', count: counts.selection_date || 0 },
-  { value: 'delayed', label: '선정지연', count: counts.delayed || 0 },
-  { value: 'completed', label: '선정완료', count: counts.completed || 0 },
-  { value: 'selection_deadline', label: '선정마감', count: counts.selection_deadline || 0 }
+  { value: 'in_selection', label: '선정중', count: counts.in_selection || 0 },
+  { value: 'completed', label: '선정완료', count: counts.completed || 0 }
 ]
  
 const MissionList = () => {
@@ -236,7 +234,7 @@ const MissionList = () => {
     if (!data.data || data.data.length === 0) {
       return (
         <tr>
-          <td colSpan="9" className="text-center" style={{ padding: '40px' }}>
+          <td colSpan="7" className="text-center" style={{ padding: '40px' }}>
             데이터가 없습니다
           </td>
         </tr>
@@ -276,9 +274,6 @@ const MissionList = () => {
           </td>
           <td>
             {col.enrollCount || '0'}/{col.maxEnroll || '0'}
-          </td>
-          <td>
-            {col.selectDate ? moment(col.selectDate).format("YY.MM.DD") : '24.08.12'}
           </td>
           <td>
             <div style={{ padding: "2px 8px", width: "fit-content", whiteSpace: "nowrap", borderRadius: "100px", border: "1px solid #E4E6EA", fontSize: "12px", color: getSelectionStatus(col).color }}>
@@ -484,7 +479,6 @@ const MissionList = () => {
                   <th style={{ width: '140px' }}>신청기간</th>
                   <th style={{ width: '120px' }}>상태</th>
                   <th style={{ width: '100px' }}>신청/선정</th>
-                  <th style={{ width: '100px' }}>선정일</th>
                   <th style={{ width: '100px' }}>선정상태</th>
                   <th style={{ width: '100px' }}>선정자</th>
                   <th style={{ width: '60px' }}>공개여부</th>

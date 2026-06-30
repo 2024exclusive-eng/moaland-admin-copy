@@ -75,6 +75,7 @@ const CampaignDetail = () => {
   const enrollUsers = data?.enrollUsers || [];
   const selectUsers = data?.selectUsers || [];
   const completedUsers = data?.completeUsers || [];
+  const rejectUsers = data?.rejectUsers || [];
   const socialPlatforms = mission.social ? mission.social.split(",") : [];
   const linkTitles = {
     Xiaohongshu: "샤오홍슈",
@@ -512,35 +513,51 @@ const CampaignDetail = () => {
                         <td>{user.memo}</td>
                         <td>
                           {user.is_delete === "Y" ? null : (
-                            <Button
-                              size="sm"
-                              className="btn-select"
-                              style={{
-                                backgroundColor:
-                                  user.status === "selected"
-                                    ? "#F3F4F6 !important"
-                                    : "#fff",
-                              }}
-                              disabled={
-                                user.status === "selected" ||
-                                user.is_delete === "Y"
-                              }
-                              onClick={() => {
-                                const now = moment().utcOffset(540);
-                                const isBeforeMissionEnd = !mission.missionEndDate ||
-                                  now.isBefore(moment(mission.missionEndDate).utcOffset(540));
-
-                                if (isBeforeMissionEnd) {
-                                  handleSelectApplicant(user.missionEnrollId);
-                                } else {
-                                  alert("방문 기간이 지났습니다.");
+                            <>
+                              <Button
+                                size="sm"
+                                className="btn-select"
+                                style={{
+                                  backgroundColor:
+                                    user.status === "selected"
+                                      ? "#F3F4F6 !important"
+                                      : "#fff",
+                                }}
+                                disabled={
+                                  user.status === "selected" ||
+                                  user.is_delete === "Y"
                                 }
-                              }}
-                            >
-                              {user.status === "selected"
-                                ? "선정됨"
-                                : "선정하기"}
-                            </Button>
+                                onClick={() => {
+                                  const now = moment().utcOffset(540);
+                                  const isBeforeMissionEnd = !mission.missionEndDate ||
+                                    now.isBefore(moment(mission.missionEndDate).utcOffset(540));
+
+                                  if (isBeforeMissionEnd) {
+                                    handleSelectApplicant(user.missionEnrollId);
+                                  } else {
+                                    alert("방문 기간이 지났습니다.");
+                                  }
+                                }}
+                              >
+                                {user.status === "selected"
+                                  ? "선정됨"
+                                  : "선정하기"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                color="danger"
+                                outline
+                                style={{ marginLeft: "8px" }}
+                                disabled={user.is_delete === "Y"}
+                                onClick={() => {
+                                  if (window.confirm("이 신청자를 반려 처리할까요?")) {
+                                    handleSelectApplicant(user.missionEnrollId, "rejected");
+                                  }
+                                }}
+                              >
+                                반려
+                              </Button>
+                            </>
                           )}
                         </td>
                       </tr>
@@ -658,6 +675,62 @@ const CampaignDetail = () => {
                             {user.status === "completed"
                               ? "검수완료"
                               : "검수 완료"}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </Table>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Rejected Table */}
+        <Card className="detail-card">
+          <CardBody>
+            <div className="table-header">
+              <h2 className="section-title">
+                반려 <span style={{ color: "#ea3a50" }}>{rejectUsers.length}</span>
+              </h2>
+            </div>
+            <div className="table-responsive">
+              <Table className="detail-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>가입 메일주소</th>
+                    <th>이름</th>
+                    <th>SNS 링크</th>
+                    <th>위챗 아이디</th>
+                    <th>방문 날짜 시간</th>
+                    <th>메모</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rejectUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" className="text-center">반려된 신청자가 없습니다</td>
+                    </tr>
+                  ) : (
+                    rejectUsers.map((user, index) => (
+                      <tr key={user.missionEnrollId}>
+                        <td>{index + 1}</td>
+                        <td>{user.email || "-"}</td>
+                        <td>{user.name || "-"}</td>
+                        <td>{user.instagram_link || "-"}</td>
+                        <td>{user.wechat_id}</td>
+                        <td>{moment(user.visit_datetime_start).format("YYYY.MM.DD HH:mm")}</td>
+                        <td>{user.memo || "-"}</td>
+                        <td>
+                          <Button
+                            size="sm"
+                            color="secondary"
+                            outline
+                            onClick={() => handleSelectApplicant(user.missionEnrollId, "applied")}
+                          >
+                            반려취소
                           </Button>
                         </td>
                       </tr>

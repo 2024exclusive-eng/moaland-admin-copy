@@ -78,7 +78,6 @@ const HorizontalFormIcons = ({ missionData }) => {
         category: dataSource.category,
         applicationStartDate: dataSource.enrollStartDate,
         applicationEndDate: dataSource.enrollEndDate,
-        selectionDate: dataSource.selectDate,
         paymentDate: dataSource.paymentDate,
         visitStartDate: dataSource.missionStartDate,
         visitEndDate: dataSource.missionEndDate,
@@ -290,7 +289,6 @@ const HorizontalFormIcons = ({ missionData }) => {
         category: formData.category,
         enrollStartDate: formatDateForServer(formData.applicationStartDate) || defaultStartDate,
         enrollEndDate: formatDateForServer(formData.applicationEndDate) || defaultEndDate,
-        selectDate: formatDateForServer(formData.selectionDate || formData.applicationEndDate),
         paymentDate: formatDateForServer(formData.paymentDate),
         missionStartDate: formatDateForServer(formData.visitStartDate),
         missionEndDate: formatDateForServer(formData.visitEndDate),
@@ -601,18 +599,6 @@ const HorizontalFormIcons = ({ missionData }) => {
                       />
                     </Col>
                   </Row>
-                </div>
-              </Col>
-              <Col md={6}>
-                <div className="form-group">
-                  <Label className="form-label">인플루언서 선정일</Label>
-                  <Input
-                    type="date"
-                    name="selectionDate"
-                    className="form-input"
-                    value={formatDate(formData?.selectionDate) || ''}
-                    onChange={handleChange}
-                  />
                 </div>
               </Col>
             </Row>

@@ -364,10 +364,6 @@ const CampaignDetail = () => {
                     mission.enrollEndDate
                   )}
                 </div>
-                <div className="info-table-cell label">인플루언서 선정일</div>
-                <div className="info-table-cell value">
-                  {formatDate(mission.selectDate)}
-                </div>
               </div>
 
               <div className="info-table-row">
@@ -531,15 +527,13 @@ const CampaignDetail = () => {
                               }
                               onClick={() => {
                                 const now = moment().utcOffset(540);
-                                const isAfterSelectionDate = mission.selectDate &&
-                                  now.isSameOrAfter(moment(mission.selectDate).utcOffset(540).startOf("day"));
-                                const isBeforeMissionEnd = mission.missionEndDate &&
+                                const isBeforeMissionEnd = !mission.missionEndDate ||
                                   now.isBefore(moment(mission.missionEndDate).utcOffset(540));
 
-                                if (isAfterSelectionDate && isBeforeMissionEnd) {
+                                if (isBeforeMissionEnd) {
                                   handleSelectApplicant(user.missionEnrollId);
                                 } else {
-                                  alert("선정일이 아니거나 방문 기간이 지났습니다.");
+                                  alert("방문 기간이 지났습니다.");
                                 }
                               }}
                             >

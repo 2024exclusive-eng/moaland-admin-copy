@@ -1,5 +1,10 @@
 import moment from 'moment'
 
+/**
+ * @deprecated 클라이언트 재계산 금지. 선정대기(application_deadline) 기준이 backend
+ * computed_status(window 기반, 선정지연 예외 포함)와 어긋남. 상태 표시는 API가 내려주는
+ * col.computed_status + getStatusBadgeConfig() 를 사용할 것.
+ */
 export const getMissionEnrollmentStatus = (mission) => {
     // Use Korea timezone (UTC+9) for all date comparisons
     const now = moment().utcOffset(540) // 540 minutes = 9 hours

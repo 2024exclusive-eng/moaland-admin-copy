@@ -20,7 +20,7 @@ import {
 import axios from 'axios'
 import moment from 'moment'
 
-import { getMissionEnrollmentStatus, getSelectionStatus } from "../../../../utility/missionStatus";
+import { getStatusBadgeConfig, getSelectionStatus } from "../../../../utility/missionStatus";
 import { getRegionOptions, getCategoryOptions, getMediaTypeOptions } from '../constants';
 
 // ** Icons
@@ -269,7 +269,7 @@ const MissionList = () => {
           </td>
           <td>
             <div style={{ padding: "2px 8px", width: "fit-content", whiteSpace: "nowrap", borderRadius: "100px", border: "1px solid #E4E6EA", fontSize: "12px" }}>
-              {getMissionEnrollmentStatus(col).label}
+              {getStatusBadgeConfig(col.computed_status).text}
             </div>
           </td>
           <td>

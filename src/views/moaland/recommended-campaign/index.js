@@ -18,7 +18,7 @@ import { FileText } from "react-feather";
 import CampaignSelectionModal from "./CampaignSelectionModal";
 
 // ** Utils
-import { getMissionEnrollmentStatus } from "../../../utility/missionStatus";
+import { getStatusBadgeConfig } from "../../../utility/missionStatus";
 
 import emptyImg from '../../../assets/images/icons/empty-img-simple.png'
 
@@ -144,7 +144,7 @@ const RecommendedCampaign = () => {
                 fontSize: "12px",
               }}
             >
-              {getMissionEnrollmentStatus(campaign).label}
+              {getStatusBadgeConfig(campaign.computed_status).text}
             </div>
           </td>
           <td style={{ padding: "16px" }}>

@@ -21,7 +21,7 @@ import moment from "moment";
 import { X } from "react-feather";
 
 // ** Utils
-import { getMissionEnrollmentStatus } from "../../../utility/missionStatus";
+import { getStatusBadgeConfig } from "../../../utility/missionStatus";
 
 const CampaignSelectionModal = ({ isOpen, toggle, onSelect }) => {
   const [campaigns, setCampaigns] = useState([]);
@@ -268,7 +268,7 @@ const CampaignSelectionModal = ({ isOpen, toggle, onSelect }) => {
                           fontSize: "12px",
                         }}
                       >
-                        {getMissionEnrollmentStatus(campaign).label}
+                        {getStatusBadgeConfig(campaign.computed_status).text}
                       </div>
                     </td>
                     <td>

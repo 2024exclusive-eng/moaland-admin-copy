@@ -6,6 +6,7 @@ import moment from "moment";
 import { Card, CardBody, Button, Table, Badge } from "reactstrap";
 import axios from "axios";
 import { getRegionLabel, getCategoryLabel } from "../constants";
+import { getStatusBadgeConfig } from "../../../../utility/missionStatus";
 import { utils, write } from "xlsx";
 import { saveAs } from "file-saver";
 import { Download } from "react-feather";
@@ -252,7 +253,7 @@ const CampaignDetail = () => {
               <div className="info-table-row six-cols">
                 <div className="info-table-cell label">캠페인 상태</div>
                 <div className="info-table-cell value">
-                  {mission.status || "진행중"}
+                  {getStatusBadgeConfig(mission.computed_status).text}
                 </div>
                 <div className="info-table-cell label">캠페인 링크</div>
                 <div className="info-table-cell value">

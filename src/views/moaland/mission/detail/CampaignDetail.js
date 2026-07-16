@@ -165,7 +165,7 @@ const CampaignDetail = () => {
       이름: user.name || "-",
       "SNS 링크": user.instagram_link || "-",
       "위챗 아이디": user.wechat_id || "-",
-      "방문 날짜 시간": moment(user.visit_datetime_start).format(
+      "방문 날짜 시간": moment.utc(user.visit_datetime_start).format(
         "YYYY.MM.DD HH:mm"
       ),
       메모: user.memo || "-",
@@ -202,7 +202,7 @@ const CampaignDetail = () => {
       이름: user.name || "-",
       "SNS 링크": user.instagram_link || "-",
       "위챗 아이디": user.wechat_id || "-",
-      "방문 날짜 시간": moment(user.visit_datetime_start).format(
+      "방문 날짜 시간": moment.utc(user.visit_datetime_start).format(
         "YYYY.MM.DD HH:mm"
       ),
       메모: user.memo || "-",
@@ -507,7 +507,7 @@ const CampaignDetail = () => {
                                 }} href={getContentInstagramUrl(user)} target="_blank" rel="noopener noreferrer">{user.instagram_link || "-"}</a></td>
                         <td>{user.wechat_id}</td>
                         <td>
-                          {moment(user.visit_datetime_start).format(
+                          {moment.utc(user.visit_datetime_start).format(
                             "YYYY.MM.DD HH:mm"
                           )}
                         </td>
@@ -627,7 +627,7 @@ const CampaignDetail = () => {
                         <td>{user.instagram_link || "-"}</td>
                         <td>{user.wechat_id}</td>
                         <td>
-                          {moment(user.visit_datetime_start).format(
+                          {moment.utc(user.visit_datetime_start).format(
                             "YYYY.MM.DD HH:mm"
                           )}
                         </td>
@@ -722,7 +722,7 @@ const CampaignDetail = () => {
                         <td>{user.name || "-"}</td>
                         <td>{user.instagram_link || "-"}</td>
                         <td>{user.wechat_id}</td>
-                        <td>{moment(user.visit_datetime_start).format("YYYY.MM.DD HH:mm")}</td>
+                        <td>{moment.utc(user.visit_datetime_start).format("YYYY.MM.DD HH:mm")}</td>
                         <td>{user.memo || "-"}</td>
                         <td>
                           <Button

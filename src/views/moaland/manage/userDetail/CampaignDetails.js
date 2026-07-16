@@ -258,7 +258,7 @@ const CampaignDetails = ({ enrollData, selectData, completeData, endedData, user
               <div className="modal-section">
                 <label className="modal-label">방문일 및 시간</label>
                 <p className="modal-value">
-                  {selectedCampaign.visit_datetime_start ? moment(selectedCampaign.visit_datetime_start).format("YY.MM.DD a h시") : '-'}
+                  {selectedCampaign.visit_datetime_start ? moment.utc(selectedCampaign.visit_datetime_start).format("YY.MM.DD a h시") : '-'}
                 </p>
               </div>
             </>

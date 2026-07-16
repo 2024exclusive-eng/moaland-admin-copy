@@ -24,6 +24,8 @@ import axios from "axios";
 // ** Utils
 import { normalizeUrl, isValidUrl } from "@utils";
 
+import Editor from "@components/editor/editor";
+
 // ** Styles
 import "./EventModal.scss";
 
@@ -32,6 +34,9 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
     name: "",
     thumbnailPath: "",
     link: "",
+    linkType: "url",
+    contents: "",
+    contentsCn: "",
     isActive: "Y",
   });
 
@@ -47,6 +52,9 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
         name: event.name || "",
         thumbnailPath: event.thumbnailPath || "",
         link: event.link || "",
+        linkType: event.linkType || "url",
+        contents: event.contents || "",
+        contentsCn: event.contentsCn || "",
         isActive: event.isActive || "Y",
       });
       setImagePreview(event.thumbnailPath || null);
@@ -56,6 +64,9 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
         name: "",
         thumbnailPath: "",
         link: "",
+        linkType: "url",
+        contents: "",
+        contentsCn: "",
         isActive: "Y",
       });
       setImagePreview(null);
@@ -135,10 +146,12 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
     if (!formData.name.trim()) {
       newErrors.name = "배너관리명을 입력해주세요";
     }
-    if (!formData.link.trim()) {
-      newErrors.link = "URL을 입력해주세요";
-    } else if (!isValidUrl(formData.link)) {
-      newErrors.link = "올바른 URL 형식이 아닙니다";
+    if (formData.linkType === "url") {
+      if (!formData.link.trim()) {
+        newErrors.link = "URL을 입력해주세요";
+      } else if (!isValidUrl(formData.link)) {
+        newErrors.link = "올바른 URL 형식이 아닙니다";
+      }
     }
     if (!imagePreview && !imageFile) {
       newErrors.thumbnail = "썸네일 이미지를 업로드해주세요";
@@ -169,7 +182,7 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
 
       const dataToSave = {
         ...formData,
-        link: normalizeUrl(formData.link),
+        link: formData.linkType === "wechat" ? null : normalizeUrl(formData.link),
         thumbnailPath: thumbnailUrl,
       };
 
@@ -185,7 +198,7 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" className="event-modal">
       <ModalHeader toggle={toggle} className="event-modal-header">
-        배너 등록
+        {event ? "이벤트 수정" : "이벤트 등록"}
       </ModalHeader>
       <ModalBody className="event-modal-body">
         <Form>
@@ -251,22 +264,63 @@ const EventModal = ({ isOpen, toggle, event, onSave }) => {
             invalid={!!errors.name}
           />
 
-          {/* Link URL */}
+          {/* Link Type */}
           <Label
-            for="link"
+            for="linkType"
             className="event-modal-label"
             style={{ marginTop: "24px" }}
           >
-            연결 URL
+            연결 방식
           </Label>
           <Input
-            type="text"
-            id="link"
-            placeholder="URL을 입력하세요."
+            type="select"
+            id="linkType"
             className="event-modal-input"
-            value={formData.link}
-            onChange={(e) => handleChange("link", e.target.value)}
-            invalid={!!errors.link}
+            value={formData.linkType}
+            onChange={(e) => handleChange("linkType", e.target.value)}
+          >
+            <option value="url">URL 링크</option>
+            <option value="wechat">위챗 QR 연동</option>
+          </Input>
+
+          {/* Link URL (only when linkType === 'url') */}
+          {formData.linkType === "url" && (
+            <>
+              <Label
+                for="link"
+                className="event-modal-label"
+                style={{ marginTop: "24px" }}
+              >
+                연결 URL
+              </Label>
+              <Input
+                type="text"
+                id="link"
+                placeholder="URL을 입력하세요."
+                className="event-modal-input"
+                value={formData.link}
+                onChange={(e) => handleChange("link", e.target.value)}
+                invalid={!!errors.link}
+              />
+            </>
+          )}
+
+          {/* Event content (KO) — shown on the member event detail page */}
+          <Label className="event-modal-label" style={{ marginTop: "24px" }}>
+            이벤트 내용 (한국어)
+          </Label>
+          <Editor
+            content={formData.contents}
+            onChange={(data) => handleChange("contents", data)}
+          />
+
+          {/* Event content (CN) */}
+          <Label className="event-modal-label" style={{ marginTop: "24px" }}>
+            이벤트 내용 (중국어)
+          </Label>
+          <Editor
+            content={formData.contentsCn}
+            onChange={(data) => handleChange("contentsCn", data)}
           />
         </Form>
       </ModalBody>

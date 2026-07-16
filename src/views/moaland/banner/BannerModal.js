@@ -37,6 +37,7 @@ const BannerModal = ({
     name: "",
     thumbnailPath: "",
     link: "",
+    linkType: "url",
     isActive: "Y",
   });
 
@@ -53,6 +54,7 @@ const BannerModal = ({
         name: banner.name || "",
         thumbnailPath: banner.thumbnailPath || "",
         link: banner.link || "",
+        linkType: banner.linkType || "url",
         isActive: banner.isActive || "Y",
       });
       setImagePreview(banner.thumbnailPath || null);
@@ -63,6 +65,7 @@ const BannerModal = ({
         name: "",
         thumbnailPath: "",
         link: "",
+        linkType: "url",
         isActive: "Y",
       });
       setImagePreview(null);
@@ -142,10 +145,12 @@ const BannerModal = ({
     if (!formData.name.trim()) {
       newErrors.name = "배너명을 입력해주세요";
     }
-    if (!formData.link.trim()) {
-      newErrors.link = "URL을 입력해주세요";
-    } else if (!isValidUrl(formData.link)) {
-      newErrors.link = "올바른 URL 형식이 아닙니다";
+    if (formData.linkType === "url") {
+      if (!formData.link.trim()) {
+        newErrors.link = "URL을 입력해주세요";
+      } else if (!isValidUrl(formData.link)) {
+        newErrors.link = "올바른 URL 형식이 아닙니다";
+      }
     }
     if (!imagePreview && !imageFile) {
       newErrors.thumbnail = "썸네일 이미지를 업로드해주세요";
@@ -176,7 +181,7 @@ const BannerModal = ({
 
       const dataToSave = {
         ...formData,
-        link: normalizeUrl(formData.link),
+        link: formData.linkType === "wechat" ? null : normalizeUrl(formData.link),
         thumbnailPath: thumbnailUrl,
       };
 
@@ -258,23 +263,46 @@ const BannerModal = ({
             invalid={!!errors.name}
           />
 
-          {/* Link URL */}
+          {/* Link Type */}
           <Label
-            for="link"
+            for="linkType"
             className="banner-modal-label"
             style={{ marginTop: "24px" }}
           >
-            연결 URL
+            연결 방식
           </Label>
           <Input
-            type="text"
-            id="link"
-            placeholder="URL을 입력하세요."
+            type="select"
+            id="linkType"
             className="banner-modal-input"
-            value={formData.link}
-            onChange={(e) => handleChange("link", e.target.value)}
-            invalid={!!errors.link}
-          />
+            value={formData.linkType}
+            onChange={(e) => handleChange("linkType", e.target.value)}
+          >
+            <option value="url">URL 링크</option>
+            <option value="wechat">위챗 QR 연동</option>
+          </Input>
+
+          {/* Link URL (only when linkType === 'url') */}
+          {formData.linkType === "url" && (
+            <>
+              <Label
+                for="link"
+                className="banner-modal-label"
+                style={{ marginTop: "24px" }}
+              >
+                연결 URL
+              </Label>
+              <Input
+                type="text"
+                id="link"
+                placeholder="URL을 입력하세요."
+                className="banner-modal-input"
+                value={formData.link}
+                onChange={(e) => handleChange("link", e.target.value)}
+                invalid={!!errors.link}
+              />
+            </>
+          )}
         </Form>
       </ModalBody>
       <ModalFooter className="banner-modal-footer">

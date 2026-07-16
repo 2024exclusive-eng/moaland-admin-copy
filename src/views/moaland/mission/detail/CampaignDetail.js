@@ -77,6 +77,14 @@ const CampaignDetail = () => {
   const selectUsers = data?.selectUsers || [];
   const completedUsers = data?.completeUsers || [];
   const rejectUsers = data?.rejectUsers || [];
+
+  // P31: 신청자 sorted by 신청일 (created), 선정자 by 방문 날짜 시간 (visit_datetime_start)
+  const sortedApplicants = [...enrollUsers, ...selectUsers].sort(
+    (a, b) => new Date(a.created) - new Date(b.created),
+  );
+  const sortedSelected = [...selectUsers, ...completedUsers].sort(
+    (a, b) => new Date(a.visit_datetime_start) - new Date(b.visit_datetime_start),
+  );
   const socialPlatforms = mission.social ? mission.social.split(",") : [];
   const linkTitles = {
     Xiaohongshu: "샤오홍슈",
@@ -152,7 +160,7 @@ const CampaignDetail = () => {
     );
 
   const downloadApplicantsExcel = () => {
-    const applicants = [...enrollUsers, ...selectUsers];
+    const applicants = sortedApplicants;
 
     if (applicants.length === 0) {
       alert("다운로드할 데이터가 없습니다.");
@@ -189,7 +197,7 @@ const CampaignDetail = () => {
   };
 
   const downloadSelectedExcel = () => {
-    const selected = [...selectUsers, ...completedUsers];
+    const selected = sortedSelected;
 
     if (selected.length === 0) {
       alert("다운로드할 데이터가 없습니다.");
@@ -496,7 +504,7 @@ const CampaignDetail = () => {
                       </td>
                     </tr>
                   ) : (
-                    [...enrollUsers, ...selectUsers].map((user, index) => (
+                    sortedApplicants.map((user, index) => (
                       <tr key={user.missionEnrollId}>
                         <td>{index + 1}</td>
                         <td>{user.email || "-"}</td>
@@ -619,7 +627,7 @@ const CampaignDetail = () => {
                       </td>
                     </tr>
                   ) : (
-                    [...selectUsers, ...completedUsers].map((user, index) => (
+                    sortedSelected.map((user, index) => (
                       <tr key={user.missionEnrollId}>
                         <td>{index + 1}</td>
                         <td>{user.email || "-"}</td>

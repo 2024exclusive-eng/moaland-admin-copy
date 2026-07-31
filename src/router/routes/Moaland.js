@@ -12,6 +12,7 @@ const ManageMission = lazy(() => import('../../views/moaland/mission/list'))
 const ManageMissionDetail = lazy(() => import('../../views/moaland/mission/detail/missionDetail'))
 const ManageMissionModify = lazy(() => import('../../views/moaland/mission/detail/newMission'))
 const RecommendedCampaign = lazy(() => import('../../views/moaland/recommended-campaign'))
+const PinnedCampaign = lazy(() => import('../../views/moaland/pinned-campaign'))
 const BannerManagement = lazy(() => import('../../views/moaland/banner'))
 const CommunityManagement = lazy(() => import('../../views/moaland/community'))
 const CustomerServiceManagement = lazy(() => import('../../views/moaland/customer-service'))
@@ -61,6 +62,10 @@ const AppRoutes = [
   {
     path: '/moaland/manage/recommended-campaign',
     element: <RecommendedCampaign />
+  },
+  {
+    path: '/moaland/manage/pinned-campaign',
+    element: <PinnedCampaign />
   },
   {
     path: '/moaland/manage/banner',

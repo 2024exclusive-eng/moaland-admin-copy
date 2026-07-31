@@ -181,6 +181,12 @@ export default [
         navLink: "/moaland/manage/recommended-campaign",
       },
       {
+        id: "pinnedCampaign",
+        title: "고정 슬롯",
+        icon: <PushPin />,
+        navLink: "/moaland/manage/pinned-campaign",
+      },
+      {
         id: "manageBanner",
         title: "배너 관리",
         icon: <Flag />,

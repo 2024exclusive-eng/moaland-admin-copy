@@ -1,0 +1,10 @@
+{
+  // 우리 팀 테스트용 프리뷰 배포 (운영은 클라이언트 측에서 관리)
+  "name": "moaland-admin-preview",
+  "compatibility_date": "2025-03-25",
+  "assets": {
+    "directory": "./build",
+    // CRA 는 클라이언트 라우팅이므로 없는 경로는 index.html 로 넘긴다
+    "not_found_handling": "single-page-application"
+  }
+}

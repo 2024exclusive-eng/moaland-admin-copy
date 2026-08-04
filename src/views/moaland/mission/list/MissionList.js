@@ -1,6 +1,6 @@
 /* eslint-disable multiline-ternary */
 // ** React Imports
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useRef } from 'react'
 
 // ** Reactstrap Imports
 import {
@@ -105,6 +105,9 @@ const MissionList = () => {
   const [search, setSearch] = useState('')
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [targetPage, setTargetPage] = useState('')
+  // P36: 신청자 수를 인라인으로 수정 중인 캠페인
+  const [editingCountId, setEditingCountId] = useState(null)
+  const editDoneRef = useRef(false) // 저장/취소가 끝난 편집에서 blur 가 중복으로 걸리는 것을 막는다
   const [filters, setFilters] = useState({
     status: [],
     selection_status: [],
@@ -186,6 +189,29 @@ const MissionList = () => {
     } catch (error) {
       console.error('Error updating draft status:', error)
       setData(previousData)
+    }
+  }
+
+  // P36: 신청자 수 임의 등록. 빈 값이면 실제 신청 수 표기로 되돌린다.
+  const handleSaveEnrollCount = async (mission, value) => {
+    if (editDoneRef.current) return
+    editDoneRef.current = true
+    setEditingCountId(null)
+
+    // 값을 바꾸지 않고 빠져나온 경우(클릭만 하고 다른 곳 클릭)에는 저장하지 않는다.
+    // 저장해 버리면 자동 집계였던 캠페인이 조용히 임의 등록으로 바뀐다.
+    if (String(value) === String(mission.displayEnrollCount ?? mission.enrollCount ?? 0)) return
+
+    try {
+      await axios.put(`/admin/mission/${mission.missionId}/enroll-count`, {
+        count: value === '' ? null : Number(value)
+      })
+
+      const result = await fetchData(currentPage, itemsPerPage, search, filters)
+      setData(result.missions || { data: [], paging: {} })
+    } catch (error) {
+      console.error('Error updating enroll count:', error)
+      alert('신청자 수 저장에 실패했습니다.')
     }
   }
 
@@ -272,8 +298,41 @@ const MissionList = () => {
               {getStatusBadgeConfig(col.computed_status).text}
             </div>
           </td>
-          <td>
-            {col.enrollCount || '0'}/{col.maxEnroll || '0'}
+          <td onClick={(e) => e.stopPropagation()}>
+            {editingCountId === col.missionId ? (
+              <Input
+                type="number"
+                min="0"
+                autoFocus
+                bsSize="sm"
+                style={{ width: "70px", display: "inline-block" }}
+                defaultValue={col.displayEnrollCount ?? col.enrollCount ?? 0}
+                onBlur={(e) => handleSaveEnrollCount(col, e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveEnrollCount(col, e.target.value)
+                  if (e.key === "Escape") {
+                    editDoneRef.current = true
+                    setEditingCountId(null)
+                  }
+                }}
+              />
+            ) : (
+              // P35: 확인하지 않은 새 신청이 있으면 빨간색(굵게)으로 표기
+              // P36: 클릭하면 신청자 수만 임의로 수정할 수 있다
+              <span
+                onClick={() => {
+                  editDoneRef.current = false
+                  setEditingCountId(col.missionId)
+                }}
+                style={{ cursor: "pointer" }}
+                title="클릭해서 신청자 수 수정"
+              >
+                <span style={col.hasNewApplication ? { color: "#EA3A50", fontWeight: 700 } : undefined}>
+                  {col.displayEnrollCount ?? col.enrollCount ?? '0'}
+                </span>
+                /{col.maxEnroll || '0'}
+              </span>
+            )}
           </td>
           <td>
             <div style={{ padding: "2px 8px", width: "fit-content", whiteSpace: "nowrap", borderRadius: "100px", border: "1px solid #E4E6EA", fontSize: "12px", color: getSelectionStatus(col).color }}>

@@ -303,6 +303,8 @@ const MissionList = () => {
               <Input
                 type="number"
                 min="0"
+                max={col.maxEnroll || undefined}
+                title="사용자 화면에도 노출되므로 모집 인원까지만 입력할 수 있습니다"
                 autoFocus
                 bsSize="sm"
                 style={{ width: "70px", display: "inline-block" }}

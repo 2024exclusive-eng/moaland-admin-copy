@@ -2,6 +2,28 @@ import { useEffect, useRef, useState } from 'react'
 import { Button, Input } from 'reactstrap'
 import axios from 'axios'
 import './AMapAddress.scss'
+// Reuse identical searches across component remounts; never retry automatically.
+const searchCache = new Map()
+const searchPending = new Map()
+let quotaUntil = 0
+let quotaError
+async function searchPlaces(keywords, region) {
+  const key = JSON.stringify([keywords, region])
+  const hit = searchCache.get(key)
+  if (hit && hit.until > Date.now()) return hit.value
+  if (quotaUntil > Date.now()) throw quotaError
+  if (searchPending.has(key)) return searchPending.get(key)
+  const pending = axios.get('/admin/amap/places', { params: { keywords, region: region || undefined } }).then(value => {
+    if (searchCache.size >= 50) searchCache.delete(searchCache.keys().next().value)
+    searchCache.set(key, { value, until: Date.now() + 300000 })
+    return value
+  }).catch(error => {
+    if (error.response?.data?.error?.code === 'AMAP_QUOTA_EXCEEDED') { quotaUntil = Date.now() + 60000; quotaError = error }
+    throw error
+  }).finally(() => searchPending.delete(key))
+  searchPending.set(key, pending)
+  return pending
+}
 let sdkPromise
 function loadMap(config) {
   const base = String(axios.defaults.baseURL || window.location.origin).replace(/\/$/, '')
@@ -37,15 +59,14 @@ export default function AMapAddress({ value, onChange }) {
     let active = true
     setResults([]); setSearched(false); setBusy(false)
     if (!config?.searchReady || query.trim().length < 2) return () => { active = false }
-    const controller = new AbortController()
     const timer = setTimeout(async () => {
       setBusy(true); setError('')
       try {
-        const r = await axios.get('/admin/amap/places', { params: { keywords: query.trim(), region: region.trim() || undefined }, signal: controller.signal })
+        const r = await searchPlaces(query.trim(), region.trim())
         if (active) { setResults(r.data || []); setSearched(true) }
       } catch (e) { if (active) setError(e.response?.data?.error?.msg || '장소 검색에 실패했습니다. 잠시 후 다시 검색해 주세요.') } finally { if (active) setBusy(false) }
     }, 300)
-    return () => { active = false; clearTimeout(timer); controller.abort() }
+    return () => { active = false; clearTimeout(timer) }
   }, [query, region, config])
   useEffect(() => {
     if (!config?.jsKey) return undefined

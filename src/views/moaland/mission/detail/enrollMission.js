@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import moment from 'moment/moment'
 // ** Reactstrap Imports
 import {
@@ -23,6 +23,7 @@ const fetchData = async (enrollId, type) => {
 }
 
 const DataTableWithButtons = ({ data }) => {
+  const [channel, setChannel] = useState('')
   const handleRowClick = (id) => {
     fetchData(id, 'select')
   }
@@ -36,11 +37,11 @@ const DataTableWithButtons = ({ data }) => {
       )
     }
 
-    return data.map(col => {
+    return data.filter(col => !channel || col.channel === channel).map(col => {
       return (
         <tr key={col.missionEnrollId} >
           <td>{col.missionEnrollId}</td>
-          <td>{col.name}</td>
+          <td>{col.name || `WeChat #${col.userId}`} {col.channel === 'wechat_mp' && <span className='badge bg-success'>WeChat</span>}</td>
           <td>{col.social}</td>
           <td>{col.address}</td>
           <td>{moment(col.created).format("YY.MM.DD")}</td>
@@ -52,7 +53,7 @@ const DataTableWithButtons = ({ data }) => {
 
   return (
     <Fragment>
-      <Card>
+      <Card><label className='m-2'>신청 경로 <select value={channel} onChange={e => setChannel(e.target.value)}><option value=''>전체</option><option value='web'>웹</option><option value='wechat_mp'>WeChat</option></select></label>
         <CardHeader>
           <CardTitle tag='h4'>선정대기</CardTitle>
         </CardHeader>

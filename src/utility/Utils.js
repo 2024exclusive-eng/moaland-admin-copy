@@ -62,7 +62,8 @@ export const getUserData = () => JSON.parse(localStorage.getItem('userData'))
  * @param {String} userRole Role of user
  */
 export const getHomeRouteForLoggedInUser = userRole => {
-  if (userRole === 'admin') return DefaultRoute
+  if (userRole === 'super_admin') return DefaultRoute
+  if (userRole === 'advertiser') return '/moaland/manage/campaign'
   if (userRole === 'client') return '/access-control'
   return '/moaland/auth/intro'
 }

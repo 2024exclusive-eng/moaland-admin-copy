@@ -75,7 +75,7 @@ const CompanyTable = () => {
             <div className='d-flex align-items-center'>
               <div>
                 <div className='fw-bolder'>{col.brand}</div>
-                <div className='font-small-2 text-muted'>{col.title}</div>
+                <div className='font-small-2 text-muted'>{col.title} {Number(col.isWechatPublic) === 1 && <span className='badge bg-success'>WeChat</span>}</div>
               </div>
             </div>
           </td>

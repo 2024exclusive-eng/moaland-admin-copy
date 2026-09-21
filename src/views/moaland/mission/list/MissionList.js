@@ -1,3 +1,4 @@
+import {isSuperAdmin} from '../../../../utility/adminPermissions'
 /* eslint-disable multiline-ternary */
 // ** React Imports
 import { Fragment, useState, useEffect, useRef } from 'react'
@@ -286,7 +287,7 @@ const MissionList = () => {
               }}
               onClick={(e) => e.preventDefault()}
             >
-              {col.title}
+              {col.title} {Number(col.isWechatPublic) === 1 && <span className='badge bg-success'>WeChat</span>}
             </a>
           </td>
            <td>
@@ -323,11 +324,12 @@ const MissionList = () => {
               // P36: 클릭하면 신청자 수만 임의로 수정할 수 있다
               <span
                 onClick={() => {
+                  if (!isSuperAdmin()) return
                   editDoneRef.current = false
                   setEditingCountId(col.missionId)
                 }}
                 style={{ cursor: "pointer" }}
-                title="클릭해서 신청자 수 수정"
+                title={isSuperAdmin() ? '클릭해서 신청자 수 수정' : '신청자 수'}
               >
                 <span style={col.hasNewApplication ? { color: "#EA3A50", fontWeight: 700 } : undefined}>
                   {col.displayEnrollCount ?? col.enrollCount ?? '0'}

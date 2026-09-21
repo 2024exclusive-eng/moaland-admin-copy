@@ -1,3 +1,5 @@
+import {useSelector} from 'react-redux'
+import {filterAdminNavigation} from '../utility/adminPermissions'
 // ** React Imports
 import { Outlet } from 'react-router-dom'
 
@@ -9,6 +11,8 @@ import Layout from '@layouts/VerticalLayout'
 import navigation from '@src/navigation/vertical'
 
 const VerticalLayout = props => {
+  const role = useSelector(state => state.auth.userData?.role)
+
   // const [menuData, setMenuData] = useState([])
 
   // ** For ServerSide navigation
@@ -17,7 +21,7 @@ const VerticalLayout = props => {
   // }, [])
 
   return (
-    <Layout menuData={navigation} {...props}>
+    <Layout menuData={filterAdminNavigation(navigation, role)} {...props}>
       <Outlet />
     </Layout>
   )

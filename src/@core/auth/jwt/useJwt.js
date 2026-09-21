@@ -36,7 +36,6 @@ class JwtService {
 
         // ** If token is present add it to request's Authorization Header
         if (accessToken) {
-          console.log(`${authConfig.tokenType} ${accessToken}`)
           config.headers.Authorization = `${authConfig.tokenType} ${accessToken}`
         }
         return config
@@ -47,7 +46,6 @@ class JwtService {
     // ** Add request/response interceptor
     axios.interceptors.response.use(
       response => {
-        console.log("🟢", response.data)
         if (response && response.data && response.data.success === false) {
           if (response.data.error && response.data.error.msg) {
             alert(response.data.error.msg)
@@ -59,13 +57,11 @@ class JwtService {
 
         // ** const { config, response: { status } } = error
         const { config, response } = error
-        console.log("🔴", error)
 
         const originalRequest = config
 
         // ** if (status === 401) {
         if (response && response.status === 401) {
-          console.log("🔴🔴🔴🔴", response)
           localStorage.removeItem('userData')
           localStorage.removeItem(this.authConfig.storageTokenKeyName)
           localStorage.removeItem(this.authConfig.storageRefreshTokenKeyName)
@@ -95,8 +91,7 @@ class JwtService {
           return retryOriginalRequest
         }
         if (response && response.status === 403) {
-          alert('관리자 로그인을 해주세요.')
-          window.location.href = '/moaland/auth/intro'
+          alert(response.data?.error?.msg || '이 작업에 접근할 권한이 없습니다.')
         }
         return Promise.reject(error)
       }

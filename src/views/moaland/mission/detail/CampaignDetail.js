@@ -1,3 +1,5 @@
+import {isSuperAdmin} from '../../../../utility/adminPermissions'
+import CampaignOwner from './CampaignOwner'
 /* eslint-disable multiline-ternary */
 /* eslint-disable implicit-arrow-linebreak */
 import { useState, useEffect } from "react";
@@ -17,6 +19,7 @@ const CampaignDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
+  const [channel, setChannel] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,10 +76,11 @@ const CampaignDetail = () => {
   };
 
   const mission = data?.mission || {};
-  const enrollUsers = data?.enrollUsers || [];
-  const selectUsers = data?.selectUsers || [];
-  const completedUsers = data?.completeUsers || [];
-  const rejectUsers = data?.rejectUsers || [];
+  const byChannel = row => !channel || row.channel === channel;
+  const enrollUsers = (data?.enrollUsers || []).filter(byChannel);
+  const selectUsers = (data?.selectUsers || []).filter(byChannel);
+  const completedUsers = (data?.completeUsers || []).filter(byChannel);
+  const rejectUsers = (data?.rejectUsers || []).filter(byChannel);
 
   // P31: 신청자 sorted by 신청일 (created), 선정자 by 방문 날짜 시간 (visit_datetime_start)
   const sortedApplicants = [...enrollUsers, ...selectUsers].sort(
@@ -253,8 +257,9 @@ const CampaignDetail = () => {
           </div>
         </div>
 
+        <CampaignOwner missionId={id} ownerAdminId={mission.ownerAdminId} />
         {/* Basic Information */}
-        <Card className="detail-card">
+        <Card className="detail-card"><label className="m-2">신청 경로 <select value={channel} onChange={e => setChannel(e.target.value)}><option value="">전체</option><option value="web">웹</option><option value="wechat_mp">WeChat</option></select></label>
           <CardBody>
             <h2 className="section-title">기본 정보</h2>
             <div className="info-table">
@@ -508,7 +513,7 @@ const CampaignDetail = () => {
                       <tr key={user.missionEnrollId}>
                         <td>{index + 1}</td>
                         <td>{user.email || "-"}</td>
-                        <td>{user.name || "-"}</td>
+                        <td>{user.name || `WeChat #${user.userId}`} {user.channel === 'wechat_mp' && <span className='badge bg-success'>WeChat</span>}</td>
                         <td><a  style={{
                                   textDecoration: "underline",
                                   color: "#509594",
@@ -631,7 +636,7 @@ const CampaignDetail = () => {
                       <tr key={user.missionEnrollId}>
                         <td>{index + 1}</td>
                         <td>{user.email || "-"}</td>
-                        <td>{user.name || "-"}</td>
+                        <td>{user.name || `WeChat #${user.userId}`} {user.channel === 'wechat_mp' && <span className='badge bg-success'>WeChat</span>}</td>
                         <td>{user.instagram_link || "-"}</td>
                         <td>{user.wechat_id}</td>
                         <td>
@@ -676,7 +681,7 @@ const CampaignDetail = () => {
                               )
                             }
                             disabled={
-                              !user.link ||
+                              !isSuperAdmin() || !user.link ||
                               user.status === "completed" ||
                               !isContentPeriod
                             }
@@ -727,7 +732,7 @@ const CampaignDetail = () => {
                       <tr key={user.missionEnrollId}>
                         <td>{index + 1}</td>
                         <td>{user.email || "-"}</td>
-                        <td>{user.name || "-"}</td>
+                        <td>{user.name || `WeChat #${user.userId}`} {user.channel === 'wechat_mp' && <span className='badge bg-success'>WeChat</span>}</td>
                         <td>{user.instagram_link || "-"}</td>
                         <td>{user.wechat_id}</td>
                         <td>{moment.utc(user.visit_datetime_start).format("YYYY.MM.DD HH:mm")}</td>

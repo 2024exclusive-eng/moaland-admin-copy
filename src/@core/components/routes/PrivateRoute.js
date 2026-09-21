@@ -23,13 +23,14 @@ const PrivateRoute = ({ children, route }) => {
     if (!user) {
       return <Navigate to='/moaland/auth/intro' />
     }
+    if (!['super_admin', 'advertiser'].includes(user.role)) return <Navigate to='/moaland/auth/intro' replace />
+    if (user.role === 'advertiser' && !route.path.startsWith('/moaland/manage/campaign')) return <Navigate to='/moaland/manage/campaign' replace />
     if (user && restrictedRoute) {
       return <Navigate to='/' />
     }
     if (user && restrictedRoute && user.role === 'client') {
       return <Navigate to='/access-control' />
     }
-    console.log('action', ability)
     if (user && !ability.can(action || 'read', resource)) {
       return <Navigate to='/misc/not-authorized' replace />
     }

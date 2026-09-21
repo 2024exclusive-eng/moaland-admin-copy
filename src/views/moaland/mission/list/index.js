@@ -1,3 +1,4 @@
+import MonthlyQuota from '../MonthlyQuota'
 
 // ** React Imports
 import { useState, useEffect } from 'react'
@@ -26,6 +27,7 @@ const MissionManagement = () => {
   return (
     <div id='mission-management'>
       <MissionHeader stats={stats} />
+      <MonthlyQuota />
       <MissionList />
     </div>
   )

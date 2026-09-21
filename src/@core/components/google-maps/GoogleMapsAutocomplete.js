@@ -225,6 +225,10 @@ const GoogleMapsAutocomplete = ({
     }
   }, [onChange, onPlaceSelect, name, getAddressInLanguage, translateToChinese])
 
+  if (!window.google?.maps?.places) {
+    return <div className="google-maps-autocomplete"><Input value={value || ''} onChange={handleInputChange} placeholder={placeholder || '주소를 직접 입력해 주세요'} className={className} name={name} /><small className="text-muted">지도를 불러올 수 없어 주소를 직접 입력할 수 있습니다.</small></div>
+  }
+
   return (
     <div className="google-maps-autocomplete">
       <Autocomplete

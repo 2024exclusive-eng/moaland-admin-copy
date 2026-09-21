@@ -48,14 +48,14 @@ const ForgotPasswordBasic = () => {
                 }
               ],
               accessToken: res.accessToken,
-              role: "admin"
+              role: res.userInfo.role
             }
             dispatch(handleLogin(data))
             ability.update(data.ability)
             navigate("/")
           }
         })
-        .catch(err => console.log(err))
+        .catch(() => setError('admin', {type:'manual', message:'로그인 정보를 확인해 주세요.'}))
         .finally(() => {
           setLoading(false)
         })
@@ -112,6 +112,7 @@ const ForgotPasswordBasic = () => {
                   )}
                 />
               </div>
+              {errors.admin?.message && <p role='alert' className='text-danger'>{errors.admin.message}</p>}
               <Button type='submit' disabled={loading} color='primary' className='mt-2' block>
                 로그인
               </Button>

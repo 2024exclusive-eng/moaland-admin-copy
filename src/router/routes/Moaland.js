@@ -3,6 +3,7 @@ import { lazy } from 'react'
 import { Navigate } from 'react-router-dom'
 
 // 기능 설명 : 앱 라우트를 정의합니다.
+const Administrators = lazy(() => import('../../views/moaland/manage/administrators'))
 const Intro = lazy(() => import('../../views/moaland/auth/intro'))
 const ManageUser = lazy(() => import('../../views/moaland/manage/user'))
 const ManageUserDetail = lazy(() => import('../../views/moaland/manage/userDetail'))
@@ -18,6 +19,7 @@ const CommunityManagement = lazy(() => import('../../views/moaland/community'))
 const CustomerServiceManagement = lazy(() => import('../../views/moaland/customer-service'))
 
 const AppRoutes = [
+  {path:'/moaland/manage/administrators', element:<Administrators />},
   {
     path: '/moaland/auth/intro',
     element: <Intro />,

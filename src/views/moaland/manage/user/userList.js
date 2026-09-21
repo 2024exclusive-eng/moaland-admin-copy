@@ -26,13 +26,14 @@ import {
 // ** Styles
 import "./userList.scss";
 
-const fetchData = async (page, item, search) => {
+const fetchData = async (page, item, search, channel) => {
   try {
     const response = await axios.get("/admin/manage/user", {
       params: {
         page,
         item,
         search,
+        signup_channel: channel || undefined,
       },
     });
     return response.data;
@@ -46,6 +47,7 @@ const DataTableWithButtons = () => {
   // ** States
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [channel, setChannel] = useState("");
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -56,15 +58,15 @@ const DataTableWithButtons = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       // Note: You may need to pass activeTab to API if backend supports filtering by user type
-      const result = await fetchData(currentPage, itemsPerPage, search);
+      const result = await fetchData(currentPage, itemsPerPage, search, channel);
       setData(result);
     };
     fetchInitialData();
-  }, [currentPage, itemsPerPage, activeTab]);
+  }, [currentPage, itemsPerPage, activeTab, channel]);
 
   useEffect(() => {
     const debounceTimer = setTimeout(async () => {
-      const result = await fetchData(currentPage, itemsPerPage, search);
+      const result = await fetchData(currentPage, itemsPerPage, search, channel);
       setData(result);
     }, 500);
 
@@ -120,7 +122,7 @@ const DataTableWithButtons = () => {
           <td>
             {col.is_delete === "Y" ? "탈퇴" : "활성"}
           </td>
-          <td>{col.email}</td>
+          <td>{col.email || `WeChat #${col.id}`} {col.signup_channel === 'wechat_mp' && <span className='badge bg-success'>WeChat</span>}</td>
           <td>
             {col.appliedMission || "0"}
           </td>

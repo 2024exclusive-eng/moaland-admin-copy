@@ -148,8 +148,9 @@ export const Logout = ({ width = 16, height = 16, color = "currentColor", path }
 export default [
   {
     id: "members",
-    title: "회원",
+    title: "계정",
     children: [
+      {id:"manageAdministrators", title:"관리자 관리", icon:<User />, navLink:"/moaland/manage/administrators"},
       {
         id: "manageUser",
         title: "회원 관리",

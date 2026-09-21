@@ -1,3 +1,5 @@
+import MonthlyQuota from '../MonthlyQuota'
+import {isSuperAdmin, adminErrorMessage} from '../../../../utility/adminPermissions'
 /* eslint-disable multiline-ternary */
 import moment from 'moment/moment'
 import { Fragment, useState, useEffect } from 'react'
@@ -17,6 +19,7 @@ import Editor from '@components/editor/editor'
 import { GoogleMapsAutocomplete } from '@components/google-maps'
 import { getRegionOptions, getCategoryOptions, getMediaTypeOptions } from '../constants'
 import './missionInfo.scss'
+import WechatVisibility from './WechatVisibility'
 
 const formatDate = (date) => {
   if (!date) return ''
@@ -38,6 +41,8 @@ const HorizontalFormIcons = ({ missionData }) => {
   const [detailedPreview, setDetailedPreview] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
   const [formData, setFormData] = useState({})
+  const [quota, setQuota] = useState(null)
+  const quotaBlocked = (!id || id === 'new') && (!quota || (quota.role === 'advertiser' && quota.usage.remaining === 0))
   const [loading, setLoading] = useState(false)
   const [fetchedMissionData, setFetchedMissionData] = useState(null)
 
@@ -231,6 +236,7 @@ const HorizontalFormIcons = ({ missionData }) => {
   }
 
   const handleSave = async () => {
+    if (quotaBlocked) return
     // Validate required fields
     if (!formData.campaignName) {
       return alert('캠페인 이름을 입력해주세요.')
@@ -331,7 +337,7 @@ const HorizontalFormIcons = ({ missionData }) => {
       }
     } catch (error) {
       console.error('Save error:', error)
-      alert('저장 중 오류가 발생했습니다.')
+      alert(adminErrorMessage(error))
     } finally {
       setIsUploading(false)
     }
@@ -359,15 +365,17 @@ const HorizontalFormIcons = ({ missionData }) => {
             <Button className="btn-cancel" onClick={handleCancel} disabled={isUploading}>
               취소
             </Button>
-            <Button className="btn-register" onClick={handleSave} disabled={isUploading}>
+            <Button className="btn-register" onClick={handleSave} disabled={isUploading || quotaBlocked}>
               {isUploading ? '업로드 중...' : (id && id !== 'new' ? '수정 하기' : '등록 하기')}
             </Button>
           </div>
         </div>
 
+        <MonthlyQuota onLoaded={setQuota} />
         {/* Provided Information Section */}
         <Card className="campaign-card">
           <CardBody>
+            {isSuperAdmin() && <WechatVisibility missionId={id} mission={missionData || fetchedMissionData} />}
             <h2 className="section-title">제공 정보</h2>
 
             {/* Thumbnail Image */}

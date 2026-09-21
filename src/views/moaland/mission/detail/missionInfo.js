@@ -1,3 +1,4 @@
+import AMapAddress from '@components/amap/AMapAddress'
 import MonthlyQuota from '../MonthlyQuota'
 import {isSuperAdmin, adminErrorMessage} from '../../../../utility/adminPermissions'
 /* eslint-disable multiline-ternary */
@@ -92,6 +93,7 @@ const HorizontalFormIcons = ({ missionData }) => {
         region: dataSource.region,
         address: dataSource.address,
         addressCn: dataSource.addressCn,
+        amapLocation: dataSource.amapLocation || null,
         addressEn: dataSource.addressEn,
         latitude: dataSource.latitude,
         longitude: dataSource.longitude,
@@ -304,6 +306,7 @@ const HorizontalFormIcons = ({ missionData }) => {
         region: formData.region,
         address: formData.address,
         addressCn: formData.addressCn,
+        amapLocation: formData.amapLocation || null,
         addressEn: formData.addressEn,
         latitude: formData.latitude || null,
         longitude: formData.longitude || null,
@@ -553,6 +556,10 @@ const HorizontalFormIcons = ({ missionData }) => {
                 placeholder="주소를 입력하거나 검색하세요"
                 className="form-input"
               />
+            </div>
+            <div className="form-group">
+              <Label className="form-label">주소 (고덕지도) <span className="text-muted">· 선택</span></Label>
+              <AMapAddress value={formData?.amapLocation || null} onChange={place => setFormData(prev => ({ ...prev, amapLocation: place }))} />
             </div>
           </CardBody>
         </Card>

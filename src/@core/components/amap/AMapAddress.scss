@@ -1,0 +1,12 @@
+.amap-address {
+  .amap-search-row { display: flex; gap: 12px; margin-bottom: 8px; input:first-child { flex: 0 1 220px; } input:last-child { flex: 1; } }
+  .amap-message { color: #6b7280; padding: 10px 0; }
+  .amap-results { padding: 0; margin: 10px 0; list-style: none; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 280px; overflow-y: auto;
+    button { width: 100%; text-align: left; border: 0; background: white; padding: 12px; color: #333; &:hover, &:focus { background: #f0f7f6; } span { display: block; color: #6b7280; margin-top: 4px; } }
+  }
+  .amap-selected { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; margin-top: 12px; border: 1px solid #509594; border-radius: 8px; overflow-wrap: anywhere; }
+  .amap-preview { position: relative; width: 100%; height: 300px; border-radius: 8px; margin-top: 12px; overflow: hidden; background: #f5f6f7; }
+  .amap-canvas { width: 100%; height: 100%; }
+  .amap-map-message { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #6b7280; padding: 20px; text-align: center; }
+  @media(max-width: 575px) { .amap-search-row { flex-direction: column; input:first-child { flex-basis: auto; } } }
+}

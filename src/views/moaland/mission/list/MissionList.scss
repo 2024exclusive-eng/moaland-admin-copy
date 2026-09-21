@@ -379,3 +379,19 @@
     }
   }
 }
+
+.mission-table .uploader-cell {
+  min-width: 140px;
+  max-width: 220px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.mission-list-card {
+  .mission-list-body { padding: 32px; min-width: 0; }
+  .pagination-wrapper { flex-wrap: wrap; gap: 12px; }
+  @media (max-width: 575px) {
+    .mission-list-body { padding: 16px; }
+    .pagination-wrapper > div { flex-wrap: wrap; }
+  }
+}

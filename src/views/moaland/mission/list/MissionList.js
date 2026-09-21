@@ -132,21 +132,16 @@ const MissionList = () => {
   })
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    let active = true
+    const timer = setTimeout(async () => {
       const result = await fetchData(currentPage, itemsPerPage, search, filters)
-      setData(result.missions || { data: [], paging: {} })
+      if (active) setData(result.missions || { data: [], paging: {} })
+    }, 300)
+    return () => {
+      active = false
+      clearTimeout(timer)
     }
-    fetchInitialData()
-  }, [currentPage, itemsPerPage, filters])
-
-  useEffect(() => {
-    const debounceTimer = setTimeout(async () => {
-      const result = await fetchData(currentPage, itemsPerPage, search, filters)
-      setData(result.missions || { data: [], paging: {} })
-    }, 500)
-
-    return () => clearTimeout(debounceTimer)
-  }, [search])
+  }, [currentPage, itemsPerPage, filters, search])
 
   useEffect(() => {
     const loadFilterCounts = async () => {
@@ -261,7 +256,7 @@ const MissionList = () => {
     if (!data.data || data.data.length === 0) {
       return (
         <tr>
-          <td colSpan="7" className="text-center" style={{ padding: '40px' }}>
+          <td colSpan={isSuperAdmin() ? 8 : 7} className="text-center" style={{ padding: '40px' }}>
             데이터가 없습니다
           </td>
         </tr>
@@ -290,6 +285,13 @@ const MissionList = () => {
               {col.title} {Number(col.isWechatPublic) === 1 && <span className='badge bg-success'>WeChat</span>}
             </a>
           </td>
+          {isSuperAdmin() && (
+            <td className="uploader-cell">
+              <div>{col.uploaderName || col.uploaderLogin || '기록 없음'}</div>
+              {col.uploaderLogin && <small className="text-muted">{col.uploaderLogin}</small>}
+              {col.uploaderCompany && <small className="text-muted d-block">{col.uploaderCompany}</small>}
+            </td>
+          )}
            <td>
             {/* eslint-disable-next-line multiline-ternary */}
             {`${moment(col.enrollStartDate).format("YY.MM.DD")}-${moment(col.enrollEndDate).format("YY.MM.DD")}`}
@@ -366,6 +368,7 @@ const MissionList = () => {
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
+    setCurrentPage(1)
   }
 
   const totalPages = data?.paging?.totalPages || 1
@@ -373,7 +376,7 @@ const MissionList = () => {
   return (
     <Fragment>
       <Card className="mission-list-card">
-        <div style={{ padding: '32px' }}>
+        <div className="mission-list-body">
           {/* Filters Row */}
           <Row className="filters-row" style={{ marginBottom: '20px' }}>
             <Col md="2">
@@ -526,7 +529,8 @@ const MissionList = () => {
           <div style={{ marginBottom: '20px' }}>
             <Input
               type="text"
-              placeholder="검색어를 입력하세요."
+              placeholder={isSuperAdmin() ? "캠페인, 브랜드, 업로드 관리자 이름·아이디·업체명 검색" : "캠페인, 브랜드 검색"}
+              aria-label="캠페인 검색"
               style={{ fontSize: '16px', height: '48px' }}
               value={search}
               onChange={handleSearchChange}
@@ -539,6 +543,7 @@ const MissionList = () => {
               <thead>
                 <tr>
                   <th style={{ width: '80px' }}>캠페인</th>
+                  {isSuperAdmin() && <th style={{ width: '160px' }}>업로드</th>}
                   <th style={{ width: '140px' }}>신청기간</th>
                   <th style={{ width: '120px' }}>상태</th>
                   <th style={{ width: '100px' }}>신청/선정</th>

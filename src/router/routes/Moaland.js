@@ -18,7 +18,9 @@ const BannerManagement = lazy(() => import('../../views/moaland/banner'))
 const CommunityManagement = lazy(() => import('../../views/moaland/community'))
 const CustomerServiceManagement = lazy(() => import('../../views/moaland/customer-service'))
 
+const EnrollmentForms = lazy(() => import('../../views/moaland/enrollment-forms'))
 const AppRoutes = [
+  {path:'/moaland/manage/enrollment-forms', element:<EnrollmentForms />},
   {path:'/moaland/manage/administrators', element:<Administrators />},
   {
     path: '/moaland/auth/intro',

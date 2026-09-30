@@ -176,6 +176,9 @@ export default [
     title: "운영",
     children: [
       {
+        id: "enrollmentForms", title: "신청 항목 설정", icon: <Home />, navLink: "/moaland/manage/enrollment-forms",
+      },
+      {
         id: "recommendedCampaign",
         title: "추천 캠페인",
         icon: <PushPin />,

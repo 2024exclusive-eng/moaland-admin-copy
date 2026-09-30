@@ -1,4 +1,6 @@
+import EnrollmentAnswers from './EnrollmentAnswers'
 import {isSuperAdmin} from '../../../../utility/adminPermissions'
+import CampaignNotifications from './CampaignNotifications'
 import CampaignOwner from './CampaignOwner'
 /* eslint-disable multiline-ternary */
 /* eslint-disable implicit-arrow-linebreak */
@@ -258,6 +260,8 @@ const CampaignDetail = () => {
         </div>
 
         <CampaignOwner missionId={id} ownerAdminId={mission.ownerAdminId} />
+        <EnrollmentAnswers users={[...enrollUsers, ...selectUsers, ...completedUsers, ...rejectUsers]} />
+        <CampaignNotifications users={[...enrollUsers, ...selectUsers, ...completedUsers, ...rejectUsers]} />
         {/* Basic Information */}
         <Card className="detail-card"><label className="m-2">신청 경로 <select value={channel} onChange={e => setChannel(e.target.value)}><option value="">전체</option><option value="web">웹</option><option value="wechat_mp">WeChat</option></select></label>
           <CardBody>

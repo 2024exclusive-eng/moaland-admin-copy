@@ -6,7 +6,6 @@ import {isSuperAdmin} from '../../../utility/adminPermissions'
 const types = {text:'한 줄 입력', textarea:'여러 줄 입력', number:'숫자', date:'날짜', url:'URL', select:'단일 선택', multi:'복수 선택'}
 const key = prefix => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 export default function EnrollmentForms() {
- const [channel, setChannel] = useState('web')
  const [category, setCategory] = useState('restaurant')
  const [fields, setFields] = useState([])
  const [version, setVersion] = useState(0)
@@ -18,24 +17,24 @@ export default function EnrollmentForms() {
   let current = true
   setBusy(true); setReady(false); setMessage('')
   if (!isSuperAdmin()) { setBusy(false); return () => { current = false } }
-  axios.get(`/admin/enrollment-forms/${channel}/${category}`).then(r => {
+  axios.get(`/admin/enrollment-forms/${category}`).then(r => {
    if (!current) return
    setFields(r.data?.fields || []); setVersion(r.data?.version || 0); setDirty(false); setReady(r.enabled === true)
    if (!r.enabled) setMessage('신청서 설정 기능이 아직 활성화되지 않았습니다.')
   }).catch(() => { if (current) setMessage('신청서 설정을 불러오지 못했습니다. 페이지를 다시 열어 주세요.') }).finally(() => { if (current) setBusy(false) })
   return () => { current = false }
- }, [channel, category])
+ }, [category])
  function update(id, value) { setFields(rows => rows.map(f => (f.id === id ? {...f, ...value} : f))); setDirty(true) }
  function change(setter, value) { if (!dirty || window.confirm('저장하지 않은 변경을 버리고 이동할까요?')) setter(value) }
  function move(index, direction) { const rows = [...fields]; const target = index + direction; if (target < 0 || target >= rows.length) return; [rows[index], rows[target]] = [rows[target], rows[index]]; setFields(rows); setDirty(true) }
  async function save() {
   setBusy(true); setMessage('')
-  try { const r = await axios.put(`/admin/enrollment-forms/${channel}/${category}`, {version, fields}); setVersion(r.data.version); setFields(r.data.fields); setDirty(false); setMessage('저장했습니다. 이후 신청부터 적용되며 기존 답변은 유지됩니다.') } catch (e) { setMessage(e.response?.status === 409 ? '다른 관리자가 수정했습니다. 페이지를 다시 열어 최신 설정을 확인해 주세요.' : '저장하지 못했습니다. 한국어·중국어 항목명과 선택지를 모두 입력해 주세요.') } finally { setBusy(false) }
+  try { const r = await axios.put(`/admin/enrollment-forms/${category}`, {version, fields}); setVersion(r.data.version); setFields(r.data.fields); setDirty(false); setMessage('저장했습니다. 이후 신청부터 적용되며 기존 답변은 유지됩니다.') } catch (e) { setMessage(e.response?.status === 409 ? '다른 관리자가 수정했습니다. 페이지를 다시 열어 최신 설정을 확인해 주세요.' : '저장하지 못했습니다. 한국어·중국어 항목명과 선택지를 모두 입력해 주세요.') } finally { setBusy(false) }
  }
  if (!isSuperAdmin()) return <Alert color="warning">슈퍼관리자만 신청 항목을 설정할 수 있습니다.</Alert>
  return <Card><CardBody>
-  <h2>신청 항목 설정</h2><p>카테고리와 신청 경로별로 서로 다른 신청서를 만듭니다. 개인정보 동의는 별도로 유지됩니다.</p>
-  <div className="d-flex gap-2 mb-2"><div><Label for="form-channel">신청 경로</Label><Input id="form-channel" type="select" value={channel} disabled={busy} onChange={e => change(setChannel, e.target.value)}><option value="web">국내 웹</option><option value="wechat_mp">위챗 미니프로그램</option></Input></div><div><Label for="form-category">카테고리</Label><Input id="form-category" type="select" value={category} disabled={busy} onChange={e => change(setCategory, e.target.value)}>{getCategoryOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</Input></div></div>
+  <h2>신청 항목 설정</h2><p>카테고리별 신청 항목은 국내 웹과 위챗 미니프로그램에 함께 적용됩니다. 미니프로그램에는 중국어 항목명과 선택지만 표시됩니다. 개인정보 동의는 별도로 유지됩니다.</p>
+  <div className="d-flex gap-2 mb-2"><div><Label for="form-category">카테고리</Label><Input id="form-category" type="select" value={category} disabled={busy} onChange={e => change(setCategory, e.target.value)}>{getCategoryOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</Input></div></div>
   {message && <Alert color="info" role="status">{message}</Alert>}
   {ready && <><p>{version ? `저장 버전 ${version}` : '아직 설정이 없습니다. 저장 전까지 기존 신청서를 사용합니다.'} · 항목 {fields.length}/30</p>
   {fields.map((f, index) => <fieldset key={f.id} className="border rounded p-2 mb-2" disabled={busy}>

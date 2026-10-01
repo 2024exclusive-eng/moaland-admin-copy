@@ -1,4 +1,5 @@
-import EnrollmentAnswers from './EnrollmentAnswers'
+import {ApplicantHeaders, ApplicantCells} from './ApplicantCells'
+import {applicantColumns, applicantExcel} from './applicantFields'
 import {isSuperAdmin} from '../../../../utility/adminPermissions'
 import CampaignNotifications from './CampaignNotifications'
 import CampaignOwner from './CampaignOwner'
@@ -78,6 +79,7 @@ const CampaignDetail = () => {
   };
 
   const mission = data?.mission || {};
+  const columns = applicantColumns([...(data?.enrollUsers || []), ...(data?.selectUsers || []), ...(data?.completeUsers || []), ...(data?.rejectUsers || [])]);
   const byChannel = row => !channel || row.channel === channel;
   const enrollUsers = (data?.enrollUsers || []).filter(byChannel);
   const selectUsers = (data?.selectUsers || []).filter(byChannel);
@@ -134,24 +136,7 @@ const CampaignDetail = () => {
       return ensureHttpsUrl(user.link);
     }
   };
-  
-  const getContentInstagramUrl = (user) => {
-    if (!user?.instagram_link) return null;
-    try {
-      const linkObj = typeof user.instagram_link === "string" ? JSON.parse(user.instagram_link) : user.instagram_link;
-      // Use the mission's social field or user's social field to get the correct URL
-      const social = mission.social || user.social;
-      if (social && linkObj[social]) {
-        return ensureHttpsUrl(linkObj[social]);
-      }
-      // Fallback: return the first URL in the object
-      const keys = Object.keys(linkObj);
-      return keys.length > 0 ? ensureHttpsUrl(linkObj[keys[0]]) : null;
-    } catch (e) {
-      // If parsing fails, assume it's already a direct URL
-      return ensureHttpsUrl(user.instagram_link);
-    }
-  };
+
 
   // Check if current date is between content start and end dates
   const now = moment().utcOffset(540); // Korea timezone (UTC+9)
@@ -173,18 +158,7 @@ const CampaignDetail = () => {
       return;
     }
 
-    const excelData = applicants.map((user, index) => ({
-      No: index + 1,
-      "가입 메일주소": user.email || "-",
-      이름: user.name || "-",
-      "SNS 링크": user.instagram_link || "-",
-      "위챗 아이디": user.wechat_id || "-",
-      "방문 날짜 시간": moment.utc(user.visit_datetime_start).format(
-        "YYYY.MM.DD HH:mm"
-      ),
-      메모: user.memo || "-",
-      상태: user.status === "selected" ? "선정됨" : "대기중",
-    }));
+    const excelData = applicantExcel(applicants, columns, user => ({상태:user.status === 'selected' ? '선정됨' : '대기중'}));
 
     const worksheet = utils.json_to_sheet(excelData);
     const workbook = utils.book_new();
@@ -210,19 +184,7 @@ const CampaignDetail = () => {
       return;
     }
 
-    const excelData = selected.map((user, index) => ({
-      No: index + 1,
-      "가입 메일주소": user.email || "-",
-      이름: user.name || "-",
-      "SNS 링크": user.instagram_link || "-",
-      "위챗 아이디": user.wechat_id || "-",
-      "방문 날짜 시간": moment.utc(user.visit_datetime_start).format(
-        "YYYY.MM.DD HH:mm"
-      ),
-      메모: user.memo || "-",
-      "등록한 콘텐츠": getContentUrl(user) || "-",
-      검수상태: user.status === "completed" ? "검수완료" : "검수대기",
-    }));
+    const excelData = applicantExcel(selected, columns, user => ({'등록한 콘텐츠':getContentUrl(user) || '-', 검수상태:user.status === 'completed' ? '검수완료' : '검수대기'}));
 
     const worksheet = utils.json_to_sheet(excelData);
     const workbook = utils.book_new();
@@ -260,10 +222,9 @@ const CampaignDetail = () => {
         </div>
 
         <CampaignOwner missionId={id} ownerAdminId={mission.ownerAdminId} />
-        <EnrollmentAnswers users={[...enrollUsers, ...selectUsers, ...completedUsers, ...rejectUsers]} />
         <CampaignNotifications users={[...enrollUsers, ...selectUsers, ...completedUsers, ...rejectUsers]} />
         {/* Basic Information */}
-        <Card className="detail-card"><label className="m-2">신청 경로 <select value={channel} onChange={e => setChannel(e.target.value)}><option value="">전체</option><option value="web">웹</option><option value="wechat_mp">WeChat</option></select></label>
+        <Card className="detail-card">
           <CardBody>
             <h2 className="section-title">기본 정보</h2>
             <div className="info-table">
@@ -459,6 +420,10 @@ const CampaignDetail = () => {
           </CardBody>
         </Card>
 
+        <div className="d-flex flex-wrap align-items-center gap-2 p-2">
+          <label htmlFor="applicant-channel">신청 경로 <select id="applicant-channel" className="ms-1" value={channel} onChange={e => setChannel(e.target.value)}><option value="">전체</option><option value="web">국내 웹</option><option value="wechat_mp">위챗 미니프로그램</option></select></label>
+          <span className="text-muted">접수한 서비스 기준으로 자동 구분됩니다. 아래 목록과 엑셀에 함께 적용됩니다.</span>
+        </div>
         {/* Applicant Table */}
         <Card className="detail-card">
           <CardBody>
@@ -495,40 +460,21 @@ const CampaignDetail = () => {
               <Table className="detail-table">
                 <thead>
                   <tr>
-                    <th>No</th>
-                    <th>가입 메일주소</th>
-                    <th>이름</th>
-                    <th>SNS 링크</th>
-                    <th>위챗 아이디</th>
-                    <th>방문 날짜 시간</th>
-                    <th>메모</th>
+                    <ApplicantHeaders columns={columns} />
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   {enrollUsers.length === 0 && selectUsers.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="text-center">
+                      <td colSpan={columns.length + 4} className="text-center">
                         신청자가 없습니다
                       </td>
                     </tr>
                   ) : (
                     sortedApplicants.map((user, index) => (
                       <tr key={user.missionEnrollId}>
-                        <td>{index + 1}</td>
-                        <td>{user.email || "-"}</td>
-                        <td>{user.name || `WeChat #${user.userId}`} {user.channel === 'wechat_mp' && <span className='badge bg-success'>WeChat</span>}</td>
-                        <td><a  style={{
-                                  textDecoration: "underline",
-                                  color: "#509594",
-                                }} href={getContentInstagramUrl(user)} target="_blank" rel="noopener noreferrer">{user.instagram_link || "-"}</a></td>
-                        <td>{user.wechat_id}</td>
-                        <td>
-                          {moment.utc(user.visit_datetime_start).format(
-                            "YYYY.MM.DD HH:mm"
-                          )}
-                        </td>
-                        <td>{user.memo}</td>
+                        <ApplicantCells user={user} index={index} columns={columns} />
                         <td>
                           {user.is_delete === "Y" ? null : (
                             <>
@@ -617,13 +563,7 @@ const CampaignDetail = () => {
               <Table className="detail-table">
                 <thead>
                   <tr>
-                    <th>No</th>
-                    <th>가입 메일주소</th>
-                    <th>이름</th>
-                    <th>SNS 링크</th>
-                    <th>위챗 아이디</th>
-                    <th>방문 날짜 시간</th>
-                    <th>메모</th>
+                    <ApplicantHeaders columns={columns} />
                     {isContentPeriod && <th>등록한 콘텐츠</th>}
                     <th>검수</th>
                   </tr>
@@ -631,24 +571,14 @@ const CampaignDetail = () => {
                 <tbody>
                   {selectUsers.length === 0 && completedUsers.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="text-center">
+                      <td colSpan={columns.length + 4 + (isContentPeriod ? 1 : 0)} className="text-center">
                         선정자가 없습니다
                       </td>
                     </tr>
                   ) : (
                     sortedSelected.map((user, index) => (
                       <tr key={user.missionEnrollId}>
-                        <td>{index + 1}</td>
-                        <td>{user.email || "-"}</td>
-                        <td>{user.name || `WeChat #${user.userId}`} {user.channel === 'wechat_mp' && <span className='badge bg-success'>WeChat</span>}</td>
-                        <td>{user.instagram_link || "-"}</td>
-                        <td>{user.wechat_id}</td>
-                        <td>
-                          {moment.utc(user.visit_datetime_start).format(
-                            "YYYY.MM.DD HH:mm"
-                          )}
-                        </td>
-                        <td>{user.memo || "-"}</td>
+                        <ApplicantCells user={user} index={index} columns={columns} />
 
                         {isContentPeriod && (
                           <td>
@@ -716,31 +646,19 @@ const CampaignDetail = () => {
               <Table className="detail-table">
                 <thead>
                   <tr>
-                    <th>No</th>
-                    <th>가입 메일주소</th>
-                    <th>이름</th>
-                    <th>SNS 링크</th>
-                    <th>위챗 아이디</th>
-                    <th>방문 날짜 시간</th>
-                    <th>메모</th>
+                    <ApplicantHeaders columns={columns} />
                     <th>관리</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rejectUsers.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="text-center">반려된 신청자가 없습니다</td>
+                      <td colSpan={columns.length + 4} className="text-center">반려된 신청자가 없습니다</td>
                     </tr>
                   ) : (
                     rejectUsers.map((user, index) => (
                       <tr key={user.missionEnrollId}>
-                        <td>{index + 1}</td>
-                        <td>{user.email || "-"}</td>
-                        <td>{user.name || `WeChat #${user.userId}`} {user.channel === 'wechat_mp' && <span className='badge bg-success'>WeChat</span>}</td>
-                        <td>{user.instagram_link || "-"}</td>
-                        <td>{user.wechat_id}</td>
-                        <td>{moment.utc(user.visit_datetime_start).format("YYYY.MM.DD HH:mm")}</td>
-                        <td>{user.memo || "-"}</td>
+                        <ApplicantCells user={user} index={index} columns={columns} />
                         <td>
                           <Button
                             size="sm"

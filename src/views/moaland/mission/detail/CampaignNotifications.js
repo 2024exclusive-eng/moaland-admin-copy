@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import {applicantName} from './applicantFields'
 import axios from 'axios'
 import moment from 'moment'
 import {Button, Input, Label, Alert, Table} from 'reactstrap'
@@ -38,7 +39,7 @@ export default function CampaignNotifications({users}) {
     <p>알림은 위챗 구독 동의와 사용 가능한 템플릿이 있어야 발송됩니다. 리뷰 URL이 저장되면 남은 리뷰 알림이 중단됩니다.</p>
     <p>신청 완료·일정 변경은 기업위챗 그룹 봇으로 안내합니다. 발송 기능은 별도 활성화 전까지 꺼져 있습니다.</p>
     <Label for="notification-enrollment">신청자</Label>
-    <Input id="notification-enrollment" type="select" value={selected} disabled={busy} onChange={e => load(e.target.value)}><option value="">신청자를 선택하세요</option>{users.map(u => <option key={u.missionEnrollId} value={u.missionEnrollId}>{u.name} · #{u.missionEnrollId}</option>)}</Input>
+    <Input id="notification-enrollment" type="select" value={selected} disabled={busy} onChange={e => load(e.target.value)}><option value="">신청자를 선택하세요</option>{users.map(u => <option key={u.missionEnrollId} value={u.missionEnrollId}>{applicantName(u)}{users.filter(other => applicantName(other) === applicantName(u)).length > 1 ? ` · #${u.missionEnrollId}` : ''}</option>)}</Input>
     {ready && <div className="mt-1">
       <Label for="visit-zone">방문 시간대</Label><Input id="visit-zone" type="select" value={zone} onChange={e => setZone(e.target.value)}><option value="Asia/Seoul">한국 (UTC+9)</option><option value="Asia/Shanghai">중국 (UTC+8)</option></Input>
       <Label for="visit-at" className="mt-1">확정 방문 시각</Label><Input id="visit-at" type="datetime-local" value={date} onChange={e => setDate(e.target.value)}/>

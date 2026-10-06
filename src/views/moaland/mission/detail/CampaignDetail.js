@@ -79,7 +79,7 @@ const CampaignDetail = () => {
   };
 
   const mission = data?.mission || {};
-  const columns = applicantColumns([...(data?.enrollUsers || []), ...(data?.selectUsers || []), ...(data?.completeUsers || []), ...(data?.rejectUsers || [])]);
+  const columns = applicantColumns([...(data?.enrollUsers || []), ...(data?.selectUsers || []), ...(data?.completeUsers || []), ...(data?.rejectUsers || [])], data?.enrollmentForm?.fields || [], mission.social || '');
   const byChannel = row => !channel || row.channel === channel;
   const enrollUsers = (data?.enrollUsers || []).filter(byChannel);
   const selectUsers = (data?.selectUsers || []).filter(byChannel);
